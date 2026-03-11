@@ -1,2 +1,1 @@
-# webp-converter-mac
-App macOS pour convertir PNG, JPEG et HEIC en WEBP
+Application macOS native permettant de convertir plusieurs images PNG, JPG/JPEG et HEIC en WEBP, avec conversion par lot, réglage de qualité, redimensionnement, et affichage du poids avant/après conversion.
