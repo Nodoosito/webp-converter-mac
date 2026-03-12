@@ -8,15 +8,6 @@ struct ContentView: View {
     @State private var widthInput = "1920"
     @State private var heightInput = "1080"
 
-    @FocusState private var focusedField: ResizeField?
-    @State private var previousFocusedField: ResizeField?
-
-    private enum ResizeField: Hashable {
-        case percentage
-        case width
-        case height
-    }
-
     var body: some View {
         VStack(spacing: 16) {
             header
@@ -30,12 +21,6 @@ struct ContentView: View {
         }
         .onChange(of: viewModel.settings.resizeSettings.mode) { _ in
             syncInputsFromSettings()
-        }
-        .onChange(of: focusedField) { newFocus in
-            if let previousFocusedField, previousFocusedField != newFocus {
-                commit(field: previousFocusedField)
-            }
-            previousFocusedField = newFocus
         }
         .onDrop(of: [UTType.fileURL.identifier], isTargeted: nil) { providers in
             viewModel.handleDrop(providers: providers)
@@ -83,35 +68,32 @@ struct ContentView: View {
                 case .percentage:
                     HStack {
                         Text("%")
-                        TextField("100", text: $percentageInput)
-                            .textFieldStyle(.roundedBorder)
-                            .frame(width: 80)
-                            .focused($focusedField, equals: .percentage)
-                            .onSubmit {
-                                commitPercentageInput()
-                            }
+                        AppKitCommitTextField(
+                            placeholder: "100",
+                            text: $percentageInput,
+                            onCommit: commitPercentageInput
+                        )
+                        .frame(width: 80, height: 24)
                     }
                 case .width:
                     HStack {
                         Text("px")
-                        TextField("1920", text: $widthInput)
-                            .textFieldStyle(.roundedBorder)
-                            .frame(width: 100)
-                            .focused($focusedField, equals: .width)
-                            .onSubmit {
-                                commitWidthInput()
-                            }
+                        AppKitCommitTextField(
+                            placeholder: "1920",
+                            text: $widthInput,
+                            onCommit: commitWidthInput
+                        )
+                        .frame(width: 100, height: 24)
                     }
                 case .height:
                     HStack {
                         Text("px")
-                        TextField("1080", text: $heightInput)
-                            .textFieldStyle(.roundedBorder)
-                            .frame(width: 100)
-                            .focused($focusedField, equals: .height)
-                            .onSubmit {
-                                commitHeightInput()
-                            }
+                        AppKitCommitTextField(
+                            placeholder: "1080",
+                            text: $heightInput,
+                            onCommit: commitHeightInput
+                        )
+                        .frame(width: 100, height: 24)
                     }
                 case .original:
                     EmptyView()
@@ -226,17 +208,6 @@ struct ContentView: View {
             Text("OK").foregroundStyle(.green)
         case .failure(let message):
             Text(message).foregroundStyle(.red).lineLimit(2)
-        }
-    }
-
-    private func commit(field: ResizeField) {
-        switch field {
-        case .percentage:
-            commitPercentageInput()
-        case .width:
-            commitWidthInput()
-        case .height:
-            commitHeightInput()
         }
     }
 
