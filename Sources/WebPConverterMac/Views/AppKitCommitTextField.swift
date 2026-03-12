@@ -80,7 +80,7 @@ struct AppKitCommitTextField: NSViewRepresentable {
     }
 }
 
-private final class ContainerView: NSView {
+final class ContainerView: NSView {
     fileprivate private(set) var textField: FocusableTextField?
 
     override var acceptsFirstResponder: Bool { false }
@@ -99,7 +99,7 @@ private final class ContainerView: NSView {
     }
 }
 
-private final class FocusableTextField: NSTextField {
+final class FocusableTextField: NSTextField {
     override var acceptsFirstResponder: Bool { true }
 
     override func mouseDown(with event: NSEvent) {
