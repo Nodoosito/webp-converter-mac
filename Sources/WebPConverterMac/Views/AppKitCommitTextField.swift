@@ -10,43 +10,44 @@ struct AppKitCommitTextField: NSViewRepresentable {
         Coordinator(text: $text, onCommit: onCommit)
     }
 
-    func makeNSView(context: Context) -> ContainerView {
-        let container = ContainerView()
-        let textField = FocusableTextField(string: text)
-
+    func makeNSView(context: Context) -> NSTextField {
+        let textField = LoggingTextField(string: text)
         textField.placeholderString = placeholder
         textField.isBordered = true
         textField.isBezeled = true
         textField.isEditable = true
         textField.isSelectable = true
-        textField.focusRingType = .default
-        textField.refusesFirstResponder = false
         textField.delegate = context.coordinator
         textField.target = context.coordinator
         textField.action = #selector(Coordinator.commitFromAction)
+        textField.focusRingType = .default
+        textField.refusesFirstResponder = false
 
-        container.install(textField: textField)
-        context.coordinator.textField = textField
+        #if DEBUG
+        print("[AppKitCommitTextField] makeNSView editable=\(textField.isEditable) selectable=\(textField.isSelectable)")
+        #endif
 
-        return container
+        return textField
     }
 
-    func updateNSView(_ nsView: ContainerView, context: Context) {
-        guard let textField = nsView.textField else { return }
+    func updateNSView(_ nsView: NSTextField, context: Context) {
+        let isEditing = nsView.currentEditor() != nil
 
-        let isEditing = textField.currentEditor() != nil
-        if !isEditing, textField.stringValue != text {
-            textField.stringValue = text
+        #if DEBUG
+        print("[AppKitCommitTextField] updateNSView isEditing=\(isEditing) current='\(nsView.stringValue)' model='\(text)'")
+        #endif
+
+        if !isEditing, nsView.stringValue != text {
+            nsView.stringValue = text
         }
 
-        textField.placeholderString = placeholder
+        nsView.placeholderString = placeholder
         context.coordinator.onCommit = onCommit
     }
 
     final class Coordinator: NSObject, NSTextFieldDelegate {
         @Binding private var text: String
         var onCommit: () -> Void
-        weak var textField: NSTextField?
 
         init(text: Binding<String>, onCommit: @escaping () -> Void) {
             _text = text
@@ -55,65 +56,59 @@ struct AppKitCommitTextField: NSViewRepresentable {
 
         func controlTextDidBeginEditing(_ notification: Notification) {
             #if DEBUG
-            print("[AppKitCommitTextField] begin editing")
+            print("[AppKitCommitTextField] controlTextDidBeginEditing")
             #endif
         }
 
-        func controlTextDidChange(_ obj: Notification) {
-            guard let field = obj.object as? NSTextField else { return }
+        func controlTextDidChange(_ notification: Notification) {
+            guard let field = notification.object as? NSTextField else { return }
             text = field.stringValue
+
             #if DEBUG
-            print("[AppKitCommitTextField] text changed: \(field.stringValue)")
+            print("[AppKitCommitTextField] controlTextDidChange text='\(field.stringValue)'")
             #endif
         }
 
-        func controlTextDidEndEditing(_ obj: Notification) {
+        func controlTextDidEndEditing(_ notification: Notification) {
             #if DEBUG
-            print("[AppKitCommitTextField] end editing")
+            print("[AppKitCommitTextField] controlTextDidEndEditing")
             #endif
             onCommit()
         }
 
         @objc func commitFromAction() {
+            #if DEBUG
+            print("[AppKitCommitTextField] commitFromAction")
+            #endif
             onCommit()
         }
     }
 }
 
-final class ContainerView: NSView {
-    fileprivate private(set) var textField: FocusableTextField?
-
-    override var acceptsFirstResponder: Bool { false }
-
-    func install(textField: FocusableTextField) {
-        self.textField = textField
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(textField)
-
-        NSLayoutConstraint.activate([
-            textField.leadingAnchor.constraint(equalTo: leadingAnchor),
-            textField.trailingAnchor.constraint(equalTo: trailingAnchor),
-            textField.topAnchor.constraint(equalTo: topAnchor),
-            textField.bottomAnchor.constraint(equalTo: bottomAnchor)
-        ])
+private final class LoggingTextField: NSTextField {
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
+        true
     }
-}
-
-final class FocusableTextField: NSTextField {
-    override var acceptsFirstResponder: Bool { true }
 
     override func mouseDown(with event: NSEvent) {
-        window?.makeFirstResponder(self)
+        #if DEBUG
+        print("[AppKitCommitTextField] mouseDown")
+        #endif
         super.mouseDown(with: event)
     }
 
     override func becomeFirstResponder() -> Bool {
         let result = super.becomeFirstResponder()
         #if DEBUG
-        if result {
-            print("[AppKitCommitTextField] became first responder")
-        }
+        print("[AppKitCommitTextField] becomeFirstResponder result=\(result)")
         #endif
         return result
+    }
+
+    override func keyDown(with event: NSEvent) {
+        #if DEBUG
+        print("[AppKitCommitTextField] keyDown keyCode=\(event.keyCode) chars='\(event.characters ?? "")'")
+        #endif
+        super.keyDown(with: event)
     }
 }
