@@ -62,6 +62,11 @@ final class ConversionViewModel: ObservableObject {
     func updateResizeMode(_ mode: ResizeMode) {
         var updated = settings
         updated.resizeSettings.mode = mode
+
+        if mode == .percentage {
+            updated.resizeSettings.keepAspectRatio = true
+        }
+
         settings = updated
     }
 

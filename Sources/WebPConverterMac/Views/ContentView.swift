@@ -9,6 +9,7 @@ struct ContentView: View {
     @State private var heightInput = "1080"
 
     @FocusState private var focusedField: ResizeField?
+    @State private var previousFocusedField: ResizeField?
 
     private enum ResizeField: Hashable {
         case percentage
@@ -31,9 +32,10 @@ struct ContentView: View {
             syncInputsFromSettings()
         }
         .onChange(of: focusedField) { newFocus in
-            if newFocus == nil {
-                commitAllResizeInputs()
+            if let previousFocusedField, previousFocusedField != newFocus {
+                commit(field: previousFocusedField)
             }
+            previousFocusedField = newFocus
         }
         .onDrop(of: [UTType.fileURL.identifier], isTargeted: nil) { providers in
             viewModel.handleDrop(providers: providers)
@@ -58,12 +60,6 @@ struct ContentView: View {
 
     private var settingsPanel: some View {
         VStack(alignment: .leading, spacing: 12) {
-            if !viewModel.nativeWebPAvailable {
-                Text("Export WEBP natif ImageIO indisponible : utilisation d'un encodeur de secours si installé (cwebp).")
-                    .font(.callout)
-                    .foregroundStyle(.orange)
-            }
-
             HStack {
                 Text("Qualité WEBP")
                 Slider(value: $viewModel.settings.quality, in: 0.1...1.0, step: 0.05)
@@ -91,9 +87,6 @@ struct ContentView: View {
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 80)
                             .focused($focusedField, equals: .percentage)
-                            .onChange(of: percentageInput) { newValue in
-                                percentageInput = sanitizeDigits(newValue)
-                            }
                             .onSubmit {
                                 commitPercentageInput()
                             }
@@ -105,9 +98,6 @@ struct ContentView: View {
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 100)
                             .focused($focusedField, equals: .width)
-                            .onChange(of: widthInput) { newValue in
-                                widthInput = sanitizeDigits(newValue)
-                            }
                             .onSubmit {
                                 commitWidthInput()
                             }
@@ -119,9 +109,6 @@ struct ContentView: View {
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 100)
                             .focused($focusedField, equals: .height)
-                            .onChange(of: heightInput) { newValue in
-                                heightInput = sanitizeDigits(newValue)
-                            }
                             .onSubmit {
                                 commitHeightInput()
                             }
@@ -130,11 +117,12 @@ struct ContentView: View {
                     EmptyView()
                 }
 
-                Toggle("Conserver les proportions", isOn: Binding(
-                    get: { viewModel.settings.resizeSettings.keepAspectRatio },
-                    set: { viewModel.updateKeepAspectRatio($0) }
-                ))
-                .disabled(viewModel.settings.resizeSettings.mode == .original || viewModel.settings.resizeSettings.mode == .percentage)
+                if viewModel.settings.resizeSettings.mode == .width || viewModel.settings.resizeSettings.mode == .height {
+                    Toggle("Conserver les proportions", isOn: Binding(
+                        get: { viewModel.settings.resizeSettings.keepAspectRatio },
+                        set: { viewModel.updateKeepAspectRatio($0) }
+                    ))
+                }
             }
 
             HStack {
@@ -241,7 +229,18 @@ struct ContentView: View {
         }
     }
 
-    private func sanitizeDigits(_ text: String) -> String {
+    private func commit(field: ResizeField) {
+        switch field {
+        case .percentage:
+            commitPercentageInput()
+        case .width:
+            commitWidthInput()
+        case .height:
+            commitHeightInput()
+        }
+    }
+
+    private func digitsOnly(_ text: String) -> String {
         text.filter { $0.isNumber }
     }
 
@@ -252,21 +251,24 @@ struct ContentView: View {
     }
 
     private func commitPercentageInput() {
-        let source = percentageInput.isEmpty ? "100" : percentageInput
+        let sanitized = digitsOnly(percentageInput)
+        let source = sanitized.isEmpty ? "100" : sanitized
         let value = Double(source) ?? viewModel.settings.resizeSettings.percentage
         viewModel.updatePercentage(value)
         percentageInput = String(Int(viewModel.settings.resizeSettings.percentage.rounded()))
     }
 
     private func commitWidthInput() {
-        let source = widthInput.isEmpty ? "1" : widthInput
+        let sanitized = digitsOnly(widthInput)
+        let source = sanitized.isEmpty ? "1" : sanitized
         let value = Double(source) ?? viewModel.settings.resizeSettings.width
         viewModel.updateWidth(value)
         widthInput = String(Int(viewModel.settings.resizeSettings.width.rounded()))
     }
 
     private func commitHeightInput() {
-        let source = heightInput.isEmpty ? "1" : heightInput
+        let sanitized = digitsOnly(heightInput)
+        let source = sanitized.isEmpty ? "1" : sanitized
         let value = Double(source) ?? viewModel.settings.resizeSettings.height
         viewModel.updateHeight(value)
         heightInput = String(Int(viewModel.settings.resizeSettings.height.rounded()))
