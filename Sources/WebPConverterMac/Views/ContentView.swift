@@ -3,6 +3,7 @@ import UniformTypeIdentifiers
 
 struct ContentView: View {
     @ObservedObject var viewModel: ConversionViewModel
+    @State private var percentageInput = "100"
 
     var body: some View {
         VStack(spacing: 16) {
@@ -12,6 +13,14 @@ struct ContentView: View {
             footer
         }
         .padding(20)
+        .onAppear {
+            percentageInput = normalizedPercentageString(viewModel.settings.resizeSettings.percentage)
+        }
+        .onChange(of: viewModel.settings.resizeSettings.mode) { mode in
+            if mode == .percentage {
+                percentageInput = normalizedPercentageString(viewModel.settings.resizeSettings.percentage)
+            }
+        }
         .onDrop(of: [UTType.fileURL.identifier], isTargeted: nil) { providers in
             viewModel.handleDrop(providers: providers)
             return true
@@ -64,12 +73,15 @@ struct ContentView: View {
                 case .percentage:
                     HStack {
                         Text("%")
-                        TextField("100", value: Binding(
-                            get: { viewModel.settings.resizeSettings.percentage },
-                            set: { viewModel.updatePercentage($0) }
-                        ), format: .number)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(width: 80)
+                        TextField("100", text: $percentageInput)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 80)
+                            .onChange(of: percentageInput) { newValue in
+                                handlePercentageInputChange(newValue)
+                            }
+                            .onSubmit {
+                                commitPercentageInput()
+                            }
                     }
                 case .width:
                     HStack {
@@ -145,6 +157,10 @@ struct ContentView: View {
                         Text("-")
                     }
                 }
+                TableColumn("Gain") { item in
+                    Text(viewModel.formattedGain(for: item))
+                        .foregroundStyle(.secondary)
+                }
                 TableColumn("Statut") { item in
                     statusView(for: item.status)
                 }
@@ -199,5 +215,31 @@ struct ContentView: View {
         case .failure(let message):
             Text(message).foregroundStyle(.red).lineLimit(2)
         }
+    }
+
+    private func handlePercentageInputChange(_ rawValue: String) {
+        let filtered = rawValue.filter { $0.isNumber }
+
+        if filtered != rawValue {
+            percentageInput = filtered
+            return
+        }
+
+        guard !filtered.isEmpty, let value = Double(filtered) else {
+            return
+        }
+
+        viewModel.updatePercentage(value)
+    }
+
+    private func commitPercentageInput() {
+        let value = Double(percentageInput) ?? viewModel.settings.resizeSettings.percentage
+        let clamped = min(max(1, value), 100)
+        viewModel.updatePercentage(clamped)
+        percentageInput = normalizedPercentageString(clamped)
+    }
+
+    private func normalizedPercentageString(_ value: Double) -> String {
+        String(Int(min(max(1, value), 100).rounded()))
     }
 }

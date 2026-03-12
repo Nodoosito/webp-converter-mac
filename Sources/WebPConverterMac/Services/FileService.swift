@@ -29,11 +29,17 @@ struct FileService {
         var urls: [URL] = []
 
         for provider in providers where provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
-            if let item = try? await provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier),
-               let data = item as? Data,
-               let url = URL(dataRepresentation: data, relativeTo: nil),
-               isSupportedImage(url: url) {
-                urls.append(url)
+            guard let item = try? await provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier),
+                  let data = item as? Data,
+                  let droppedURL = URL(dataRepresentation: data, relativeTo: nil)
+            else {
+                continue
+            }
+
+            if isDirectory(url: droppedURL) {
+                urls.append(contentsOf: supportedImagesRecursively(in: droppedURL))
+            } else if isSupportedImage(url: droppedURL) {
+                urls.append(droppedURL)
             }
         }
 
@@ -51,5 +57,35 @@ struct FileService {
         else { return 0 }
 
         return Int64(fileSize)
+    }
+
+    private func isDirectory(url: URL) -> Bool {
+        (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) ?? false
+    }
+
+    private func supportedImagesRecursively(in folderURL: URL) -> [URL] {
+        guard let enumerator = FileManager.default.enumerator(
+            at: folderURL,
+            includingPropertiesForKeys: [.isRegularFileKey, .isDirectoryKey],
+            options: [.skipsHiddenFiles, .skipsPackageDescendants]
+        ) else {
+            return []
+        }
+
+        var results: [URL] = []
+
+        for case let fileURL as URL in enumerator {
+            guard
+                let values = try? fileURL.resourceValues(forKeys: [.isRegularFileKey]),
+                values.isRegularFile == true,
+                isSupportedImage(url: fileURL)
+            else {
+                continue
+            }
+
+            results.append(fileURL)
+        }
+
+        return results
     }
 }

@@ -64,7 +64,7 @@ final class ConversionViewModel: ObservableObject {
 
     func updatePercentage(_ percentage: Double) {
         var updated = settings
-        updated.resizeSettings.percentage = max(1, percentage)
+        updated.resizeSettings.percentage = min(max(1, percentage), 100)
         settings = updated
     }
 
@@ -139,6 +139,15 @@ final class ConversionViewModel: ObservableObject {
 
     func formattedSize(_ bytes: Int64) -> String {
         ByteCountFormatter.string(fromByteCount: bytes, countStyle: .file)
+    }
+
+    func formattedGain(for item: FileConversionItem) -> String {
+        guard case .success(_, let outputSize) = item.status, item.inputSize > 0 else {
+            return "-"
+        }
+
+        let gain = (Double(outputSize - item.inputSize) / Double(item.inputSize)) * 100
+        return "\(Int(gain.rounded()))%"
     }
 
     private func updateStatus(_ status: FileConversionStatus, for id: UUID) {
