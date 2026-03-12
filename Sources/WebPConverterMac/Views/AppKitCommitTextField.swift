@@ -25,9 +25,14 @@ struct AppKitCommitTextField: NSViewRepresentable {
     }
 
     func updateNSView(_ nsView: NSTextField, context: Context) {
-        if nsView.stringValue != text {
+        // Important: ne pas écraser la valeur pendant une édition active,
+        // sinon la saisie clavier (replace/delete/paste) devient instable.
+        let isEditing = nsView.currentEditor() != nil
+
+        if !isEditing, nsView.stringValue != text {
             nsView.stringValue = text
         }
+
         context.coordinator.onCommit = onCommit
     }
 
