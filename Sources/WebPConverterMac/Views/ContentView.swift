@@ -35,6 +35,12 @@ struct ContentView: View {
 
     private var settingsPanel: some View {
         VStack(alignment: .leading, spacing: 12) {
+            if !viewModel.nativeWebPAvailable {
+                Text("Export WEBP natif ImageIO indisponible : utilisation d'un encodeur de secours si installé (cwebp).")
+                    .font(.callout)
+                    .foregroundStyle(.orange)
+            }
+
             HStack {
                 Text("Qualité WEBP")
                 Slider(value: $viewModel.settings.quality, in: 0.1...1.0, step: 0.05)
@@ -44,7 +50,10 @@ struct ContentView: View {
             }
 
             HStack {
-                Picker("Redimensionnement", selection: $viewModel.settings.resizeSettings.mode) {
+                Picker("Redimensionnement", selection: Binding(
+                    get: { viewModel.settings.resizeSettings.mode },
+                    set: { viewModel.updateResizeMode($0) }
+                )) {
                     ForEach(ResizeMode.allCases) { mode in
                         Text(mode.rawValue).tag(mode)
                     }
@@ -55,30 +64,42 @@ struct ContentView: View {
                 case .percentage:
                     HStack {
                         Text("%")
-                        TextField("100", value: $viewModel.settings.resizeSettings.percentage, format: .number)
-                            .textFieldStyle(.roundedBorder)
-                            .frame(width: 80)
+                        TextField("100", value: Binding(
+                            get: { viewModel.settings.resizeSettings.percentage },
+                            set: { viewModel.updatePercentage($0) }
+                        ), format: .number)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 80)
                     }
                 case .width:
                     HStack {
                         Text("px")
-                        TextField("1920", value: $viewModel.settings.resizeSettings.width, format: .number)
-                            .textFieldStyle(.roundedBorder)
-                            .frame(width: 100)
+                        TextField("1920", value: Binding(
+                            get: { viewModel.settings.resizeSettings.width },
+                            set: { viewModel.updateWidth($0) }
+                        ), format: .number)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 100)
                     }
                 case .height:
                     HStack {
                         Text("px")
-                        TextField("1080", value: $viewModel.settings.resizeSettings.height, format: .number)
-                            .textFieldStyle(.roundedBorder)
-                            .frame(width: 100)
+                        TextField("1080", value: Binding(
+                            get: { viewModel.settings.resizeSettings.height },
+                            set: { viewModel.updateHeight($0) }
+                        ), format: .number)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 100)
                     }
                 case .original:
                     EmptyView()
                 }
 
-                Toggle("Conserver les proportions", isOn: $viewModel.settings.resizeSettings.keepAspectRatio)
-                    .disabled(viewModel.settings.resizeSettings.mode == .original || viewModel.settings.resizeSettings.mode == .percentage)
+                Toggle("Conserver les proportions", isOn: Binding(
+                    get: { viewModel.settings.resizeSettings.keepAspectRatio },
+                    set: { viewModel.updateKeepAspectRatio($0) }
+                ))
+                .disabled(viewModel.settings.resizeSettings.mode == .original || viewModel.settings.resizeSettings.mode == .percentage)
             }
 
             HStack {

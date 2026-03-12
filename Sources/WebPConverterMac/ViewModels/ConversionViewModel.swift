@@ -16,6 +16,10 @@ final class ConversionViewModel: ObservableObject {
         !items.isEmpty && settings.outputFolder != nil && !isConverting
     }
 
+    var nativeWebPAvailable: Bool {
+        conversionService.isNativeWebPEncodingAvailable
+    }
+
     func addFilesFromPanel() {
         let urls = fileService.openImagePanel()
         addFiles(urls)
@@ -52,9 +56,39 @@ final class ConversionViewModel: ObservableObject {
         }
     }
 
+    func updateResizeMode(_ mode: ResizeMode) {
+        var updated = settings
+        updated.resizeSettings.mode = mode
+        settings = updated
+    }
+
+    func updatePercentage(_ percentage: Double) {
+        var updated = settings
+        updated.resizeSettings.percentage = max(1, percentage)
+        settings = updated
+    }
+
+    func updateWidth(_ width: Double) {
+        var updated = settings
+        updated.resizeSettings.width = max(1, width)
+        settings = updated
+    }
+
+    func updateHeight(_ height: Double) {
+        var updated = settings
+        updated.resizeSettings.height = max(1, height)
+        settings = updated
+    }
+
+    func updateKeepAspectRatio(_ keep: Bool) {
+        var updated = settings
+        updated.resizeSettings.keepAspectRatio = keep
+        settings = updated
+    }
+
     func convertAll() {
         guard let outputFolder = settings.outputFolder else {
-            globalError = ConversionError.missingOutputFolder.localizedDescription
+            globalError = "Aucun dossier de sortie sélectionné."
             return
         }
 
@@ -65,7 +99,6 @@ final class ConversionViewModel: ObservableObject {
             items[index].status = .pending
         }
 
-        // Snapshots capturés sur le MainActor avant de lancer le travail en arrière-plan.
         let itemsToConvert = items
         let settingsSnapshot = settings
         let conversionService = self.conversionService

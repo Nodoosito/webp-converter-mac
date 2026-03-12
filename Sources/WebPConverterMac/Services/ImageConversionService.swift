@@ -5,30 +5,55 @@ import UniformTypeIdentifiers
 
 enum ConversionError: LocalizedError {
     case unableToReadImage
-    case unableToCreateDestination
+    case outputFolderUnavailable
+    case nativeWebPUnsupported
+    case unableToCreateDestination(details: String)
     case failedToFinalize
-    case missingOutputFolder
+    case fallbackEncoderUnavailable
+    case fallbackEncodingFailed(details: String)
+    case unableToWriteTemporaryImage
 
     var errorDescription: String? {
         switch self {
         case .unableToReadImage:
             return "Impossible de lire l'image source."
-        case .unableToCreateDestination:
-            return "Impossible de créer le fichier WEBP de destination."
+        case .outputFolderUnavailable:
+            return "Le dossier de sortie est indisponible ou inaccessible."
+        case .nativeWebPUnsupported:
+            return "Ce macOS ne prend pas en charge l'export WEBP natif via ImageIO."
+        case .unableToCreateDestination(let details):
+            return "Impossible de créer le fichier WEBP de destination. \(details)"
         case .failedToFinalize:
-            return "La conversion WEBP a échoué lors de l'écriture."
-        case .missingOutputFolder:
-            return "Aucun dossier de sortie sélectionné."
+            return "La conversion WEBP a échoué lors de l'écriture finale du fichier."
+        case .fallbackEncoderUnavailable:
+            return "Export WEBP natif indisponible et aucun encodeur de secours trouvé (installez 'cwebp')."
+        case .fallbackEncodingFailed(let details):
+            return "La conversion WEBP via l'encodeur de secours a échoué. \(details)"
+        case .unableToWriteTemporaryImage:
+            return "Impossible d'écrire l'image temporaire pour l'encodeur de secours."
         }
     }
 }
 
 struct ImageConversionService: Sendable {
+    private static let webPIdentifier = UTType.webP.identifier
+
+    var isNativeWebPEncodingAvailable: Bool {
+        guard let supported = CGImageDestinationCopyTypeIdentifiers() as? [String] else {
+            return false
+        }
+        return supported.contains(Self.webPIdentifier)
+    }
+
     func convert(
         inputURL: URL,
         settings: ConversionSettings,
         outputFolder: URL
     ) throws -> (outputURL: URL, outputSize: Int64) {
+        guard FileManager.default.fileExists(atPath: outputFolder.path) else {
+            throw ConversionError.outputFolderUnavailable
+        }
+
         guard let source = CGImageSourceCreateWithURL(inputURL as CFURL, nil),
               let cgImage = CGImageSourceCreateImageAtIndex(source, 0, nil)
         else {
@@ -40,27 +65,107 @@ struct ImageConversionService: Sendable {
             .appendingPathComponent(inputURL.deletingPathExtension().lastPathComponent)
             .appendingPathExtension("webp")
 
+        if isNativeWebPEncodingAvailable {
+            do {
+                try exportNativeWebP(image: resizedImage, to: outputURL, quality: settings.quality)
+                let outputSize = FileService().fileSize(for: outputURL)
+                return (outputURL, outputSize)
+            } catch {
+                // fallback if native support exists but fails at runtime on this machine.
+                try exportWithCWebP(image: resizedImage, to: outputURL, quality: settings.quality)
+                let outputSize = FileService().fileSize(for: outputURL)
+                return (outputURL, outputSize)
+            }
+        }
+
+        try exportWithCWebP(image: resizedImage, to: outputURL, quality: settings.quality)
+        let outputSize = FileService().fileSize(for: outputURL)
+        return (outputURL, outputSize)
+    }
+
+    private func exportNativeWebP(image: CGImage, to outputURL: URL, quality: Double) throws {
         guard let destination = CGImageDestinationCreateWithURL(
             outputURL as CFURL,
-            UTType.webP.identifier as CFString,
+            Self.webPIdentifier as CFString,
             1,
             nil
         ) else {
-            throw ConversionError.unableToCreateDestination
+            throw ConversionError.unableToCreateDestination(details: "Format '\(Self.webPIdentifier)' non accepté par ImageIO sur cette machine.")
         }
 
         let options: [CFString: Any] = [
-            kCGImageDestinationLossyCompressionQuality: settings.quality
+            kCGImageDestinationLossyCompressionQuality: quality
         ]
 
-        CGImageDestinationAddImage(destination, resizedImage, options as CFDictionary)
+        CGImageDestinationAddImage(destination, image, options as CFDictionary)
 
         guard CGImageDestinationFinalize(destination) else {
             throw ConversionError.failedToFinalize
         }
+    }
 
-        let outputSize = FileService().fileSize(for: outputURL)
-        return (outputURL, outputSize)
+    private func exportWithCWebP(image: CGImage, to outputURL: URL, quality: Double) throws {
+        guard let cwebpPath = findCWebPPath() else {
+            if isNativeWebPEncodingAvailable {
+                throw ConversionError.fallbackEncoderUnavailable
+            }
+            throw ConversionError.nativeWebPUnsupported
+        }
+
+        let tempInputURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+            .appendingPathExtension("png")
+
+        try writeTemporaryPNG(image: image, to: tempInputURL)
+        defer { try? FileManager.default.removeItem(at: tempInputURL) }
+
+        let q = String(Int((quality * 100).rounded()))
+
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: cwebpPath)
+        process.arguments = [
+            "-quiet",
+            "-q", q,
+            tempInputURL.path,
+            "-o", outputURL.path
+        ]
+
+        let stderr = Pipe()
+        process.standardError = stderr
+
+        try process.run()
+        process.waitUntilExit()
+
+        let errorData = stderr.fileHandleForReading.readDataToEndOfFile()
+        let stderrText = String(data: errorData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+
+        guard process.terminationStatus == 0 else {
+            throw ConversionError.fallbackEncodingFailed(details: stderrText.isEmpty ? "Code \(process.terminationStatus)." : stderrText)
+        }
+    }
+
+    private func findCWebPPath() -> String? {
+        let candidates = [
+            "/opt/homebrew/bin/cwebp",
+            "/usr/local/bin/cwebp",
+            "/usr/bin/cwebp"
+        ]
+
+        for candidate in candidates where FileManager.default.isExecutableFile(atPath: candidate) {
+            return candidate
+        }
+
+        return nil
+    }
+
+    private func writeTemporaryPNG(image: CGImage, to url: URL) throws {
+        guard let destination = CGImageDestinationCreateWithURL(url as CFURL, UTType.png.identifier as CFString, 1, nil) else {
+            throw ConversionError.unableToWriteTemporaryImage
+        }
+        CGImageDestinationAddImage(destination, image, nil)
+        guard CGImageDestinationFinalize(destination) else {
+            throw ConversionError.unableToWriteTemporaryImage
+        }
     }
 
     private func resizeIfNeeded(image: CGImage, with settings: ResizeSettings) -> CGImage {
@@ -76,7 +181,8 @@ struct ImageConversionService: Sendable {
         case .original:
             break
         case .percentage:
-            let factor = CGFloat(max(1, settings.percentage)) / 100
+            let clampedPercent = max(1, settings.percentage)
+            let factor = CGFloat(clampedPercent) / 100
             targetWidth = originalWidth * factor
             targetHeight = originalHeight * factor
         case .width:
@@ -93,6 +199,10 @@ struct ImageConversionService: Sendable {
 
         let width = max(1, Int(targetWidth.rounded()))
         let height = max(1, Int(targetHeight.rounded()))
+
+        guard width != image.width || height != image.height else {
+            return image
+        }
 
         guard let colorSpace = image.colorSpace ?? CGColorSpace(name: CGColorSpace.sRGB),
               let context = CGContext(

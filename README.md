@@ -18,21 +18,12 @@ Architecture en couches simple et maintenable:
 
 ## 2) Stratégie recommandée pour encoder du WEBP sur macOS
 
-### Recommandation V1 (native Apple)
-Utiliser **ImageIO + UniformTypeIdentifiers**:
-- lecture : `CGImageSourceCreateWithURL`
-- écriture : `CGImageDestinationCreateWithURL(..., UTType.webP.identifier, ...)`
-- qualité : `kCGImageDestinationLossyCompressionQuality`
+### Stratégie d'encodage WEBP (V1 robuste)
+- **Essai natif** : ImageIO (`CGImageDestination` + `UTType.webP`) quand le type est réellement annoncé par le système (`CGImageDestinationCopyTypeIdentifiers`).
+- **Fallback automatique** : si le support natif est absent (ou échoue au runtime), l'application utilise l'encodeur `cwebp` s'il est installé (`/opt/homebrew/bin/cwebp`, `/usr/local/bin/cwebp`).
+- **Erreurs explicites** : message utilisateur clair si aucun encodeur WEBP n'est disponible.
 
-**Avantages**:
-- 100% natif Apple (pas de dépendance externe).
-- Intégration simple avec SwiftUI/AppKit.
-- Suffisant pour une V1 fiable et rapide à maintenir.
-
-### Alternative avancée (si besoin futur)
-Passer à `libwebp` (via SPM/C wrapper) si vous avez besoin de:
-- réglages encodeur très fins (preset, near-lossless, effort, alpha options, etc.)
-- performances ou contrôle strict du ratio qualité/taille au-delà d’ImageIO.
+Cette approche reste macOS-native côté UI/flux, tout en étant fiable sur des machines où l'export WEBP ImageIO est indisponible.
 
 ## 3) V1 implémentée
 
