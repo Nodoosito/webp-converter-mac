@@ -3,7 +3,18 @@ import UniformTypeIdentifiers
 
 struct ContentView: View {
     @ObservedObject var viewModel: ConversionViewModel
+
     @State private var percentageInput = "100"
+    @State private var widthInput = "1920"
+    @State private var heightInput = "1080"
+
+    @FocusState private var focusedField: ResizeField?
+
+    private enum ResizeField: Hashable {
+        case percentage
+        case width
+        case height
+    }
 
     var body: some View {
         VStack(spacing: 16) {
@@ -14,11 +25,14 @@ struct ContentView: View {
         }
         .padding(20)
         .onAppear {
-            percentageInput = normalizedPercentageString(viewModel.settings.resizeSettings.percentage)
+            syncInputsFromSettings()
         }
-        .onChange(of: viewModel.settings.resizeSettings.mode) { mode in
-            if mode == .percentage {
-                percentageInput = normalizedPercentageString(viewModel.settings.resizeSettings.percentage)
+        .onChange(of: viewModel.settings.resizeSettings.mode) { _ in
+            syncInputsFromSettings()
+        }
+        .onChange(of: focusedField) { newFocus in
+            if newFocus == nil {
+                commitAllResizeInputs()
             }
         }
         .onDrop(of: [UTType.fileURL.identifier], isTargeted: nil) { providers in
@@ -76,8 +90,9 @@ struct ContentView: View {
                         TextField("100", text: $percentageInput)
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 80)
+                            .focused($focusedField, equals: .percentage)
                             .onChange(of: percentageInput) { newValue in
-                                handlePercentageInputChange(newValue)
+                                percentageInput = sanitizeDigits(newValue)
                             }
                             .onSubmit {
                                 commitPercentageInput()
@@ -86,22 +101,30 @@ struct ContentView: View {
                 case .width:
                     HStack {
                         Text("px")
-                        TextField("1920", value: Binding(
-                            get: { viewModel.settings.resizeSettings.width },
-                            set: { viewModel.updateWidth($0) }
-                        ), format: .number)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(width: 100)
+                        TextField("1920", text: $widthInput)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 100)
+                            .focused($focusedField, equals: .width)
+                            .onChange(of: widthInput) { newValue in
+                                widthInput = sanitizeDigits(newValue)
+                            }
+                            .onSubmit {
+                                commitWidthInput()
+                            }
                     }
                 case .height:
                     HStack {
                         Text("px")
-                        TextField("1080", value: Binding(
-                            get: { viewModel.settings.resizeSettings.height },
-                            set: { viewModel.updateHeight($0) }
-                        ), format: .number)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(width: 100)
+                        TextField("1080", text: $heightInput)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 100)
+                            .focused($focusedField, equals: .height)
+                            .onChange(of: heightInput) { newValue in
+                                heightInput = sanitizeDigits(newValue)
+                            }
+                            .onSubmit {
+                                commitHeightInput()
+                            }
                     }
                 case .original:
                     EmptyView()
@@ -195,6 +218,7 @@ struct ContentView: View {
                     .foregroundStyle(.secondary)
                 Spacer()
                 Button("Convertir") {
+                    commitAllResizeInputs()
                     viewModel.convertAll()
                 }
                 .keyboardShortcut(.defaultAction)
@@ -217,29 +241,40 @@ struct ContentView: View {
         }
     }
 
-    private func handlePercentageInputChange(_ rawValue: String) {
-        let filtered = rawValue.filter { $0.isNumber }
+    private func sanitizeDigits(_ text: String) -> String {
+        text.filter { $0.isNumber }
+    }
 
-        if filtered != rawValue {
-            percentageInput = filtered
-            return
-        }
-
-        guard !filtered.isEmpty, let value = Double(filtered) else {
-            return
-        }
-
-        viewModel.updatePercentage(value)
+    private func commitAllResizeInputs() {
+        commitPercentageInput()
+        commitWidthInput()
+        commitHeightInput()
     }
 
     private func commitPercentageInput() {
-        let value = Double(percentageInput) ?? viewModel.settings.resizeSettings.percentage
-        let clamped = min(max(1, value), 100)
-        viewModel.updatePercentage(clamped)
-        percentageInput = normalizedPercentageString(clamped)
+        let source = percentageInput.isEmpty ? "100" : percentageInput
+        let value = Double(source) ?? viewModel.settings.resizeSettings.percentage
+        viewModel.updatePercentage(value)
+        percentageInput = String(Int(viewModel.settings.resizeSettings.percentage.rounded()))
     }
 
-    private func normalizedPercentageString(_ value: Double) -> String {
-        String(Int(min(max(1, value), 100).rounded()))
+    private func commitWidthInput() {
+        let source = widthInput.isEmpty ? "1" : widthInput
+        let value = Double(source) ?? viewModel.settings.resizeSettings.width
+        viewModel.updateWidth(value)
+        widthInput = String(Int(viewModel.settings.resizeSettings.width.rounded()))
+    }
+
+    private func commitHeightInput() {
+        let source = heightInput.isEmpty ? "1" : heightInput
+        let value = Double(source) ?? viewModel.settings.resizeSettings.height
+        viewModel.updateHeight(value)
+        heightInput = String(Int(viewModel.settings.resizeSettings.height.rounded()))
+    }
+
+    private func syncInputsFromSettings() {
+        percentageInput = String(Int(viewModel.settings.resizeSettings.percentage.rounded()))
+        widthInput = String(Int(viewModel.settings.resizeSettings.width.rounded()))
+        heightInput = String(Int(viewModel.settings.resizeSettings.height.rounded()))
     }
 }

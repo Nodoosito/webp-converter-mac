@@ -3,6 +3,9 @@ import AppKit
 
 @MainActor
 final class ConversionViewModel: ObservableObject {
+    private let percentageRange: ClosedRange<Double> = 1...100
+    private let dimensionRange: ClosedRange<Double> = 1...20_000
+
     @Published private(set) var items: [FileConversionItem] = []
     @Published var settings = ConversionSettings()
     @Published var globalError: String?
@@ -64,19 +67,19 @@ final class ConversionViewModel: ObservableObject {
 
     func updatePercentage(_ percentage: Double) {
         var updated = settings
-        updated.resizeSettings.percentage = min(max(1, percentage), 100)
+        updated.resizeSettings.percentage = min(max(percentageRange.lowerBound, percentage), percentageRange.upperBound)
         settings = updated
     }
 
     func updateWidth(_ width: Double) {
         var updated = settings
-        updated.resizeSettings.width = max(1, width)
+        updated.resizeSettings.width = min(max(dimensionRange.lowerBound, width), dimensionRange.upperBound)
         settings = updated
     }
 
     func updateHeight(_ height: Double) {
         var updated = settings
-        updated.resizeSettings.height = max(1, height)
+        updated.resizeSettings.height = min(max(dimensionRange.lowerBound, height), dimensionRange.upperBound)
         settings = updated
     }
 

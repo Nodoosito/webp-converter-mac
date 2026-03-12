@@ -61,9 +61,7 @@ struct ImageConversionService: Sendable {
         }
 
         let resizedImage = resizeIfNeeded(image: cgImage, with: settings.resizeSettings)
-        let outputURL = outputFolder
-            .appendingPathComponent(inputURL.deletingPathExtension().lastPathComponent)
-            .appendingPathExtension("webp")
+        let outputURL = FileService().uniqueOutputURL(for: inputURL, in: outputFolder, pathExtension: "webp")
 
         if isNativeWebPEncodingAvailable {
             do {

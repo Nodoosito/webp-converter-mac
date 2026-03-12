@@ -59,6 +59,30 @@ struct FileService {
         return Int64(fileSize)
     }
 
+    func uniqueOutputURL(for inputURL: URL, in outputFolder: URL, pathExtension: String = "webp") -> URL {
+        let baseName = inputURL.deletingPathExtension().lastPathComponent
+        var candidate = outputFolder
+            .appendingPathComponent(baseName)
+            .appendingPathExtension(pathExtension)
+
+        guard FileManager.default.fileExists(atPath: candidate.path) else {
+            return candidate
+        }
+
+        var index = 1
+        while true {
+            candidate = outputFolder
+                .appendingPathComponent("\(baseName) (\(index))")
+                .appendingPathExtension(pathExtension)
+
+            if !FileManager.default.fileExists(atPath: candidate.path) {
+                return candidate
+            }
+
+            index += 1
+        }
+    }
+
     private func isDirectory(url: URL) -> Bool {
         (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) ?? false
     }
