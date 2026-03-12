@@ -65,28 +65,42 @@ final class ConversionViewModel: ObservableObject {
             items[index].status = .pending
         }
 
-        Task {
-            let total = items.count
+        // Snapshots capturés sur le MainActor avant de lancer le travail en arrière-plan.
+        let itemsToConvert = items
+        let settingsSnapshot = settings
+        let conversionService = self.conversionService
+
+        Task { @MainActor [weak self, itemsToConvert, settingsSnapshot, outputFolder, conversionService] in
+            guard let self else { return }
+
+            let total = itemsToConvert.count
             var converted = 0
 
-            for item in items {
-                updateStatus(.processing, for: item.id)
+            for item in itemsToConvert {
+                self.updateStatus(.processing, for: item.id)
 
                 do {
                     let result = try await Task.detached(priority: .userInitiated) {
-                        try conversionService.convert(inputURL: item.inputURL, settings: settings, outputFolder: outputFolder)
+                        try conversionService.convert(
+                            inputURL: item.inputURL,
+                            settings: settingsSnapshot,
+                            outputFolder: outputFolder
+                        )
                     }.value
 
-                    updateStatus(.success(outputURL: result.outputURL, outputSize: result.outputSize), for: item.id)
+                    self.updateStatus(
+                        .success(outputURL: result.outputURL, outputSize: result.outputSize),
+                        for: item.id
+                    )
                 } catch {
-                    updateStatus(.failure(message: error.localizedDescription), for: item.id)
+                    self.updateStatus(.failure(message: error.localizedDescription), for: item.id)
                 }
 
                 converted += 1
-                progress = Double(converted) / Double(max(total, 1))
+                self.progress = Double(converted) / Double(max(total, 1))
             }
 
-            isConverting = false
+            self.isConverting = false
         }
     }
 

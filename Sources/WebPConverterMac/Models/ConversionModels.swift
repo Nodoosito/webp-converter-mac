@@ -1,6 +1,6 @@
 import Foundation
 
-enum ResizeMode: String, CaseIterable, Identifiable {
+enum ResizeMode: String, CaseIterable, Identifiable, Sendable {
     case original = "Taille originale"
     case percentage = "Pourcentage"
     case width = "Largeur"
@@ -9,7 +9,7 @@ enum ResizeMode: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
-struct ResizeSettings {
+struct ResizeSettings: Sendable {
     var mode: ResizeMode = .original
     var percentage: Double = 100
     var width: Double = 1920
@@ -33,7 +33,7 @@ struct FileConversionItem: Identifiable, Equatable {
     var filename: String { inputURL.lastPathComponent }
 }
 
-struct ConversionSettings {
+struct ConversionSettings: Sendable {
     var quality: Double = 0.8
     var resizeSettings = ResizeSettings()
     var outputFolder: URL?

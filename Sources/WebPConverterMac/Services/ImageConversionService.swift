@@ -23,7 +23,7 @@ enum ConversionError: LocalizedError {
     }
 }
 
-struct ImageConversionService {
+struct ImageConversionService: Sendable {
     func convert(
         inputURL: URL,
         settings: ConversionSettings,
