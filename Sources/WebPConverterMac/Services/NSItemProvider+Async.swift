@@ -2,14 +2,31 @@ import Foundation
 import UniformTypeIdentifiers
 
 extension NSItemProvider {
-    func loadItem(forTypeIdentifier typeIdentifier: String) async throws -> NSSecureCoding? {
+    func loadFileURL() async throws -> URL {
         try await withCheckedThrowingContinuation { continuation in
-            loadItem(forTypeIdentifier: typeIdentifier, options: nil) { item, error in
+            loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { item, error in
                 if let error {
                     continuation.resume(throwing: error)
-                } else {
-                    continuation.resume(returning: item)
+                    return
                 }
+
+                if let url = item as? URL {
+                    continuation.resume(returning: url)
+                    return
+                }
+
+                if let nsURL = item as? NSURL, let url = nsURL as URL? {
+                    continuation.resume(returning: url)
+                    return
+                }
+
+                if let data = item as? Data {
+                    let droppedURL = URL(dataRepresentation: data, relativeTo: nil)
+                    continuation.resume(returning: droppedURL)
+                    return
+                }
+
+                continuation.resume(throwing: CocoaError(.fileReadUnknown))
             }
         }
     }

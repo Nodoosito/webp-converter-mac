@@ -29,10 +29,7 @@ struct FileService {
         var urls: [URL] = []
 
         for provider in providers where provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
-            guard let item = try? await provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier),
-                  let data = item as? Data,
-                  let droppedURL = URL(dataRepresentation: data, relativeTo: nil)
-            else {
+            guard let droppedURL = try? await provider.loadFileURL() else {
                 continue
             }
 
