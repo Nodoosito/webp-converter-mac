@@ -21,7 +21,7 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
         Task { @MainActor in
             NSApp.setActivationPolicy(.regular)
             NSApp.activate(ignoringOtherApps: true)
-            makeMainWindowKeyAndFront()
+            AppDelegate.makeMainWindowKeyAndFront()
         }
     }
 
