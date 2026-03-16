@@ -260,12 +260,14 @@ final class ConversionViewModel: ObservableObject {
     }
 
     private func loadPreview(for url: URL) async -> LoadedPreview {
-        await Task.detached(priority: .utility) {
-            LoadedPreview(image: NSImage(contentsOf: url), dimensions: Self.imageDimensions(for: url))
+        let dimensions = await Task.detached(priority: .utility) {
+            Self.imageDimensions(for: url)
         }.value
+
+        return LoadedPreview(image: NSImage(contentsOf: url), dimensions: dimensions)
     }
 
-    private static func imageDimensions(for url: URL) -> CGSize? {
+    nonisolated private static func imageDimensions(for url: URL) -> CGSize? {
         guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
               let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
               let width = properties[kCGImagePropertyPixelWidth] as? CGFloat,

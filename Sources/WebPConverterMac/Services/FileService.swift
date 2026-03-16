@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 struct FileService {
     private let supportedExtensions: Set<String> = ["png", "jpg", "jpeg", "heic"]
 
+    @MainActor
     func openImagePanel() -> [URL] {
         let panel = NSOpenPanel()
         panel.allowedContentTypes = [.png, .jpeg, .heic]
@@ -15,6 +16,7 @@ struct FileService {
         return panel.runModal() == .OK ? panel.urls : []
     }
 
+    @MainActor
     func openOutputFolderPanel() -> URL? {
         let panel = NSOpenPanel()
         panel.canChooseFiles = false
