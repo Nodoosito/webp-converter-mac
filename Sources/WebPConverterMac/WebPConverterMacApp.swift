@@ -18,16 +18,18 @@ struct WebPConverterMacApp: App {
 
 private final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
-        NSApp.setActivationPolicy(.regular)
-        NSApp.activate(ignoringOtherApps: true)
-
-        DispatchQueue.main.async {
-            Self.makeMainWindowKeyAndFront()
+        Task { @MainActor in
+            NSApp.setActivationPolicy(.regular)
+            NSApp.activate(ignoringOtherApps: true)
+            makeMainWindowKeyAndFront()
         }
     }
 
+    @MainActor
     static func makeMainWindowKeyAndFront() {
-        guard let window = NSApp.windows.first(where: { $0.canBecomeKey && $0.isVisible }) ?? NSApp.mainWindow ?? NSApp.windows.first else {
+        guard let window = NSApp.windows.first(where: { $0.canBecomeKey && $0.isVisible })
+            ?? NSApp.mainWindow
+            ?? NSApp.windows.first else {
             return
         }
 
@@ -40,7 +42,7 @@ private struct MainWindowConfigurator: NSViewRepresentable {
     func makeNSView(context: Context) -> NSView {
         let view = NSView()
 
-        DispatchQueue.main.async {
+        Task { @MainActor in
             AppDelegate.makeMainWindowKeyAndFront()
         }
 
@@ -48,7 +50,7 @@ private struct MainWindowConfigurator: NSViewRepresentable {
     }
 
     func updateNSView(_ nsView: NSView, context: Context) {
-        DispatchQueue.main.async {
+        Task { @MainActor in
             guard let window = nsView.window else { return }
 
             if !NSApp.isActive {

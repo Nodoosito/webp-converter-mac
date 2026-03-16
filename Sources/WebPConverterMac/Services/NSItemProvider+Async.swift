@@ -20,11 +20,11 @@ extension NSItemProvider {
                     return
                 }
 
-                if let data = item as? Data,
-   let droppedURL = URL(dataRepresentation: data, relativeTo: nil) {
-    continuation.resume(returning: droppedURL)
-    return
-}
+                if let data = item as? Data {
+                    let droppedURL = URL(dataRepresentation: data, relativeTo: nil)
+                    continuation.resume(returning: droppedURL)
+                    return
+                }
 
                 continuation.resume(throwing: CocoaError(.fileReadUnknown))
             }

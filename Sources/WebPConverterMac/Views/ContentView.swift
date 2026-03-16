@@ -308,6 +308,91 @@ struct ContentView: View {
         }
     }
 
+
+    private var footer: some View {
+        VStack(spacing: 8) {
+            if let error = viewModel.globalError {
+                Text(error)
+                    .foregroundStyle(.red)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(.borderless)
+            .disabled(viewModel.isConverting)
+            .frame(width: columnWidths[5], alignment: .center)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            viewModel.updateSelectedItem(id: item.id)
+        }
+    }
+
+    private var previewPanel: some View {
+        HStack(spacing: 12) {
+            previewCard(title: "Original", info: viewModel.originalPreview, gainText: nil)
+            previewCard(
+                title: "WebP converti",
+                info: viewModel.convertedPreview,
+                gainText: viewModel.selectedItem.map { viewModel.formattedGain(for: $0) }
+            )
+        }
+        .frame(height: 250)
+    }
+
+    private func previewCard(title: String, info: ConversionViewModel.PreviewInfo?, gainText: String?) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.headline)
+
+            Group {
+                if let image = info?.image {
+                    Image(nsImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: .infinity, maxHeight: 150)
+                } else {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(.quaternary.opacity(0.4))
+                        .overlay(
+                            Text(viewModel.previewMessage)
+                                .foregroundStyle(.secondary)
+                                .font(.caption)
+                                .multilineTextAlignment(.center)
+                                .padding(8)
+                        )
+                        .frame(maxWidth: .infinity, maxHeight: 150)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                if let info {
+                    Text("Taille: \(viewModel.formattedSize(info.fileSize))")
+                        .foregroundStyle(.secondary)
+                    if let dimensions = info.dimensions {
+                        Text("Dimensions: \(Int(dimensions.width)) × \(Int(dimensions.height))")
+                            .foregroundStyle(.secondary)
+                    }
+                    if let gainText, gainText != "-" {
+                        Text("Gain: \(gainText)")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .font(.caption)
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(.quaternary.opacity(0.3), in: RoundedRectangle(cornerRadius: 10))
+    }
+
+    private func afterSizeText(for item: FileConversionItem) -> String {
+        switch item.status {
+        case .success(_, let outputSize):
+            return viewModel.formattedSize(outputSize)
+        default:
+            return "-"
+        }
+    }
+
     private func digitsOnly(_ text: String) -> String {
         text.filter { $0.isNumber }
     }
