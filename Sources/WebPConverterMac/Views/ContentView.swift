@@ -284,6 +284,20 @@ struct ContentView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(.quaternary.opacity(0.3), in: RoundedRectangle(cornerRadius: 10))
     }
+private var footer: some View {
+    VStack(spacing: 8) {
+
+        if let error = viewModel.globalError {
+            Text(error)
+                .foregroundStyle(.red)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+
+        HStack {
+            Text("Progression : \(Int(viewModel.progress * 100))%")
+                .foregroundStyle(.secondary)
+
+            Spacer()
 
     private func afterSizeText(for item: FileConversionItem) -> String {
         switch item.status {
@@ -316,21 +330,62 @@ struct ContentView: View {
                     .foregroundStyle(.red)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .disabled(viewModel.items.isEmpty || viewModel.isConverting)
+        }
+    }
+}
+    private func previewCard(title: String, info: ConversionViewModel.PreviewInfo?, gainText: String?) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.headline)
 
-            ProgressView(value: viewModel.progress)
-                .opacity(viewModel.isConverting ? 1 : 0)
-
-            HStack {
-                Text("Progression : \(Int(viewModel.progress * 100))%")
-                    .foregroundStyle(.secondary)
-                Spacer()
-                Button("Convertir") {
-                    commitAllResizeInputs()
-                    viewModel.convertAll()
+            Group {
+                if let image = info?.image {
+                    Image(nsImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: .infinity, maxHeight: 150)
+                } else {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(.quaternary.opacity(0.4))
+                        .overlay(
+                            Text(viewModel.previewMessage)
+                                .foregroundStyle(.secondary)
+                                .font(.caption)
+                                .multilineTextAlignment(.center)
+                                .padding(8)
+                        )
+                        .frame(maxWidth: .infinity, maxHeight: 150)
                 }
-                .keyboardShortcut(.defaultAction)
-                .disabled(!viewModel.canConvert)
             }
+
+            VStack(alignment: .leading, spacing: 2) {
+                if let info {
+                    Text("Taille: \(viewModel.formattedSize(info.fileSize))")
+                        .foregroundStyle(.secondary)
+                    if let dimensions = info.dimensions {
+                        Text("Dimensions: \(Int(dimensions.width)) × \(Int(dimensions.height))")
+                            .foregroundStyle(.secondary)
+                    }
+                    if let gainText, gainText != "-" {
+                        Text("Gain: \(gainText)")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .font(.caption)
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(.quaternary.opacity(0.3), in: RoundedRectangle(cornerRadius: 10))
+    }
+
+    private func afterSizeText(for item: FileConversionItem) -> String {
+        switch item.status {
+        case .success(_, let outputSize):
+            return viewModel.formattedSize(outputSize)
+        default:
+            return "-"
         }
     }
 
