@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 struct FileService {
     private let supportedExtensions: Set<String> = ["png", "jpg", "jpeg", "heic"]
 
+    @MainActor
     func openImagePanel() -> [URL] {
         let panel = NSOpenPanel()
         panel.allowedContentTypes = [.png, .jpeg, .heic]
@@ -15,6 +16,7 @@ struct FileService {
         return panel.runModal() == .OK ? panel.urls : []
     }
 
+    @MainActor
     func openOutputFolderPanel() -> URL? {
         let panel = NSOpenPanel()
         panel.canChooseFiles = false
@@ -29,10 +31,7 @@ struct FileService {
         var urls: [URL] = []
 
         for provider in providers where provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
-            guard let item = try? await provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier),
-                  let data = item as? Data,
-                  let droppedURL = URL(dataRepresentation: data, relativeTo: nil)
-            else {
+            guard let droppedURL = try? await provider.loadFileURL() else {
                 continue
             }
 
