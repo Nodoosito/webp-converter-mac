@@ -8,6 +8,8 @@ struct ContentView: View {
     @State private var widthInput = "1920"
     @State private var heightInput = "1080"
 
+    private let columnWidths: [CGFloat] = [280, 100, 100, 90, 220, 60]
+
     var body: some View {
         VStack(spacing: 16) {
             header
@@ -124,7 +126,7 @@ struct ContentView: View {
     }
 
     private var listPanel: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text("Fichiers")
                     .font(.headline)
@@ -135,42 +137,177 @@ struct ContentView: View {
                 .disabled(viewModel.items.isEmpty || viewModel.isConverting)
             }
 
-            Table(viewModel.items) {
-                TableColumn("Nom") { item in
-                    Text(item.filename)
+            tableHeader
+
+            List(selection: Binding(
+                get: { viewModel.selectedItemID.map { Set([$0]) } ?? [] },
+                set: { newValue in
+                    viewModel.updateSelectedItem(id: newValue.first)
                 }
-                TableColumn("Avant") { item in
-                    Text(viewModel.formattedSize(item.inputSize))
+            )) {
+                ForEach(viewModel.sortedItems) { item in
+                    fileRow(item)
+                        .tag(item.id)
                 }
-                TableColumn("Après") { item in
-                    switch item.status {
-                    case .success(_, let outputSize):
-                        Text(viewModel.formattedSize(outputSize))
-                    default:
-                        Text("-")
-                    }
-                }
-                TableColumn("Gain") { item in
-                    Text(viewModel.formattedGain(for: item))
-                        .foregroundStyle(.secondary)
-                }
-                TableColumn("Statut") { item in
-                    statusView(for: item.status)
-                }
-                TableColumn("Action") { item in
-                    Button(role: .destructive) {
-                        viewModel.removeItem(item)
-                    } label: {
-                        Image(systemName: "trash")
-                    }
-                    .buttonStyle(.borderless)
-                    .disabled(viewModel.isConverting)
-                }
-                .width(60)
             }
             .frame(maxHeight: .infinity)
+
+            previewPanel
         }
     }
+
+    private var tableHeader: some View {
+        HStack(spacing: 12) {
+            sortHeader("Nom", column: .name, width: columnWidths[0], alignment: .leading)
+            sortHeader("Avant", column: .beforeSize, width: columnWidths[1], alignment: .trailing)
+            sortHeader("Après", column: .afterSize, width: columnWidths[2], alignment: .trailing)
+            sortHeader("Gain", column: .gain, width: columnWidths[3], alignment: .trailing)
+            sortHeader("Statut", column: .status, width: columnWidths[4], alignment: .leading)
+            Text("Action")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary.opacity(0.85))
+                .frame(width: columnWidths[5], alignment: .center)
+        }
+        .padding(.horizontal, 8)
+    }
+
+    private func sortHeader(_ title: String, column: ConversionViewModel.SortColumn, width: CGFloat, alignment: Alignment) -> some View {
+        Button {
+            viewModel.cycleSort(for: column)
+        } label: {
+            HStack(spacing: 4) {
+                Text(title)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary.opacity(0.85))
+                Spacer(minLength: 0)
+                if let symbol = viewModel.sortIndicator(for: column) {
+                    Image(systemName: symbol)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .frame(width: width, alignment: alignment)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func fileRow(_ item: FileConversionItem) -> some View {
+        HStack(spacing: 12) {
+            Text(item.filename)
+                .lineLimit(1)
+                .frame(width: columnWidths[0], alignment: .leading)
+
+            Text(viewModel.formattedSize(item.inputSize))
+                .font(.system(.body, design: .monospaced))
+                .frame(width: columnWidths[1], alignment: .trailing)
+
+            Text(afterSizeText(for: item))
+                .font(.system(.body, design: .monospaced))
+                .frame(width: columnWidths[2], alignment: .trailing)
+
+            Text(viewModel.formattedGain(for: item))
+                .foregroundStyle(.secondary)
+                .frame(width: columnWidths[3], alignment: .trailing)
+
+            statusView(for: item.status)
+                .frame(width: columnWidths[4], alignment: .leading)
+
+            Button(role: .destructive) {
+                viewModel.removeItem(item)
+            } label: {
+                Image(systemName: "trash")
+            }
+            .buttonStyle(.borderless)
+            .disabled(viewModel.isConverting)
+            .frame(width: columnWidths[5], alignment: .center)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            viewModel.updateSelectedItem(id: item.id)
+        }
+    }
+
+    private var previewPanel: some View {
+        HStack(spacing: 12) {
+            previewCard(title: "Original", info: viewModel.originalPreview, gainText: nil)
+            previewCard(
+                title: "WebP converti",
+                info: viewModel.convertedPreview,
+                gainText: viewModel.selectedItem.map { viewModel.formattedGain(for: $0) }
+            )
+        }
+        .frame(height: 250)
+    }
+
+    private func previewCard(title: String, info: ConversionViewModel.PreviewInfo?, gainText: String?) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.headline)
+
+            Group {
+                if let image = info?.image {
+                    Image(nsImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: .infinity, maxHeight: 150)
+                } else {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(.quaternary.opacity(0.4))
+                        .overlay(
+                            Text(viewModel.previewMessage)
+                                .foregroundStyle(.secondary)
+                                .font(.caption)
+                                .multilineTextAlignment(.center)
+                                .padding(8)
+                        )
+                        .frame(maxWidth: .infinity, maxHeight: 150)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                if let info {
+                    Text("Taille: \(viewModel.formattedSize(info.fileSize))")
+                        .foregroundStyle(.secondary)
+                    if let dimensions = info.dimensions {
+                        Text("Dimensions: \(Int(dimensions.width)) × \(Int(dimensions.height))")
+                            .foregroundStyle(.secondary)
+                    }
+                    if let gainText, gainText != "-" {
+                        Text("Gain: \(gainText)")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .font(.caption)
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(.quaternary.opacity(0.3), in: RoundedRectangle(cornerRadius: 10))
+    }
+
+    private func afterSizeText(for item: FileConversionItem) -> String {
+        switch item.status {
+        case .success(_, let outputSize):
+            return viewModel.formattedSize(outputSize)
+        default:
+            return "-"
+        }
+    }
+
+    @ViewBuilder
+    private func statusView(for status: FileConversionStatus) -> some View {
+        switch status {
+        case .pending:
+            Text("En attente").foregroundStyle(.secondary)
+        case .processing:
+            Text("Conversion...").foregroundStyle(.orange)
+        case .success:
+            Text("OK").foregroundStyle(.green)
+        case .failure(let message):
+            Text(message).foregroundStyle(.red).lineLimit(2)
+        }
+    }
+
 
     private var footer: some View {
         VStack(spacing: 8) {
@@ -194,20 +331,6 @@ struct ContentView: View {
                 .keyboardShortcut(.defaultAction)
                 .disabled(!viewModel.canConvert)
             }
-        }
-    }
-
-    @ViewBuilder
-    private func statusView(for status: FileConversionStatus) -> some View {
-        switch status {
-        case .pending:
-            Text("En attente").foregroundStyle(.secondary)
-        case .processing:
-            Text("Conversion...").foregroundStyle(.orange)
-        case .success:
-            Text("OK").foregroundStyle(.green)
-        case .failure(let message):
-            Text(message).foregroundStyle(.red).lineLimit(2)
         }
     }
 
