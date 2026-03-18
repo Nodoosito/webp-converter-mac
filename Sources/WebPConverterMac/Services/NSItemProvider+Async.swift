@@ -20,8 +20,8 @@ extension NSItemProvider {
                     return
                 }
 
-                if let data = item as? Data {
-                    let droppedURL = URL(dataRepresentation: data, relativeTo: nil)
+                if let data = item as? Data,
+                   let droppedURL = URL(dataRepresentation: data, relativeTo: nil) {
                     continuation.resume(returning: droppedURL)
                     return
                 }
