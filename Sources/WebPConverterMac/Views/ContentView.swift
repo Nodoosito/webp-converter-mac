@@ -38,7 +38,9 @@ struct ContentView: View {
                 Text("Conversion par lot PNG / JPG / HEIC vers WEBP")
                     .foregroundStyle(.secondary)
             }
+
             Spacer()
+
             Button("Ajouter des fichiers") {
                 viewModel.addFilesFromPanel()
             }
@@ -49,7 +51,9 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("Qualité WEBP")
+
                 Slider(value: $viewModel.settings.quality, in: 0.1...1.0, step: 0.05)
+
                 Text("\(Int(viewModel.settings.quality * 100))%")
                     .font(.system(.body, design: .monospaced))
                     .frame(width: 50)
@@ -77,6 +81,7 @@ struct ContentView: View {
                         )
                         .frame(width: 80, height: 24)
                     }
+
                 case .width:
                     HStack {
                         Text("px")
@@ -87,6 +92,7 @@ struct ContentView: View {
                         )
                         .frame(width: 100, height: 24)
                     }
+
                 case .height:
                     HStack {
                         Text("px")
@@ -97,11 +103,13 @@ struct ContentView: View {
                         )
                         .frame(width: 100, height: 24)
                     }
+
                 case .original:
                     EmptyView()
                 }
 
-                if viewModel.settings.resizeSettings.mode == .width || viewModel.settings.resizeSettings.mode == .height {
+                if viewModel.settings.resizeSettings.mode == .width ||
+                    viewModel.settings.resizeSettings.mode == .height {
                     Toggle("Conserver les proportions", isOn: Binding(
                         get: { viewModel.settings.resizeSettings.keepAspectRatio },
                         set: { viewModel.updateKeepAspectRatio($0) }
@@ -111,11 +119,14 @@ struct ContentView: View {
 
             HStack {
                 Text("Sortie :")
+
                 Text(viewModel.settings.outputFolder?.path ?? "Aucun dossier sélectionné")
                     .lineLimit(1)
                     .truncationMode(.middle)
                     .foregroundStyle(.secondary)
+
                 Spacer()
+
                 Button("Choisir") {
                     viewModel.selectOutputFolder()
                 }
@@ -130,7 +141,9 @@ struct ContentView: View {
             HStack {
                 Text("Fichiers")
                     .font(.headline)
+
                 Spacer()
+
                 Button("Vider") {
                     viewModel.clearAll()
                 }
@@ -317,19 +330,17 @@ struct ContentView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            ProgressView(value: viewModel.progress)
-                .opacity(viewModel.isConverting ? 1 : 0)
-
             HStack {
                 Text("Progression : \(Int(viewModel.progress * 100))%")
                     .foregroundStyle(.secondary)
+
                 Spacer()
+
                 Button("Convertir") {
                     commitAllResizeInputs()
                     viewModel.convertAll()
                 }
-                .keyboardShortcut(.defaultAction)
-                .disabled(!viewModel.canConvert)
+                .disabled(viewModel.items.isEmpty || viewModel.isConverting)
             }
         }
     }
