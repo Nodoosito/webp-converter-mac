@@ -176,7 +176,6 @@ struct ContentView: View {
             sortHeader("Après", column: .afterSize, width: columnWidths[2], alignment: .trailing)
             sortHeader("Gain", column: .gain, width: columnWidths[3], alignment: .trailing)
             sortHeader("Statut", column: .status, width: columnWidths[4], alignment: .leading)
-
             Text("Action")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary.opacity(0.85))
@@ -185,12 +184,7 @@ struct ContentView: View {
         .padding(.horizontal, 8)
     }
 
-    private func sortHeader(
-        _ title: String,
-        column: ConversionViewModel.SortColumn,
-        width: CGFloat,
-        alignment: Alignment
-    ) -> some View {
+    private func sortHeader(_ title: String, column: ConversionViewModel.SortColumn, width: CGFloat, alignment: Alignment) -> some View {
         Button {
             viewModel.cycleSort(for: column)
         } label: {
@@ -198,9 +192,7 @@ struct ContentView: View {
                 Text(title)
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary.opacity(0.85))
-
                 Spacer(minLength: 0)
-
                 if let symbol = viewModel.sortIndicator(for: column) {
                     Image(systemName: symbol)
                         .font(.caption2.weight(.semibold))
@@ -251,7 +243,6 @@ struct ContentView: View {
     private var previewPanel: some View {
         HStack(spacing: 12) {
             previewCard(title: "Original", info: viewModel.originalPreview, gainText: nil)
-
             previewCard(
                 title: "WebP converti",
                 info: viewModel.convertedPreview,
@@ -261,11 +252,7 @@ struct ContentView: View {
         .frame(height: 250)
     }
 
-    private func previewCard(
-        title: String,
-        info: ConversionViewModel.PreviewInfo?,
-        gainText: String?
-    ) -> some View {
+    private func previewCard(title: String, info: ConversionViewModel.PreviewInfo?, gainText: String?) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.headline)
@@ -294,12 +281,10 @@ struct ContentView: View {
                 if let info {
                     Text("Taille: \(viewModel.formattedSize(info.fileSize))")
                         .foregroundStyle(.secondary)
-
                     if let dimensions = info.dimensions {
                         Text("Dimensions: \(Int(dimensions.width)) × \(Int(dimensions.height))")
                             .foregroundStyle(.secondary)
                     }
-
                     if let gainText, gainText != "-" {
                         Text("Gain: \(gainText)")
                             .foregroundStyle(.secondary)
@@ -332,11 +317,10 @@ struct ContentView: View {
         case .success:
             Text("OK").foregroundStyle(.green)
         case .failure(let message):
-            Text(message)
-                .foregroundStyle(.red)
-                .lineLimit(2)
+            Text(message).foregroundStyle(.red).lineLimit(2)
         }
     }
+
 
     private var footer: some View {
         VStack(spacing: 8) {

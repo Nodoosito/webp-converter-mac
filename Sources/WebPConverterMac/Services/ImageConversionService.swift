@@ -60,23 +60,29 @@ struct ImageConversionService: Sendable {
             throw ConversionError.unableToReadImage
         }
 
-        let resizedImage = resizeIfNeeded(image: cgImage, with: settings.resizeSettings)
+        let targetSize = computeTargetSize(for: cgImage, settings: settings.resizeSettings)
+        let resizedImage = resizeIfNeeded(image: cgImage, targetSize: targetSize)
+
+        print("[Resize] \(inputURL.lastPathComponent) original=\(cgImage.width)x\(cgImage.height) target=\(targetSize.width)x\(targetSize.height) resized=\(resizedImage.width)x\(resizedImage.height) mode=\(settings.resizeSettings.mode.rawValue)")
+
         let outputURL = FileService().uniqueOutputURL(for: inputURL, in: outputFolder, pathExtension: "webp")
 
         if isNativeWebPEncodingAvailable {
             do {
                 try exportNativeWebP(image: resizedImage, to: outputURL, quality: settings.quality)
+                logOutputSize(outputURL: outputURL, inputURL: inputURL, encoder: "native")
                 let outputSize = FileService().fileSize(for: outputURL)
                 return (outputURL, outputSize)
             } catch {
-                // fallback if native support exists but fails at runtime on this machine.
                 try exportWithCWebP(image: resizedImage, to: outputURL, quality: settings.quality)
+                logOutputSize(outputURL: outputURL, inputURL: inputURL, encoder: "cwebp-fallback")
                 let outputSize = FileService().fileSize(for: outputURL)
                 return (outputURL, outputSize)
             }
         }
 
         try exportWithCWebP(image: resizedImage, to: outputURL, quality: settings.quality)
+        logOutputSize(outputURL: outputURL, inputURL: inputURL, encoder: "cwebp")
         let outputSize = FileService().fileSize(for: outputURL)
         return (outputURL, outputSize)
     }
@@ -166,8 +172,10 @@ struct ImageConversionService: Sendable {
         }
     }
 
-    private func resizeIfNeeded(image: CGImage, with settings: ResizeSettings) -> CGImage {
-        guard settings.mode != .original else { return image }
+    private func computeTargetSize(for image: CGImage, settings: ResizeSettings) -> CGSize {
+        guard settings.mode != .original else {
+            return CGSize(width: image.width, height: image.height)
+        }
 
         let originalWidth = CGFloat(image.width)
         let originalHeight = CGFloat(image.height)
@@ -195,23 +203,32 @@ struct ImageConversionService: Sendable {
             }
         }
 
-        let width = max(1, Int(targetWidth.rounded()))
-        let height = max(1, Int(targetHeight.rounded()))
+        return CGSize(
+            width: max(1, Int(targetWidth.rounded())),
+            height: max(1, Int(targetHeight.rounded()))
+        )
+    }
+
+    private func resizeIfNeeded(image: CGImage, targetSize: CGSize) -> CGImage {
+        let width = Int(targetSize.width)
+        let height = Int(targetSize.height)
 
         guard width != image.width || height != image.height else {
             return image
         }
 
-        guard let colorSpace = image.colorSpace ?? CGColorSpace(name: CGColorSpace.sRGB),
-              let context = CGContext(
-                data: nil,
-                width: width,
-                height: height,
-                bitsPerComponent: image.bitsPerComponent,
-                bytesPerRow: 0,
-                space: colorSpace,
-                bitmapInfo: image.bitmapInfo.rawValue
-              ) else {
+        let colorSpace = CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB()
+        let bitmapInfo = CGImageAlphaInfo.premultipliedLast.rawValue
+
+        guard let context = CGContext(
+            data: nil,
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bytesPerRow: 0,
+            space: colorSpace,
+            bitmapInfo: bitmapInfo
+        ) else {
             return image
         }
 
@@ -219,5 +236,14 @@ struct ImageConversionService: Sendable {
         context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
 
         return context.makeImage() ?? image
+    }
+
+    private func logOutputSize(outputURL: URL, inputURL: URL, encoder: String) {
+        guard let source = CGImageSourceCreateWithURL(outputURL as CFURL, nil),
+              let image = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
+            return
+        }
+
+        print("[Resize] \(inputURL.lastPathComponent) output=\(image.width)x\(image.height) encoder=\(encoder)")
     }
 }
