@@ -4,6 +4,8 @@ import UniformTypeIdentifiers
 struct ContentView: View {
     @ObservedObject var viewModel: ConversionViewModel
 
+    @State private var presetPendingDeletion: ConversionPreset?
+    @State private var presetNameInput = ""
     @State private var percentageInput = "100"
     @State private var widthInput = "1920"
     @State private var heightInput = "1080"
@@ -21,12 +23,50 @@ struct ContentView: View {
         .onAppear {
             syncInputsFromSettings()
         }
+        .onChange(of: viewModel.settings.resizeSettings.percentage) { _ in
+            syncInputsFromSettings()
+        }
+        .onChange(of: viewModel.settings.resizeSettings.width) { _ in
+            syncInputsFromSettings()
+        }
+        .onChange(of: viewModel.settings.resizeSettings.height) { _ in
+            syncInputsFromSettings()
+        }
         .onChange(of: viewModel.settings.resizeSettings.mode) { _ in
             syncInputsFromSettings()
         }
         .onDrop(of: [UTType.fileURL.identifier], isTargeted: nil) { providers in
             viewModel.handleDrop(providers: providers)
             return true
+        }
+        .alert(
+            "Supprimer le préréglage ?",
+            isPresented: Binding(
+                get: { presetPendingDeletion != nil },
+                set: { isPresented in
+                    if !isPresented {
+                        presetPendingDeletion = nil
+                    }
+                }
+            ),
+            actions: {
+                Button("Annuler", role: .cancel) {
+                    presetPendingDeletion = nil
+                }
+                Button("Supprimer", role: .destructive) {
+                    guard let presetPendingDeletion else { return }
+                    viewModel.deletePreset(id: presetPendingDeletion.id)
+                    self.presetPendingDeletion = nil
+                }
+            },
+            message: {
+                if let presetPendingDeletion {
+                    Text("Le préréglage “\(presetPendingDeletion.name)” sera supprimé définitivement.")
+                }
+            }
+        )
+        .alert("Traitement terminé", isPresented: $viewModel.showCompletionAlert) {
+            Button("OK", role: .cancel) {}
         }
     }
 
@@ -49,17 +89,95 @@ struct ContentView: View {
 
     private var settingsPanel: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("Qualité WEBP")
+            HStack(alignment: .center, spacing: 12) {
+                Picker("Préréglage", selection: Binding<UUID?>(
+                    get: { viewModel.selectedPresetID },
+                    set: { viewModel.applyPreset(id: $0) }
+                )) {
+                    Text("Configuration actuelle").tag(UUID?.none)
+                    ForEach(viewModel.presets) { preset in
+                        Text(preset.name).tag(Optional(preset.id))
+                    }
+                }
+                .frame(maxWidth: 280)
 
-                Slider(value: $viewModel.settings.quality, in: 0.1...1.0, step: 0.05)
+                if let selectedPreset = viewModel.selectedPreset, viewModel.canDeleteSelectedPreset {
+                    Button(role: .destructive) {
+                        presetPendingDeletion = selectedPreset
+                    } label: {
+                        Image(systemName: "trash")
+                    }
+                    .help("Supprimer ce préréglage personnalisé")
+                }
+
+                TextField("Nom du nouveau préréglage", text: $presetNameInput)
+
+                Button("Enregistrer") {
+                    commitAllResizeInputs()
+                    viewModel.saveCurrentPreset(named: presetNameInput)
+                    if viewModel.globalError == nil {
+                        presetNameInput = ""
+                    }
+                }
+                .disabled(presetNameInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+
+            HStack {
+                labelWithInfo(
+                    "Qualité WEBP",
+                    help: "Ajuste le niveau de compression. Une valeur élevée préserve les détails originaux, une valeur basse maximise l'espace disque économisé."
+                )
+
+                Slider(
+                    value: Binding(
+                        get: { viewModel.settings.quality },
+                        set: { viewModel.updateQuality($0) }
+                    ),
+                    in: 0.1...1.0,
+                    step: 0.05
+                )
 
                 Text("\(Int(viewModel.settings.quality * 100))%")
                     .font(.system(.body, design: .monospaced))
                     .frame(width: 50)
             }
 
+            Toggle(
+                isOn: Binding(
+                    get: { viewModel.settings.removeMetadata },
+                    set: { viewModel.updateRemoveMetadata($0) }
+                )
+            ) {
+                labelWithInfo(
+                    "Supprimer les métadonnées",
+                    help: "Supprime les données techniques (EXIF, GPS, réglages boîtier) pour alléger le fichier et protéger la confidentialité de vos prises de vue."
+                )
+            }
+            .toggleStyle(.checkbox)
+
             HStack {
+                labelWithInfo(
+                    "Suffixe",
+                    help: "Ajoute automatiquement un texte au nom du fichier pour identifier rapidement ses variantes ou ses dimensions."
+                )
+
+                Picker("Suffixe", selection: Binding(
+                    get: { viewModel.settings.suffixMode },
+                    set: { viewModel.updateSuffixMode($0) }
+                )) {
+                    ForEach(SuffixMode.allCases) { mode in
+                        Text(mode.rawValue).tag(mode)
+                    }
+                }
+                .frame(maxWidth: 220)
+            }
+
+            HStack {
+                labelWithInfo(
+                    "Redimensionnement",
+                    help: "Modifie les dimensions physiques de l'image. Redimensionner est la méthode la plus radicale pour réduire le poids d'un fichier lourd."
+                )
+
                 Picker("Redimensionnement", selection: Binding(
                     get: { viewModel.settings.resizeSettings.mode },
                     set: { viewModel.updateResizeMode($0) }
@@ -383,5 +501,15 @@ struct ContentView: View {
         percentageInput = String(Int(viewModel.settings.resizeSettings.percentage.rounded()))
         widthInput = String(Int(viewModel.settings.resizeSettings.width.rounded()))
         heightInput = String(Int(viewModel.settings.resizeSettings.height.rounded()))
+    }
+
+    private func labelWithInfo(_ title: String, help: String) -> some View {
+        HStack(spacing: 4) {
+            Text(title)
+            Image(systemName: "info.circle")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .help(help)
+        }
     }
 }
