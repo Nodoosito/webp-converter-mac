@@ -65,6 +65,9 @@ struct ContentView: View {
                 }
             }
         )
+        .alert("Traitement terminé", isPresented: $viewModel.showCompletionAlert) {
+            Button("OK", role: .cancel) {}
+        }
     }
 
     private var header: some View {
@@ -120,7 +123,10 @@ struct ContentView: View {
             }
 
             HStack {
-                Text("Qualité WEBP")
+                labelWithInfo(
+                    "Qualité WEBP",
+                    help: "Ajuste le niveau de compression. Une valeur élevée préserve les détails originaux, une valeur basse maximise l'espace disque économisé."
+                )
 
                 Slider(
                     value: Binding(
@@ -137,16 +143,23 @@ struct ContentView: View {
             }
 
             Toggle(
-                "Supprimer les métadonnées",
                 isOn: Binding(
                     get: { viewModel.settings.removeMetadata },
                     set: { viewModel.updateRemoveMetadata($0) }
                 )
-            )
+            ) {
+                labelWithInfo(
+                    "Supprimer les métadonnées",
+                    help: "Supprime les données techniques (EXIF, GPS, réglages boîtier) pour alléger le fichier et protéger la confidentialité de vos prises de vue."
+                )
+            }
             .toggleStyle(.checkbox)
 
             HStack {
-                Text("Suffixe")
+                labelWithInfo(
+                    "Suffixe",
+                    help: "Ajoute automatiquement un texte au nom du fichier pour identifier rapidement ses variantes ou ses dimensions."
+                )
 
                 Picker("Suffixe", selection: Binding(
                     get: { viewModel.settings.suffixMode },
@@ -160,6 +173,11 @@ struct ContentView: View {
             }
 
             HStack {
+                labelWithInfo(
+                    "Redimensionnement",
+                    help: "Modifie les dimensions physiques de l'image. Redimensionner est la méthode la plus radicale pour réduire le poids d'un fichier lourd."
+                )
+
                 Picker("Redimensionnement", selection: Binding(
                     get: { viewModel.settings.resizeSettings.mode },
                     set: { viewModel.updateResizeMode($0) }
@@ -483,5 +501,15 @@ struct ContentView: View {
         percentageInput = String(Int(viewModel.settings.resizeSettings.percentage.rounded()))
         widthInput = String(Int(viewModel.settings.resizeSettings.width.rounded()))
         heightInput = String(Int(viewModel.settings.resizeSettings.height.rounded()))
+    }
+
+    private func labelWithInfo(_ title: String, help: String) -> some View {
+        HStack(spacing: 4) {
+            Text(title)
+            Image(systemName: "info.circle")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .help(help)
+        }
     }
 }

@@ -26,6 +26,7 @@ final class ConversionViewModel: ObservableObject {
     @Published var globalError: String?
     @Published private(set) var isConverting = false
     @Published private(set) var progress: Double = 0
+    @Published var showCompletionAlert = false
     @Published private(set) var presets: [ConversionPreset] = []
     @Published var selectedPresetID: UUID?
 
@@ -134,6 +135,7 @@ final class ConversionViewModel: ObservableObject {
         items.removeAll()
         progress = 0
         globalError = nil
+        showCompletionAlert = false
         selectedItemID = nil
         clearPreviewState(message: "Sélectionnez un fichier pour voir l'aperçu")
     }
@@ -279,6 +281,7 @@ final class ConversionViewModel: ObservableObject {
         }
 
         globalError = nil
+        showCompletionAlert = false
         isConverting = true
         progress = 0
         for index in items.indices { items[index].status = .pending }
@@ -310,6 +313,7 @@ final class ConversionViewModel: ObservableObject {
             }
 
             self.isConverting = false
+            self.showCompletionAlert = true
         }
     }
 
