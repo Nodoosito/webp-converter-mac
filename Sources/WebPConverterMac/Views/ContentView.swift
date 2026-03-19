@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 struct ContentView: View {
     @ObservedObject var viewModel: ConversionViewModel
 
+    @State private var presetNameInput = ""
     @State private var percentageInput = "100"
     @State private var widthInput = "1920"
     @State private var heightInput = "1080"
@@ -19,6 +20,15 @@ struct ContentView: View {
         }
         .padding(20)
         .onAppear {
+            syncInputsFromSettings()
+        }
+        .onChange(of: viewModel.settings.resizeSettings.percentage) { _ in
+            syncInputsFromSettings()
+        }
+        .onChange(of: viewModel.settings.resizeSettings.width) { _ in
+            syncInputsFromSettings()
+        }
+        .onChange(of: viewModel.settings.resizeSettings.height) { _ in
             syncInputsFromSettings()
         }
         .onChange(of: viewModel.settings.resizeSettings.mode) { _ in
@@ -49,10 +59,41 @@ struct ContentView: View {
 
     private var settingsPanel: some View {
         VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .center, spacing: 12) {
+                Picker("Préréglage", selection: Binding<UUID?>(
+                    get: { viewModel.selectedPresetID },
+                    set: { viewModel.applyPreset(id: $0) }
+                )) {
+                    Text("Configuration actuelle").tag(UUID?.none)
+                    ForEach(viewModel.presets) { preset in
+                        Text(preset.name).tag(Optional(preset.id))
+                    }
+                }
+                .frame(maxWidth: 280)
+
+                TextField("Nom du nouveau préréglage", text: $presetNameInput)
+
+                Button("Enregistrer") {
+                    commitAllResizeInputs()
+                    viewModel.saveCurrentPreset(named: presetNameInput)
+                    if viewModel.globalError == nil {
+                        presetNameInput = ""
+                    }
+                }
+                .disabled(presetNameInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+
             HStack {
                 Text("Qualité WEBP")
 
-                Slider(value: $viewModel.settings.quality, in: 0.1...1.0, step: 0.05)
+                Slider(
+                    value: Binding(
+                        get: { viewModel.settings.quality },
+                        set: { viewModel.updateQuality($0) }
+                    ),
+                    in: 0.1...1.0,
+                    step: 0.05
+                )
 
                 Text("\(Int(viewModel.settings.quality * 100))%")
                     .font(.system(.body, design: .monospaced))
