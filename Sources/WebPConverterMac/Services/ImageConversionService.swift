@@ -37,7 +37,7 @@ enum ConversionError: LocalizedError {
 
 struct ImageConversionService: Sendable {
     private static let webPIdentifier = UTType.webP.identifier
-    private static let copiedMetadataKeys: [CFString] = [
+    nonisolated(unsafe) private static let copiedMetadataKeys: [CFString] = [
         kCGImagePropertyTIFFDictionary,
         kCGImagePropertyExifDictionary,
         kCGImagePropertyGPSDictionary,
