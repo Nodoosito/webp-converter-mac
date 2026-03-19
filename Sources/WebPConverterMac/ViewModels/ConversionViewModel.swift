@@ -55,6 +55,12 @@ final class ConversionViewModel: ObservableObject {
         selectedPresetID = matchingPresetID(for: settings)
     }
 
+    init(presetStore: ConversionPresetStore = ConversionPresetStore()) {
+        self.presetStore = presetStore
+        presets = presetStore.loadPresets()
+        selectedPresetID = matchingPresetID(for: settings)
+    }
+
     var sortedItems: [FileConversionItem] {
         guard let column = currentSortColumn, currentSortDirection != .none else { return items }
 
