@@ -43,6 +43,17 @@ final class ConversionViewModel: ObservableObject {
 
     var canConvert: Bool { !items.isEmpty && settings.outputFolder != nil && !isConverting }
     var nativeWebPAvailable: Bool { conversionService.isNativeWebPEncodingAvailable }
+    var selectedPreset: ConversionPreset? {
+        guard let selectedPresetID else { return nil }
+        return presets.first(where: { $0.id == selectedPresetID })
+    }
+    var canDeleteSelectedPreset: Bool { selectedPreset?.isSystemPreset == false }
+
+    init(presetStore: ConversionPresetStore = ConversionPresetStore()) {
+        self.presetStore = presetStore
+        presets = presetStore.loadPresets()
+        selectedPresetID = matchingPresetID(for: settings)
+    }
 
     init(presetStore: ConversionPresetStore = ConversionPresetStore()) {
         self.presetStore = presetStore
@@ -206,6 +217,10 @@ final class ConversionViewModel: ObservableObject {
             globalError = "Le nom du préréglage ne peut pas être vide."
             return
         }
+        guard !presetStore.isProtectedPresetName(trimmedName) else {
+            globalError = "Ce nom est réservé à un préréglage par défaut."
+            return
+        }
 
         globalError = nil
 
@@ -218,6 +233,25 @@ final class ConversionViewModel: ObservableObject {
         presets.append(preset)
         presetStore.savePresets(presets)
         selectedPresetID = preset.id
+    }
+
+    func deletePreset(id: UUID) {
+        guard
+            let preset = presets.first(where: { $0.id == id }),
+            !preset.isSystemPreset,
+            !presetStore.isProtectedPresetName(preset.name)
+        else {
+            return
+        }
+
+        presets = presetStore.deletePreset(id: id, from: presets)
+
+        if selectedPresetID == id {
+            applyDefaultPreset()
+            return
+        }
+
+        refreshSelectedPreset()
     }
 
     func updateSelectedItem(id: UUID?) {
@@ -335,6 +369,14 @@ final class ConversionViewModel: ObservableObject {
         previewMessage = message
         originalPreview = nil
         convertedPreview = nil
+    }
+
+    private var defaultPresetID: UUID? {
+        presets.first(where: { $0.name == ConversionPresetStore.defaultPresetName })?.id
+    }
+
+    private func applyDefaultPreset() {
+        applyPreset(id: defaultPresetID)
     }
 
     private func refreshSelectedPreset() {

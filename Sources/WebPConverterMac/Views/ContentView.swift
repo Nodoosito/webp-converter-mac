@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 struct ContentView: View {
     @ObservedObject var viewModel: ConversionViewModel
 
+    @State private var presetPendingDeletion: ConversionPreset?
     @State private var presetNameInput = ""
     @State private var percentageInput = "100"
     @State private var widthInput = "1920"
@@ -38,6 +39,32 @@ struct ContentView: View {
             viewModel.handleDrop(providers: providers)
             return true
         }
+        .alert(
+            "Supprimer le préréglage ?",
+            isPresented: Binding(
+                get: { presetPendingDeletion != nil },
+                set: { isPresented in
+                    if !isPresented {
+                        presetPendingDeletion = nil
+                    }
+                }
+            ),
+            actions: {
+                Button("Annuler", role: .cancel) {
+                    presetPendingDeletion = nil
+                }
+                Button("Supprimer", role: .destructive) {
+                    guard let presetPendingDeletion else { return }
+                    viewModel.deletePreset(id: presetPendingDeletion.id)
+                    self.presetPendingDeletion = nil
+                }
+            },
+            message: {
+                if let presetPendingDeletion {
+                    Text("Le préréglage “\(presetPendingDeletion.name)” sera supprimé définitivement.")
+                }
+            }
+        )
     }
 
     private var header: some View {
@@ -70,6 +97,15 @@ struct ContentView: View {
                     }
                 }
                 .frame(maxWidth: 280)
+
+                if let selectedPreset = viewModel.selectedPreset, viewModel.canDeleteSelectedPreset {
+                    Button(role: .destructive) {
+                        presetPendingDeletion = selectedPreset
+                    } label: {
+                        Image(systemName: "trash")
+                    }
+                    .help("Supprimer ce préréglage personnalisé")
+                }
 
                 TextField("Nom du nouveau préréglage", text: $presetNameInput)
 
