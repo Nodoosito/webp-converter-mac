@@ -59,6 +59,7 @@ struct ImageConversionService: Sendable {
         else {
             throw ConversionError.unableToReadImage
         }
+        let sourceProperties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any]
 
         let targetSize = computeTargetSize(for: cgImage, settings: settings.resizeSettings)
         let resizedImage = resizeIfNeeded(image: cgImage, targetSize: targetSize)
@@ -69,25 +70,49 @@ struct ImageConversionService: Sendable {
 
         if isNativeWebPEncodingAvailable {
             do {
-                try exportNativeWebP(image: resizedImage, to: outputURL, quality: settings.quality)
+                try exportNativeWebP(
+                    image: resizedImage,
+                    to: outputURL,
+                    quality: settings.quality,
+                    sourceProperties: sourceProperties,
+                    removeMetadata: settings.removeMetadata
+                )
                 logOutputSize(outputURL: outputURL, inputURL: inputURL, encoder: "native")
                 let outputSize = FileService().fileSize(for: outputURL)
                 return (outputURL, outputSize)
             } catch {
-                try exportWithCWebP(image: resizedImage, to: outputURL, quality: settings.quality)
+                try exportWithCWebP(
+                    image: resizedImage,
+                    to: outputURL,
+                    quality: settings.quality,
+                    sourceProperties: sourceProperties,
+                    removeMetadata: settings.removeMetadata
+                )
                 logOutputSize(outputURL: outputURL, inputURL: inputURL, encoder: "cwebp-fallback")
                 let outputSize = FileService().fileSize(for: outputURL)
                 return (outputURL, outputSize)
             }
         }
 
-        try exportWithCWebP(image: resizedImage, to: outputURL, quality: settings.quality)
+        try exportWithCWebP(
+            image: resizedImage,
+            to: outputURL,
+            quality: settings.quality,
+            sourceProperties: sourceProperties,
+            removeMetadata: settings.removeMetadata
+        )
         logOutputSize(outputURL: outputURL, inputURL: inputURL, encoder: "cwebp")
         let outputSize = FileService().fileSize(for: outputURL)
         return (outputURL, outputSize)
     }
 
-    private func exportNativeWebP(image: CGImage, to outputURL: URL, quality: Double) throws {
+    private func exportNativeWebP(
+        image: CGImage,
+        to outputURL: URL,
+        quality: Double,
+        sourceProperties: [CFString: Any]?,
+        removeMetadata: Bool
+    ) throws {
         guard let destination = CGImageDestinationCreateWithURL(
             outputURL as CFURL,
             Self.webPIdentifier as CFString,
@@ -97,9 +122,12 @@ struct ImageConversionService: Sendable {
             throw ConversionError.unableToCreateDestination(details: "Format '\(Self.webPIdentifier)' non accepté par ImageIO sur cette machine.")
         }
 
-        let options: [CFString: Any] = [
-            kCGImageDestinationLossyCompressionQuality: quality
-        ]
+        let options = destinationProperties(
+            image: image,
+            quality: quality,
+            sourceProperties: sourceProperties,
+            removeMetadata: removeMetadata
+        )
 
         CGImageDestinationAddImage(destination, image, options as CFDictionary)
 
@@ -108,7 +136,13 @@ struct ImageConversionService: Sendable {
         }
     }
 
-    private func exportWithCWebP(image: CGImage, to outputURL: URL, quality: Double) throws {
+    private func exportWithCWebP(
+        image: CGImage,
+        to outputURL: URL,
+        quality: Double,
+        sourceProperties: [CFString: Any]?,
+        removeMetadata: Bool
+    ) throws {
         guard let cwebpPath = findCWebPPath() else {
             if isNativeWebPEncodingAvailable {
                 throw ConversionError.fallbackEncoderUnavailable
@@ -120,19 +154,30 @@ struct ImageConversionService: Sendable {
             .appendingPathComponent(UUID().uuidString)
             .appendingPathExtension("png")
 
-        try writeTemporaryPNG(image: image, to: tempInputURL)
+        try writeTemporaryPNG(
+            image: image,
+            to: tempInputURL,
+            sourceProperties: sourceProperties,
+            removeMetadata: removeMetadata
+        )
         defer { try? FileManager.default.removeItem(at: tempInputURL) }
 
         let q = String(Int((quality * 100).rounded()))
 
         let process = Process()
         process.executableURL = URL(fileURLWithPath: cwebpPath)
-        process.arguments = [
+        var arguments = [
             "-quiet",
-            "-q", q,
+            "-q", q
+        ]
+        if !removeMetadata {
+            arguments.append(contentsOf: ["-metadata", "all"])
+        }
+        arguments.append(contentsOf: [
             tempInputURL.path,
             "-o", outputURL.path
-        ]
+        ])
+        process.arguments = arguments
 
         let stderr = Pipe()
         process.standardError = stderr
@@ -162,14 +207,63 @@ struct ImageConversionService: Sendable {
         return nil
     }
 
-    private func writeTemporaryPNG(image: CGImage, to url: URL) throws {
+    private func writeTemporaryPNG(
+        image: CGImage,
+        to url: URL,
+        sourceProperties: [CFString: Any]?,
+        removeMetadata: Bool
+    ) throws {
         guard let destination = CGImageDestinationCreateWithURL(url as CFURL, UTType.png.identifier as CFString, 1, nil) else {
             throw ConversionError.unableToWriteTemporaryImage
         }
-        CGImageDestinationAddImage(destination, image, nil)
+        let options: CFDictionary?
+        if removeMetadata {
+            options = nil
+        } else {
+            options = preservedSourceProperties(
+                for: image,
+                sourceProperties: sourceProperties
+            ) as CFDictionary
+        }
+        CGImageDestinationAddImage(destination, image, options)
         guard CGImageDestinationFinalize(destination) else {
             throw ConversionError.unableToWriteTemporaryImage
         }
+    }
+
+    private func destinationProperties(
+        image: CGImage,
+        quality: Double,
+        sourceProperties: [CFString: Any]?,
+        removeMetadata: Bool
+    ) -> [CFString: Any] {
+        guard !removeMetadata else {
+            return [kCGImageDestinationLossyCompressionQuality: quality]
+        }
+
+        var properties = preservedSourceProperties(
+            for: image,
+            sourceProperties: sourceProperties
+        )
+        properties[kCGImageDestinationLossyCompressionQuality] = quality
+
+        return properties
+    }
+
+    private func preservedSourceProperties(
+        for image: CGImage,
+        sourceProperties: [CFString: Any]?
+    ) -> [CFString: Any] {
+        var properties = sourceProperties ?? [:]
+
+        properties[kCGImagePropertyPixelWidth] = image.width
+        properties[kCGImagePropertyPixelHeight] = image.height
+
+        if let orientation = sourceProperties?[kCGImagePropertyOrientation] {
+            properties[kCGImagePropertyOrientation] = orientation
+        }
+
+        return properties
     }
 
     private func computeTargetSize(for image: CGImage, settings: ResizeSettings) -> CGSize {
