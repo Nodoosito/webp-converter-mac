@@ -67,6 +67,8 @@ struct ContentView: View {
         )
         .alert("Traitement terminé", isPresented: $viewModel.showCompletionAlert) {
             Button("OK", role: .cancel) {}
+        } message: {
+            Text("Traitement terminé. Gain total : \(viewModel.formattedTotalGain)")
         }
     }
 
@@ -158,7 +160,7 @@ struct ContentView: View {
             HStack {
                 labelWithInfo(
                     "Suffixe",
-                    help: "Ajoute automatiquement un texte au nom du fichier pour identifier rapidement ses variantes ou ses dimensions."
+                    help: "Ajoute un texte au nom du fichier pour identifier rapidement ses variantes (ex: dimensions ou usage)."
                 )
 
                 Picker("Suffixe", selection: Binding(
@@ -175,7 +177,7 @@ struct ContentView: View {
             HStack {
                 labelWithInfo(
                     "Redimensionnement",
-                    help: "Modifie les dimensions physiques de l'image. Redimensionner est la méthode la plus radicale pour réduire le poids d'un fichier lourd."
+                    help: "Modifie les dimensions physiques de l'image. Redimensionner est la méthode la plus directe pour réduire radicalement le poids d'un fichier."
                 )
 
                 Picker("Redimensionnement", selection: Binding(
@@ -449,8 +451,19 @@ struct ContentView: View {
             }
 
             HStack {
-                Text("Progression : \(Int(viewModel.progress * 100))%")
-                    .foregroundStyle(.secondary)
+                if viewModel.isConverting {
+                    ProgressView(value: viewModel.progress)
+                        .frame(maxWidth: 240)
+                    Text("Progression : \(Int(viewModel.progress * 100))%")
+                        .foregroundStyle(.secondary)
+                    Button("Arrêter") {
+                        viewModel.stopConversion()
+                    }
+                    .buttonStyle(.bordered)
+                } else {
+                    Text("Progression : \(Int(viewModel.progress * 100))%")
+                        .foregroundStyle(.secondary)
+                }
 
                 Spacer()
 
@@ -506,9 +519,12 @@ struct ContentView: View {
     private func labelWithInfo(_ title: String, help: String) -> some View {
         HStack(spacing: 4) {
             Text(title)
-            Image(systemName: "info.circle")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            Button(action: {}) {
+                Image(systemName: "info.circle")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.plain)
                 .help(help)
         }
     }
