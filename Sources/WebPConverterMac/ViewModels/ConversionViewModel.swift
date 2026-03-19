@@ -54,6 +54,12 @@ final class ConversionViewModel: ObservableObject {
         presets = presetStore.loadPresets()
         selectedPresetID = matchingPresetID(for: settings)
     }
+
+    init(presetStore: ConversionPresetStore = ConversionPresetStore()) {
+        self.presetStore = presetStore
+        presets = presetStore.loadPresets()
+        selectedPresetID = matchingPresetID(for: settings)
+    }
     var sortedItems: [FileConversionItem] {
         guard let column = currentSortColumn, currentSortDirection != .none else { return items }
 
@@ -189,6 +195,13 @@ final class ConversionViewModel: ObservableObject {
         refreshSelectedPreset()
     }
 
+    func updateRemoveMetadata(_ removeMetadata: Bool) {
+        var updated = settings
+        updated.removeMetadata = removeMetadata
+        settings = updated
+        refreshSelectedPreset()
+    }
+
     func applyPreset(id: UUID?) {
         guard let id, let preset = presets.first(where: { $0.id == id }) else {
             selectedPresetID = nil
@@ -199,7 +212,8 @@ final class ConversionViewModel: ObservableObject {
         settings = ConversionSettings(
             quality: preset.quality,
             resizeSettings: preset.resizeSettings,
-            outputFolder: outputFolder
+            outputFolder: outputFolder,
+            removeMetadata: preset.removeMetadata
         )
         selectedPresetID = preset.id
     }
@@ -220,7 +234,8 @@ final class ConversionViewModel: ObservableObject {
         let preset = ConversionPreset(
             name: trimmedName,
             quality: settings.quality,
-            resizeSettings: settings.resizeSettings
+            resizeSettings: settings.resizeSettings,
+            removeMetadata: settings.removeMetadata
         )
 
         presets.append(preset)
@@ -379,7 +394,8 @@ final class ConversionViewModel: ObservableObject {
     private func matchingPresetID(for settings: ConversionSettings) -> UUID? {
         presets.first {
             $0.quality == settings.quality &&
-            $0.resizeSettings == settings.resizeSettings
+            $0.resizeSettings == settings.resizeSettings &&
+            $0.removeMetadata == settings.removeMetadata
         }?.id
     }
 

@@ -136,6 +136,15 @@ struct ContentView: View {
                     .frame(width: 50)
             }
 
+            Toggle(
+                "Supprimer les métadonnées",
+                isOn: Binding(
+                    get: { viewModel.settings.removeMetadata },
+                    set: { viewModel.updateRemoveMetadata($0) }
+                )
+            )
+            .toggleStyle(.checkbox)
+
             HStack {
                 Picker("Redimensionnement", selection: Binding(
                     get: { viewModel.settings.resizeSettings.mode },
