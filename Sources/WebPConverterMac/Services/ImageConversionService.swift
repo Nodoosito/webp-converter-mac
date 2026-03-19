@@ -133,6 +133,7 @@ struct ImageConversionService: Sendable {
         }
 
         let options = destinationProperties(
+            image: image,
             quality: quality,
             sourceProperties: sourceProperties,
             removeMetadata: removeMetadata
@@ -175,12 +176,18 @@ struct ImageConversionService: Sendable {
 
         let process = Process()
         process.executableURL = URL(fileURLWithPath: cwebpPath)
-        process.arguments = [
+        var arguments = [
             "-quiet",
-            "-q", q,
+            "-q", q
+        ]
+        if !removeMetadata {
+            arguments.append(contentsOf: ["-metadata", "all"])
+        }
+        arguments.append(contentsOf: [
             tempInputURL.path,
             "-o", outputURL.path
-        ]
+        ])
+        process.arguments = arguments
 
         let stderr = Pipe()
         process.standardError = stderr
@@ -223,7 +230,10 @@ struct ImageConversionService: Sendable {
         if removeMetadata {
             options = nil
         } else {
-            options = metadataProperties(from: sourceProperties) as CFDictionary
+            options = preservedSourceProperties(
+                for: image,
+                sourceProperties: sourceProperties
+            ) as CFDictionary
         }
         CGImageDestinationAddImage(destination, image, options)
         guard CGImageDestinationFinalize(destination) else {
@@ -232,43 +242,38 @@ struct ImageConversionService: Sendable {
     }
 
     private func destinationProperties(
+        image: CGImage,
         quality: Double,
         sourceProperties: [CFString: Any]?,
         removeMetadata: Bool
     ) -> [CFString: Any] {
-        var properties: [CFString: Any] = [
-            kCGImageDestinationLossyCompressionQuality: quality
-        ]
-
         guard !removeMetadata else {
-            return properties
+            return [kCGImageDestinationLossyCompressionQuality: quality]
         }
 
-        for (key, value) in metadataProperties(from: sourceProperties) {
-            properties[key] = value
-        }
+        var properties = preservedSourceProperties(
+            for: image,
+            sourceProperties: sourceProperties
+        )
+        properties[kCGImageDestinationLossyCompressionQuality] = quality
+
+        return properties
+    }
+
+    private func preservedSourceProperties(
+        for image: CGImage,
+        sourceProperties: [CFString: Any]?
+    ) -> [CFString: Any] {
+        var properties = sourceProperties ?? [:]
+
+        properties[kCGImagePropertyPixelWidth] = image.width
+        properties[kCGImagePropertyPixelHeight] = image.height
 
         if let orientation = sourceProperties?[kCGImagePropertyOrientation] {
             properties[kCGImagePropertyOrientation] = orientation
         }
 
         return properties
-    }
-
-    private func metadataProperties(from sourceProperties: [CFString: Any]?) -> [CFString: Any] {
-        guard let sourceProperties else {
-            return [:]
-        }
-
-        var metadata: [CFString: Any] = [:]
-
-        for key in Self.copiedMetadataKeys {
-            if let value = sourceProperties[key] {
-                metadata[key] = value
-            }
-        }
-
-        return metadata
     }
 
     private func computeTargetSize(for image: CGImage, settings: ResizeSettings) -> CGSize {
