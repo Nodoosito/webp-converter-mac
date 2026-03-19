@@ -70,11 +70,13 @@ struct ImageConversionService: Sendable {
             throw ConversionError.unableToReadImage
         }
         let sourceProperties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any]
+        let sourceOrientation = imageOrientation(from: sourceProperties)
+        let normalizedImage = normalizedImage(image: cgImage, orientation: sourceOrientation)
 
-        let targetSize = computeTargetSize(for: cgImage, settings: settings.resizeSettings)
-        let resizedImage = resizeIfNeeded(image: cgImage, targetSize: targetSize)
+        let targetSize = computeTargetSize(for: normalizedImage, settings: settings.resizeSettings)
+        let resizedImage = resizeIfNeeded(image: normalizedImage, targetSize: targetSize)
 
-        print("[Resize] \(inputURL.lastPathComponent) original=\(cgImage.width)x\(cgImage.height) target=\(targetSize.width)x\(targetSize.height) resized=\(resizedImage.width)x\(resizedImage.height) mode=\(settings.resizeSettings.mode.rawValue)")
+        print("[Resize] \(inputURL.lastPathComponent) original=\(cgImage.width)x\(cgImage.height) normalized=\(normalizedImage.width)x\(normalizedImage.height) target=\(targetSize.width)x\(targetSize.height) resized=\(resizedImage.width)x\(resizedImage.height) mode=\(settings.resizeSettings.mode.rawValue)")
 
         let outputBaseName = outputBaseName(
             for: inputURL,
@@ -237,7 +239,7 @@ struct ImageConversionService: Sendable {
         }
         let options: CFDictionary?
         if removeMetadata {
-            options = nil
+            options = [kCGImagePropertyOrientation: CGImagePropertyOrientation.up.rawValue] as CFDictionary
         } else {
             options = preservedSourceProperties(
                 for: image,
@@ -257,7 +259,10 @@ struct ImageConversionService: Sendable {
         removeMetadata: Bool
     ) -> [CFString: Any] {
         guard !removeMetadata else {
-            return [kCGImageDestinationLossyCompressionQuality: quality]
+            return [
+                kCGImageDestinationLossyCompressionQuality: quality,
+                kCGImagePropertyOrientation: CGImagePropertyOrientation.up.rawValue
+            ]
         }
 
         var properties = preservedSourceProperties(
@@ -277,12 +282,89 @@ struct ImageConversionService: Sendable {
 
         properties[kCGImagePropertyPixelWidth] = image.width
         properties[kCGImagePropertyPixelHeight] = image.height
-
-        if let orientation = sourceProperties?[kCGImagePropertyOrientation] {
-            properties[kCGImagePropertyOrientation] = orientation
-        }
+        properties[kCGImagePropertyOrientation] = CGImagePropertyOrientation.up.rawValue
 
         return properties
+    }
+
+    private func imageOrientation(from sourceProperties: [CFString: Any]?) -> CGImagePropertyOrientation {
+        if let orientation = sourceProperties?[kCGImagePropertyOrientation] as? UInt32,
+           let imageOrientation = CGImagePropertyOrientation(rawValue: orientation) {
+            return imageOrientation
+        }
+
+        if let orientation = sourceProperties?[kCGImagePropertyOrientation] as? Int,
+           let imageOrientation = CGImagePropertyOrientation(rawValue: UInt32(orientation)) {
+            return imageOrientation
+        }
+
+        return .up
+    }
+
+    private func normalizedImage(image: CGImage, orientation: CGImagePropertyOrientation) -> CGImage {
+        guard orientation != .up else {
+            return image
+        }
+
+        let originalWidth = image.width
+        let originalHeight = image.height
+        let requiresDimensionSwap = orientation == .left ||
+            orientation == .leftMirrored ||
+            orientation == .right ||
+            orientation == .rightMirrored
+
+        let contextWidth = requiresDimensionSwap ? originalHeight : originalWidth
+        let contextHeight = requiresDimensionSwap ? originalWidth : originalHeight
+
+        let colorSpace = image.colorSpace ?? CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB()
+        let bitmapInfo = CGImageAlphaInfo.premultipliedLast.rawValue
+
+        guard let context = CGContext(
+            data: nil,
+            width: contextWidth,
+            height: contextHeight,
+            bitsPerComponent: image.bitsPerComponent,
+            bytesPerRow: 0,
+            space: colorSpace,
+            bitmapInfo: bitmapInfo
+        ) else {
+            return image
+        }
+
+        switch orientation {
+        case .up:
+            break
+        case .upMirrored:
+            context.translateBy(x: CGFloat(contextWidth), y: 0)
+            context.scaleBy(x: -1, y: 1)
+        case .down:
+            context.translateBy(x: CGFloat(contextWidth), y: CGFloat(contextHeight))
+            context.rotate(by: .pi)
+        case .downMirrored:
+            context.translateBy(x: 0, y: CGFloat(contextHeight))
+            context.scaleBy(x: 1, y: -1)
+        case .left:
+            context.translateBy(x: 0, y: CGFloat(contextHeight))
+            context.rotate(by: -.pi / 2)
+        case .leftMirrored:
+            context.translateBy(x: CGFloat(contextWidth), y: CGFloat(contextHeight))
+            context.scaleBy(x: -1, y: 1)
+            context.rotate(by: -.pi / 2)
+        case .right:
+            context.translateBy(x: CGFloat(contextWidth), y: 0)
+            context.rotate(by: .pi / 2)
+        case .rightMirrored:
+            context.scaleBy(x: -1, y: 1)
+            context.rotate(by: .pi / 2)
+            context.translateBy(x: -CGFloat(originalWidth), y: 0)
+        @unknown default:
+            return image
+        }
+
+        context.interpolationQuality = .high
+        context.draw(image, in: CGRect(x: 0, y: 0, width: originalWidth, height: originalHeight))
+
+        return context.makeImage() ?? image
     }
 
     private func outputBaseName(

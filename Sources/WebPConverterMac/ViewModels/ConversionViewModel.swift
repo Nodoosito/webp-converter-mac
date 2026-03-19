@@ -401,8 +401,7 @@ final class ConversionViewModel: ObservableObject {
         presets.first {
             $0.quality == settings.quality &&
             $0.resizeSettings == settings.resizeSettings &&
-            $0.removeMetadata == settings.removeMetadata &&
-            $0.suffixMode == settings.suffixMode
+            $0.removeMetadata == settings.removeMetadata
         }?.id
     }
 
