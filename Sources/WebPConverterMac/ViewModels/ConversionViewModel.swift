@@ -197,6 +197,13 @@ final class ConversionViewModel: ObservableObject {
         refreshSelectedPreset()
     }
 
+    func updateSuffixMode(_ suffixMode: SuffixMode) {
+        var updated = settings
+        updated.suffixMode = suffixMode
+        settings = updated
+        refreshSelectedPreset()
+    }
+
     func applyPreset(id: UUID?) {
         guard let id, let preset = presets.first(where: { $0.id == id }) else {
             selectedPresetID = nil
@@ -208,7 +215,9 @@ final class ConversionViewModel: ObservableObject {
             quality: preset.quality,
             resizeSettings: preset.resizeSettings,
             outputFolder: outputFolder,
-            removeMetadata: preset.removeMetadata
+            removeMetadata: preset.removeMetadata,
+            suffixMode: preset.suffixMode,
+            selectedPresetName: preset.name
         )
         selectedPresetID = preset.id
     }
@@ -230,7 +239,8 @@ final class ConversionViewModel: ObservableObject {
             name: trimmedName,
             quality: settings.quality,
             resizeSettings: settings.resizeSettings,
-            removeMetadata: settings.removeMetadata
+            removeMetadata: settings.removeMetadata,
+            suffixMode: settings.suffixMode
         )
 
         presets.append(preset)
@@ -274,7 +284,8 @@ final class ConversionViewModel: ObservableObject {
         for index in items.indices { items[index].status = .pending }
 
         let itemsToConvert = items
-        let settingsSnapshot = settings
+        var settingsSnapshot = settings
+        settingsSnapshot.selectedPresetName = selectedPreset?.name
         let conversionService = self.conversionService
 
         Task { @MainActor [weak self, itemsToConvert, settingsSnapshot, outputFolder, conversionService] in
@@ -390,7 +401,8 @@ final class ConversionViewModel: ObservableObject {
         presets.first {
             $0.quality == settings.quality &&
             $0.resizeSettings == settings.resizeSettings &&
-            $0.removeMetadata == settings.removeMetadata
+            $0.removeMetadata == settings.removeMetadata &&
+            $0.suffixMode == settings.suffixMode
         }?.id
     }
 

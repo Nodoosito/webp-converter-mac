@@ -76,7 +76,16 @@ struct ImageConversionService: Sendable {
 
         print("[Resize] \(inputURL.lastPathComponent) original=\(cgImage.width)x\(cgImage.height) target=\(targetSize.width)x\(targetSize.height) resized=\(resizedImage.width)x\(resizedImage.height) mode=\(settings.resizeSettings.mode.rawValue)")
 
-        let outputURL = FileService().uniqueOutputURL(for: inputURL, in: outputFolder, pathExtension: "webp")
+        let outputBaseName = outputBaseName(
+            for: inputURL,
+            settings: settings,
+            finalImage: resizedImage
+        )
+        let outputURL = FileService().uniqueOutputURL(
+            forBaseName: outputBaseName,
+            in: outputFolder,
+            pathExtension: "webp"
+        )
 
         if isNativeWebPEncodingAvailable {
             do {
@@ -274,6 +283,50 @@ struct ImageConversionService: Sendable {
         }
 
         return properties
+    }
+
+    private func outputBaseName(
+        for inputURL: URL,
+        settings: ConversionSettings,
+        finalImage: CGImage
+    ) -> String {
+        let originalBaseName = inputURL.deletingPathExtension().lastPathComponent
+
+        guard let suffix = outputSuffix(settings: settings, finalImage: finalImage) else {
+            return originalBaseName
+        }
+
+        return "\(originalBaseName)-\(suffix)"
+    }
+
+    private func outputSuffix(settings: ConversionSettings, finalImage: CGImage) -> String? {
+        switch settings.suffixMode {
+        case .none:
+            return nil
+        case .presetName:
+            guard
+                let presetName = settings.selectedPresetName?
+                    .trimmingCharacters(in: .whitespacesAndNewlines),
+                !presetName.isEmpty
+            else {
+                return nil
+            }
+
+            return sanitizedSuffixComponent(presetName)
+        case .dimensions:
+            return "\(finalImage.width)x\(finalImage.height)"
+        }
+    }
+
+    private func sanitizedSuffixComponent(_ value: String) -> String {
+        let folded = value.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+        let allowed = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "-_"))
+        let components = folded
+            .components(separatedBy: allowed.inverted)
+            .filter { !$0.isEmpty }
+
+        let sanitized = components.joined(separator: "-")
+        return sanitized.isEmpty ? value.replacingOccurrences(of: " ", with: "-") : sanitized
     }
 
     private func computeTargetSize(for image: CGImage, settings: ResizeSettings) -> CGSize {

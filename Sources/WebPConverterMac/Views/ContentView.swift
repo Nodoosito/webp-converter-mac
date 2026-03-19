@@ -146,6 +146,20 @@ struct ContentView: View {
             .toggleStyle(.checkbox)
 
             HStack {
+                Text("Suffixe")
+
+                Picker("Suffixe", selection: Binding(
+                    get: { viewModel.settings.suffixMode },
+                    set: { viewModel.updateSuffixMode($0) }
+                )) {
+                    ForEach(SuffixMode.allCases) { mode in
+                        Text(mode.rawValue).tag(mode)
+                    }
+                }
+                .frame(maxWidth: 220)
+            }
+
+            HStack {
                 Picker("Redimensionnement", selection: Binding(
                     get: { viewModel.settings.resizeSettings.mode },
                     set: { viewModel.updateResizeMode($0) }

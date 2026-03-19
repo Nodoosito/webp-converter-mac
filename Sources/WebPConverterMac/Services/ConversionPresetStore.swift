@@ -63,6 +63,7 @@ struct ConversionPresetStore {
             quality: 0.8,
             resizeSettings: ResizeSettings(mode: .original, percentage: 100, width: 1920, height: 1080, keepAspectRatio: true),
             removeMetadata: true,
+            suffixMode: .none,
             isSystemPreset: true
         ),
         ConversionPreset(
@@ -70,6 +71,7 @@ struct ConversionPresetStore {
             quality: 0.75,
             resizeSettings: ResizeSettings(mode: .width, percentage: 100, width: 150, height: 150, keepAspectRatio: true),
             removeMetadata: true,
+            suffixMode: .none,
             isSystemPreset: true
         ),
         ConversionPreset(
@@ -77,6 +79,7 @@ struct ConversionPresetStore {
             quality: 0.82,
             resizeSettings: ResizeSettings(mode: .width, percentage: 100, width: 1600, height: 900, keepAspectRatio: true),
             removeMetadata: true,
+            suffixMode: .none,
             isSystemPreset: true
         )
     ]

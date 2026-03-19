@@ -9,6 +9,14 @@ enum ResizeMode: String, CaseIterable, Identifiable, Codable, Sendable {
     var id: String { rawValue }
 }
 
+enum SuffixMode: String, CaseIterable, Identifiable, Codable, Sendable {
+    case none = "Aucun"
+    case presetName = "Nom du préréglage"
+    case dimensions = "Dimensions"
+
+    var id: String { rawValue }
+}
+
 struct ResizeSettings: Codable, Equatable, Sendable {
     var mode: ResizeMode = .original
     var percentage: Double = 100
@@ -38,6 +46,8 @@ struct ConversionSettings: Sendable {
     var resizeSettings = ResizeSettings()
     var outputFolder: URL?
     var removeMetadata: Bool = true
+    var suffixMode: SuffixMode = .none
+    var selectedPresetName: String?
 }
 
 struct ConversionPreset: Codable, Identifiable, Equatable, Sendable {
@@ -46,6 +56,7 @@ struct ConversionPreset: Codable, Identifiable, Equatable, Sendable {
     var quality: Double
     var resizeSettings: ResizeSettings
     var removeMetadata: Bool
+    var suffixMode: SuffixMode
     var isSystemPreset: Bool
 
     init(
@@ -54,6 +65,7 @@ struct ConversionPreset: Codable, Identifiable, Equatable, Sendable {
         quality: Double,
         resizeSettings: ResizeSettings,
         removeMetadata: Bool = true,
+        suffixMode: SuffixMode = .none,
         isSystemPreset: Bool = false
     ) {
         self.id = id
@@ -61,6 +73,7 @@ struct ConversionPreset: Codable, Identifiable, Equatable, Sendable {
         self.quality = quality
         self.resizeSettings = resizeSettings
         self.removeMetadata = removeMetadata
+        self.suffixMode = suffixMode
         self.isSystemPreset = isSystemPreset
     }
 
@@ -70,6 +83,7 @@ struct ConversionPreset: Codable, Identifiable, Equatable, Sendable {
         case quality
         case resizeSettings
         case removeMetadata
+        case suffixMode
         case isSystemPreset
     }
 
@@ -80,6 +94,7 @@ struct ConversionPreset: Codable, Identifiable, Equatable, Sendable {
         quality = try container.decode(Double.self, forKey: .quality)
         resizeSettings = try container.decode(ResizeSettings.self, forKey: .resizeSettings)
         removeMetadata = try container.decodeIfPresent(Bool.self, forKey: .removeMetadata) ?? true
+        suffixMode = try container.decodeIfPresent(SuffixMode.self, forKey: .suffixMode) ?? .none
         isSystemPreset = try container.decodeIfPresent(Bool.self, forKey: .isSystemPreset) ?? false
     }
 
@@ -90,6 +105,7 @@ struct ConversionPreset: Codable, Identifiable, Equatable, Sendable {
         try container.encode(quality, forKey: .quality)
         try container.encode(resizeSettings, forKey: .resizeSettings)
         try container.encode(removeMetadata, forKey: .removeMetadata)
+        try container.encode(suffixMode, forKey: .suffixMode)
         try container.encode(isSystemPreset, forKey: .isSystemPreset)
     }
 }
