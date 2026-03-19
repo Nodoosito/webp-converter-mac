@@ -9,6 +9,10 @@ struct ContentView: View {
     @State private var percentageInput = "100"
     @State private var widthInput = "1920"
     @State private var heightInput = "1080"
+    @State private var isQualityHelpPresented = false
+    @State private var isMetadataHelpPresented = false
+    @State private var isSuffixHelpPresented = false
+    @State private var isResizeHelpPresented = false
 
     private let columnWidths: [CGFloat] = [280, 100, 100, 90, 220, 60]
 
@@ -127,7 +131,8 @@ struct ContentView: View {
             HStack {
                 labelWithInfo(
                     "Qualité WEBP",
-                    help: "Ajuste le niveau de compression. Une valeur élevée préserve les détails originaux, une valeur basse maximise l'espace disque économisé."
+                    help: "Ajuste le niveau de compression. Une valeur élevée préserve les détails originaux, une valeur basse maximise l'espace disque économisé.",
+                    isPresented: $isQualityHelpPresented
                 )
 
                 Slider(
@@ -152,7 +157,8 @@ struct ContentView: View {
             ) {
                 labelWithInfo(
                     "Supprimer les métadonnées",
-                    help: "Supprime les données techniques (EXIF, GPS, réglages boîtier) pour alléger le fichier et protéger la confidentialité de vos prises de vue."
+                    help: "Supprime les données techniques (EXIF, GPS, réglages boîtier) pour alléger le fichier et protéger la confidentialité de vos prises de vue.",
+                    isPresented: $isMetadataHelpPresented
                 )
             }
             .toggleStyle(.checkbox)
@@ -160,7 +166,8 @@ struct ContentView: View {
             HStack {
                 labelWithInfo(
                     "Suffixe",
-                    help: "Ajoute un texte au nom du fichier pour identifier rapidement ses variantes (ex: dimensions ou usage)."
+                    help: "Ajoute un texte au nom du fichier pour identifier rapidement ses variantes (ex: dimensions ou usage).",
+                    isPresented: $isSuffixHelpPresented
                 )
 
                 Picker("Suffixe", selection: Binding(
@@ -177,7 +184,8 @@ struct ContentView: View {
             HStack {
                 labelWithInfo(
                     "Redimensionnement",
-                    help: "Modifie les dimensions physiques de l'image. Redimensionner est la méthode la plus directe pour réduire radicalement le poids d'un fichier."
+                    help: "Modifie les dimensions physiques de l'image. Redimensionner est la méthode la plus directe pour réduire radicalement le poids d'un fichier.",
+                    isPresented: $isResizeHelpPresented
                 )
 
                 Picker("Redimensionnement", selection: Binding(
@@ -516,16 +524,24 @@ struct ContentView: View {
         heightInput = String(Int(viewModel.settings.resizeSettings.height.rounded()))
     }
 
-    private func labelWithInfo(_ title: String, help: String) -> some View {
+    private func labelWithInfo(_ title: String, help: String, isPresented: Binding<Bool>) -> some View {
         HStack(spacing: 4) {
             Text(title)
-            Button(action: {}) {
+            Button {
+                isPresented.wrappedValue.toggle()
+            } label: {
                 Image(systemName: "info.circle")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
             .buttonStyle(.plain)
-                .help(help)
+            .popover(isPresented: isPresented, arrowEdge: .bottom) {
+                Text(help)
+                    .font(.callout)
+                    .foregroundStyle(.primary)
+                    .padding(12)
+                    .frame(maxWidth: 280, alignment: .leading)
+            }
         }
     }
 }
