@@ -1,6 +1,6 @@
 import Foundation
 
-enum ResizeMode: String, CaseIterable, Identifiable, Sendable {
+enum ResizeMode: String, CaseIterable, Identifiable, Codable, Sendable {
     case original = "Taille originale"
     case percentage = "Pourcentage"
     case width = "Largeur"
@@ -9,7 +9,7 @@ enum ResizeMode: String, CaseIterable, Identifiable, Sendable {
     var id: String { rawValue }
 }
 
-struct ResizeSettings: Sendable {
+struct ResizeSettings: Codable, Equatable, Sendable {
     var mode: ResizeMode = .original
     var percentage: Double = 100
     var width: Double = 1920
@@ -37,4 +37,23 @@ struct ConversionSettings: Sendable {
     var quality: Double = 0.8
     var resizeSettings = ResizeSettings()
     var outputFolder: URL?
+}
+
+struct ConversionPreset: Codable, Identifiable, Equatable, Sendable {
+    let id: UUID
+    var name: String
+    var quality: Double
+    var resizeSettings: ResizeSettings
+
+    init(
+        id: UUID = UUID(),
+        name: String,
+        quality: Double,
+        resizeSettings: ResizeSettings
+    ) {
+        self.id = id
+        self.name = name
+        self.quality = quality
+        self.resizeSettings = resizeSettings
+    }
 }

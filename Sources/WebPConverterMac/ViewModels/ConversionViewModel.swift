@@ -26,6 +26,8 @@ final class ConversionViewModel: ObservableObject {
     @Published var globalError: String?
     @Published private(set) var isConverting = false
     @Published private(set) var progress: Double = 0
+    @Published private(set) var presets: [ConversionPreset] = []
+    @Published var selectedPresetID: UUID?
 
     @Published var currentSortColumn: SortColumn?
     @Published var currentSortDirection: SortDirection = .none
@@ -37,9 +39,16 @@ final class ConversionViewModel: ObservableObject {
 
     private let fileService = FileService()
     private let conversionService = ImageConversionService()
+    private let presetStore: ConversionPresetStore
 
     var canConvert: Bool { !items.isEmpty && settings.outputFolder != nil && !isConverting }
     var nativeWebPAvailable: Bool { conversionService.isNativeWebPEncodingAvailable }
+
+    init(presetStore: ConversionPresetStore = ConversionPresetStore()) {
+        self.presetStore = presetStore
+        presets = presetStore.loadPresets()
+        selectedPresetID = matchingPresetID(for: settings)
+    }
 
     var sortedItems: [FileConversionItem] {
         guard let column = currentSortColumn, currentSortDirection != .none else { return items }
@@ -138,30 +147,77 @@ final class ConversionViewModel: ObservableObject {
         updated.resizeSettings.mode = mode
         if mode == .percentage { updated.resizeSettings.keepAspectRatio = true }
         settings = updated
+        refreshSelectedPreset()
+    }
+
+    func updateQuality(_ quality: Double) {
+        var updated = settings
+        updated.quality = quality
+        settings = updated
+        refreshSelectedPreset()
     }
 
     func updatePercentage(_ percentage: Double) {
         var updated = settings
         updated.resizeSettings.percentage = min(max(percentageRange.lowerBound, percentage), percentageRange.upperBound)
         settings = updated
+        refreshSelectedPreset()
     }
 
     func updateWidth(_ width: Double) {
         var updated = settings
         updated.resizeSettings.width = min(max(dimensionRange.lowerBound, width), dimensionRange.upperBound)
         settings = updated
+        refreshSelectedPreset()
     }
 
     func updateHeight(_ height: Double) {
         var updated = settings
         updated.resizeSettings.height = min(max(dimensionRange.lowerBound, height), dimensionRange.upperBound)
         settings = updated
+        refreshSelectedPreset()
     }
 
     func updateKeepAspectRatio(_ keep: Bool) {
         var updated = settings
         updated.resizeSettings.keepAspectRatio = keep
         settings = updated
+        refreshSelectedPreset()
+    }
+
+    func applyPreset(id: UUID?) {
+        guard let id, let preset = presets.first(where: { $0.id == id }) else {
+            selectedPresetID = nil
+            return
+        }
+
+        let outputFolder = settings.outputFolder
+        settings = ConversionSettings(
+            quality: preset.quality,
+            resizeSettings: preset.resizeSettings,
+            outputFolder: outputFolder
+        )
+        selectedPresetID = preset.id
+    }
+
+    func saveCurrentPreset(named name: String) {
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else {
+            globalError = "Le nom du préréglage ne peut pas être vide."
+            return
+        }
+
+        globalError = nil
+
+        let preset = ConversionPreset(
+            name: trimmedName,
+            quality: settings.quality,
+            resizeSettings: settings.resizeSettings
+        )
+
+        presets.append(preset)
+        presetStore.savePresets(presets)
+        selectedPresetID = preset.id
     }
 
     func updateSelectedItem(id: UUID?) {
@@ -279,6 +335,17 @@ final class ConversionViewModel: ObservableObject {
         previewMessage = message
         originalPreview = nil
         convertedPreview = nil
+    }
+
+    private func refreshSelectedPreset() {
+        selectedPresetID = matchingPresetID(for: settings)
+    }
+
+    private func matchingPresetID(for settings: ConversionSettings) -> UUID? {
+        presets.first {
+            $0.quality == settings.quality &&
+            $0.resizeSettings == settings.resizeSettings
+        }?.id
     }
 
     private func sortAfterColumnKeepingMissingAtBottom() -> [FileConversionItem] {
