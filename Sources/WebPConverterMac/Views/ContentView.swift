@@ -90,20 +90,6 @@ struct ContentView: View {
         }
     }
 
-    @ViewBuilder
-    private var presetDeleteButton: some View {
-        if let selectedPreset = viewModel.selectedPreset, viewModel.canDeleteSelectedPreset {
-            Button(role: .destructive) {
-                presetPendingDeletion = selectedPreset
-            } label: {
-                Label(L10n.text("settings.preset.delete_help", language: currentLanguage), systemImage: "trash")
-            }
-            .buttonStyle(.bordered)
-        }
-    }
-
-    // MARK: - Window and Toolbar
-
     private var windowBackground: some View {
         ZStack {
             Color.nodooBackground
@@ -143,8 +129,6 @@ struct ContentView: View {
         }
         .scrollIndicators(.hidden)
     }
-
-    // MARK: - Sidebar
 
     private var sidebar: some View {
         ScrollView {
@@ -210,7 +194,6 @@ struct ContentView: View {
             presetDeleteButton
         }
     }
-
 
     private var qualitySection: some View {
         sidebarSection(title: L10n.text("settings.quality.label", language: currentLanguage), systemImage: "dial.medium") {
@@ -308,38 +291,6 @@ struct ContentView: View {
         }
     }
 
-    @ViewBuilder
-    private var resizeInputPanel: some View {
-        switch viewModel.settings.resizeSettings.mode {
-        case .percentage:
-            metricInputCard(label: "%", placeholder: "100", text: $percentageInput, onCommit: commitPercentageInput)
-        case .width:
-            metricInputCard(label: "px", placeholder: "1920", text: $widthInput, onCommit: commitWidthInput)
-        case .height:
-            metricInputCard(label: "px", placeholder: "1080", text: $heightInput, onCommit: commitHeightInput)
-        case .original:
-            EmptyView()
-        }
-    }
-
-    private func metricInputCard(label: String, placeholder: String, text: Binding<String>, onCommit: @escaping () -> Void) -> some View {
-        HStack(spacing: 10) {
-            Text(label)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.nodooText.opacity(0.72))
-                .frame(width: 34, alignment: .leading)
-
-            AppKitCommitTextField(
-                placeholder: placeholder,
-                text: text,
-                onCommit: onCommit
-            )
-            .frame(height: 28)
-        }
-        .padding(12)
-        .glassCard(cornerRadius: 16, fillOpacity: 0.05)
-    }
-
     private var languageSection: some View {
         sidebarSection(title: L10n.text("settings.language.section", language: currentLanguage), systemImage: "globe") {
             Picker(L10n.text("settings.language.label", language: currentLanguage), selection: $selectedLanguage) {
@@ -366,6 +317,32 @@ struct ContentView: View {
         }
     }
 
+    @ViewBuilder
+    private var presetDeleteButton: some View {
+        if let selectedPreset = viewModel.selectedPreset, viewModel.canDeleteSelectedPreset {
+            Button(role: .destructive) {
+                presetPendingDeletion = selectedPreset
+            } label: {
+                Label(L10n.text("settings.preset.delete_help", language: currentLanguage), systemImage: "trash")
+            }
+            .buttonStyle(.bordered)
+        }
+    }
+
+    @ViewBuilder
+    private var resizeInputPanel: some View {
+        switch viewModel.settings.resizeSettings.mode {
+        case .percentage:
+            metricInputCard(label: "%", placeholder: "100", text: $percentageInput, onCommit: commitPercentageInput)
+        case .width:
+            metricInputCard(label: "px", placeholder: "1920", text: $widthInput, onCommit: commitWidthInput)
+        case .height:
+            metricInputCard(label: "px", placeholder: "1080", text: $heightInput, onCommit: commitHeightInput)
+        case .original:
+            EmptyView()
+        }
+    }
+
     private func sidebarSection<Content: View>(title: String, systemImage: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             Label(title, systemImage: systemImage)
@@ -382,7 +359,23 @@ struct ContentView: View {
         .glassCard(cornerRadius: 24, fillOpacity: 0.06)
     }
 
-    // MARK: - Main Canvas
+    private func metricInputCard(label: String, placeholder: String, text: Binding<String>, onCommit: @escaping () -> Void) -> some View {
+        HStack(spacing: 10) {
+            Text(label)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.nodooText.opacity(0.72))
+                .frame(width: 34, alignment: .leading)
+
+            AppKitCommitTextField(
+                placeholder: placeholder,
+                text: text,
+                onCommit: onCommit
+            )
+            .frame(height: 28)
+        }
+        .padding(12)
+        .glassCard(cornerRadius: 16, fillOpacity: 0.05)
+    }
 
     private var mainCanvas: some View {
         ScrollView {
@@ -653,28 +646,6 @@ struct ContentView: View {
         .glassCard(cornerRadius: 24, fillOpacity: 0.05)
     }
 
-    private func afterSizeText(for item: FileConversionItem) -> String {
-        switch item.status {
-        case .success(_, let outputSize):
-            return viewModel.formattedSize(outputSize)
-        default:
-            return "-"
-        }
-    }
-
-    private func statusText(for status: FileConversionStatus) -> String {
-        switch status {
-        case .pending:
-            return L10n.text("status.pending", language: currentLanguage)
-        case .processing:
-            return L10n.text("status.processing", language: currentLanguage)
-        case .success:
-            return L10n.text("status.success", language: currentLanguage)
-        case .failure(let message):
-            return message
-        }
-    }
-
     private func statusColor(for status: FileConversionStatus) -> Color {
         switch status {
         case .pending:
@@ -756,15 +727,57 @@ struct ContentView: View {
         .disabled(viewModel.items.isEmpty || viewModel.isConverting)
     }
 
+    private var convertButton: some View {
+        Button(L10n.text("button.convert", language: currentLanguage)) {
+            commitAllResizeInputs()
+            viewModel.convertAll()
+        }
+        .buttonStyle(.borderedProminent)
+        .disabled(viewModel.items.isEmpty || viewModel.isConverting)
+    }
+
     private var progressLabel: String {
         L10n.format("progress.label", language: currentLanguage, Int(viewModel.progress * 100))
+    }
+
+    private func statusText(for status: FileConversionStatus) -> String {
+        switch status {
+        case .pending:
+            return L10n.text("status.pending", language: currentLanguage)
+        case .processing:
+            return L10n.text("status.processing", language: currentLanguage)
+        case .success:
+            return L10n.text("status.success", language: currentLanguage)
+        case .failure(let message):
+            return message
+        }
+    }
+
+    private func statusColor(for status: FileConversionStatus) -> Color {
+        switch status {
+        case .pending:
+            return .nodooText
+        case .processing:
+            return .orange
+        case .success:
+            return .green
+        case .failure:
+            return .red
+        }
+    }
+
+    private func afterSizeText(for item: FileConversionItem) -> String {
+        switch item.status {
+        case .success(_, let outputSize):
+            return viewModel.formattedSize(outputSize)
+        default:
+            return "-"
+        }
     }
 
     private func cycleAppearanceMode() {
         appearanceMode = (appearanceMode + 1) % 3
     }
-
-    // MARK: - Helpers
 
     private func ensureLanguageFallback() {
         if AppLanguage(rawValue: selectedLanguage) == nil {
