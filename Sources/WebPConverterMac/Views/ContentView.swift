@@ -78,10 +78,11 @@ struct ContentView: View {
 
     private var header: some View {
         HStack {
-            VStack(alignment: .leading) {
-                Text("WEBP Converter")
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Orlo — Batch Image Converter")
                     .font(.title.bold())
-                Text("Conversion par lot PNG / JPG / HEIC vers WEBP")
+                Text("Organiser, réduire, lisser, optimiser")
+                    .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
 

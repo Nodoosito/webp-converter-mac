@@ -7,7 +7,7 @@ struct WebPConverterMacApp: App {
     @StateObject private var viewModel = ConversionViewModel()
 
     var body: some Scene {
-        WindowGroup {
+        WindowGroup("Orlo") {
             ContentView(viewModel: viewModel)
                 .frame(minWidth: 980, minHeight: 680)
                 .background(MainWindowConfigurator())
@@ -33,6 +33,7 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
 
+        window.title = "Orlo"
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
     }
@@ -56,6 +57,8 @@ private struct MainWindowConfigurator: NSViewRepresentable {
             if !NSApp.isActive {
                 NSApp.activate(ignoringOtherApps: true)
             }
+
+            window.title = "Orlo"
 
             if !window.isKeyWindow {
                 window.makeKeyAndOrderFront(nil)
