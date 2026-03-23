@@ -21,6 +21,8 @@ struct ContentView: View {
         AppLanguage(rawValue: selectedLanguage) ?? .fallback
     }
 
+    // MARK: - Body
+
     var body: some View {
         NavigationSplitView {
             sidebar
@@ -88,6 +90,8 @@ struct ContentView: View {
         }
     }
 
+    // MARK: - Window and Toolbar
+
     private var windowBackground: some View {
         ZStack {
             Color.nodooBackground
@@ -127,6 +131,8 @@ struct ContentView: View {
         }
         .scrollIndicators(.hidden)
     }
+
+    // MARK: - Sidebar
 
     private var sidebar: some View {
         ScrollView {
@@ -189,14 +195,20 @@ struct ContentView: View {
         }
     }
 
-            if let selectedPreset = viewModel.selectedPreset, viewModel.canDeleteSelectedPreset {
-                Button(role: .destructive) {
-                    presetPendingDeletion = selectedPreset
-                } label: {
-                    Label(L10n.text("settings.preset.delete_help", language: currentLanguage), systemImage: "trash")
-                }
-                .buttonStyle(.bordered)
+            presetDeleteButton
+        }
+    }
+
+
+    @ViewBuilder
+    private var presetDeleteButton: some View {
+        if let selectedPreset = viewModel.selectedPreset, viewModel.canDeleteSelectedPreset {
+            Button(role: .destructive) {
+                presetPendingDeletion = selectedPreset
+            } label: {
+                Label(L10n.text("settings.preset.delete_help", language: currentLanguage), systemImage: "trash")
             }
+            .buttonStyle(.bordered)
         }
     }
 
@@ -369,6 +381,8 @@ struct ContentView: View {
         .padding(18)
         .glassCard(cornerRadius: 24, fillOpacity: 0.06)
     }
+
+    // MARK: - Main Canvas
 
     private var mainCanvas: some View {
         ScrollView {
@@ -674,6 +688,8 @@ struct ContentView: View {
         }
     }
 
+    // MARK: - Footer
+
     private var footer: some View {
         VStack(spacing: 10) {
             if let error = viewModel.globalError {
@@ -740,6 +756,15 @@ struct ContentView: View {
         .disabled(viewModel.items.isEmpty || viewModel.isConverting)
     }
 
+    private var convertButton: some View {
+        Button(L10n.text("button.convert", language: currentLanguage)) {
+            commitAllResizeInputs()
+            viewModel.convertAll()
+        }
+        .buttonStyle(.borderedProminent)
+        .disabled(viewModel.items.isEmpty || viewModel.isConverting)
+    }
+
     private var progressLabel: String {
         L10n.format("progress.label", language: currentLanguage, Int(viewModel.progress * 100))
     }
@@ -747,6 +772,8 @@ struct ContentView: View {
     private func cycleAppearanceMode() {
         appearanceMode = (appearanceMode + 1) % 3
     }
+
+    // MARK: - Helpers
 
     private func ensureLanguageFallback() {
         if AppLanguage(rawValue: selectedLanguage) == nil {
