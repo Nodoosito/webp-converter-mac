@@ -34,7 +34,7 @@ struct ContentView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(windowBackground)
         .tint(.nodooAccent)
-        .foregroundStyle(.nodooAdaptiveText)
+        .foregroundStyle(.nodooText)
         .onAppear {
             syncInputsFromSettings()
             ensureLanguageFallback()
@@ -124,7 +124,7 @@ struct ContentView: View {
                 .font(.system(size: 30, weight: .bold, design: .rounded))
             Text(LocalizedStringKey(L10n.text("app.header.tagline", language: currentLanguage)))
                 .font(.subheadline)
-                .foregroundStyle(.nodooAdaptiveText.opacity(0.72))
+                .foregroundStyle(.nodooText.opacity(0.72))
                 .fixedSize(horizontal: false, vertical: true)
         }
     }
@@ -287,7 +287,7 @@ struct ContentView: View {
         HStack(spacing: 10) {
             Text(label)
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(.nodooAdaptiveText.opacity(0.72))
+                .foregroundStyle(.nodooText.opacity(0.72))
                 .frame(width: 34, alignment: .leading)
 
             AppKitCommitTextField(
@@ -316,7 +316,7 @@ struct ContentView: View {
             VStack(alignment: .leading, spacing: 12) {
                 Text(viewModel.settings.outputFolder?.path ?? L10n.text("settings.output.none", language: currentLanguage))
                     .font(.caption)
-                    .foregroundStyle(.nodooAdaptiveText.opacity(0.72))
+                    .foregroundStyle(.nodooText.opacity(0.72))
                     .lineLimit(2)
                     .truncationMode(.middle)
 
@@ -332,7 +332,7 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 14) {
             Label(title, systemImage: systemImage)
                 .font(.headline)
-                .foregroundStyle(.nodooAdaptiveText)
+                .foregroundStyle(.nodooText)
 
             content()
         }
@@ -362,7 +362,7 @@ struct ContentView: View {
                     .font(.system(size: 22, weight: .semibold, design: .rounded))
                 Text(viewModel.items.isEmpty ? L10n.text("app.header.tagline", language: currentLanguage) : progressLabel)
                     .font(.subheadline)
-                    .foregroundStyle(.nodooAdaptiveText.opacity(0.72))
+                    .foregroundStyle(.nodooText.opacity(0.72))
             }
 
             Spacer()
@@ -390,7 +390,7 @@ struct ContentView: View {
                 .font(.title3.weight(.semibold))
 
             Text(LocalizedStringKey(L10n.text("app.header.tagline", language: currentLanguage)))
-                .foregroundStyle(.nodooAdaptiveText.opacity(0.68))
+                .foregroundStyle(.nodooText.opacity(0.68))
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 500)
         }
@@ -436,7 +436,7 @@ struct ContentView: View {
                 .font(.headline)
             Text(LocalizedStringKey(L10n.text("app.header.tagline", language: currentLanguage)))
                 .font(.callout)
-                .foregroundStyle(.nodooAdaptiveText.opacity(0.68))
+                .foregroundStyle(.nodooText.opacity(0.68))
         }
         .frame(maxWidth: .infinity)
         .frame(minHeight: 180)
@@ -452,7 +452,7 @@ struct ContentView: View {
             sortHeader(L10n.text("table.status", language: currentLanguage), column: .status, width: columnWidths[4], alignment: .leading)
             Text(L10n.text("table.action", language: currentLanguage))
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(.nodooAdaptiveText.opacity(0.62))
+                .foregroundStyle(.nodooText.opacity(0.62))
                 .frame(width: columnWidths[5], alignment: .center)
         }
         .padding(.horizontal, 16)
@@ -465,7 +465,7 @@ struct ContentView: View {
             HStack(spacing: 4) {
                 Text(title)
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(.nodooAdaptiveText.opacity(0.62))
+                    .foregroundStyle(.nodooText.opacity(0.62))
                 Spacer(minLength: 0)
                 if let symbol = viewModel.sortIndicator(for: column) {
                     Image(systemName: symbol)
@@ -486,7 +486,7 @@ struct ContentView: View {
                     .font(.headline)
                 Text(item.inputURL.path)
                     .font(.caption)
-                    .foregroundStyle(.nodooAdaptiveText.opacity(0.6))
+                    .foregroundStyle(.nodooText.opacity(0.6))
                     .lineLimit(1)
                     .truncationMode(.middle)
             }
@@ -501,7 +501,7 @@ struct ContentView: View {
                 .frame(width: columnWidths[2], alignment: .trailing)
 
             Text(viewModel.formattedGain(for: item))
-                .foregroundStyle(.nodooAdaptiveText.opacity(0.72))
+                .foregroundStyle(.nodooText.opacity(0.72))
                 .frame(width: columnWidths[3], alignment: .trailing)
 
             statusView(for: item.status)
@@ -557,7 +557,7 @@ struct ContentView: View {
                         .fill(Color.white.opacity(0.04))
                         .overlay(
                             Text(viewModel.previewMessage)
-                                .foregroundStyle(.nodooAdaptiveText.opacity(0.65))
+                                .foregroundStyle(.nodooText.opacity(0.65))
                                 .font(.caption)
                                 .multilineTextAlignment(.center)
                                 .padding(10)
@@ -569,14 +569,14 @@ struct ContentView: View {
             VStack(alignment: .leading, spacing: 2) {
                 if let info {
                     Text(L10n.format("preview.size", language: currentLanguage, viewModel.formattedSize(info.fileSize)))
-                        .foregroundStyle(.nodooAdaptiveText.opacity(0.72))
+                        .foregroundStyle(.nodooText.opacity(0.72))
                     if let dimensions = info.dimensions {
                         Text(L10n.format("preview.dimensions", language: currentLanguage, Int(dimensions.width), Int(dimensions.height)))
-                            .foregroundStyle(.nodooAdaptiveText.opacity(0.72))
+                            .foregroundStyle(.nodooText.opacity(0.72))
                     }
                     if let gainText, gainText != "-" {
                         Text(L10n.format("preview.gain", language: currentLanguage, gainText))
-                            .foregroundStyle(.nodooAdaptiveText.opacity(0.72))
+                            .foregroundStyle(.nodooText.opacity(0.72))
                     }
                 }
             }
@@ -600,7 +600,7 @@ struct ContentView: View {
     private func statusView(for status: FileConversionStatus) -> some View {
         switch status {
         case .pending:
-            Text(L10n.text("status.pending", language: currentLanguage)).foregroundStyle(.nodooAdaptiveText.opacity(0.68))
+            Text(L10n.text("status.pending", language: currentLanguage)).foregroundStyle(.nodooText.opacity(0.68))
         case .processing:
             Text(L10n.text("status.processing", language: currentLanguage)).foregroundStyle(.orange)
         case .success:
@@ -624,14 +624,14 @@ struct ContentView: View {
                         .tint(.nodooAccent)
                         .frame(maxWidth: 240)
                     Text(progressLabel)
-                        .foregroundStyle(.nodooAdaptiveText.opacity(0.72))
+                        .foregroundStyle(.nodooText.opacity(0.72))
                     Button(L10n.text("button.stop", language: currentLanguage)) {
                         viewModel.stopConversion()
                     }
                     .buttonStyle(.bordered)
                 } else {
                     Text(progressLabel)
-                        .foregroundStyle(.nodooAdaptiveText.opacity(0.72))
+                        .foregroundStyle(.nodooText.opacity(0.72))
                 }
 
                 Spacer()

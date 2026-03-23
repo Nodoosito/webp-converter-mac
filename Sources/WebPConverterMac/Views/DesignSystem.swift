@@ -2,23 +2,29 @@ import AppKit
 import SwiftUI
 
 extension Color {
-    static let nodooBackground = Color("nodooBackground", bundle: .module)
-    static let nodooAccent = Color("nodooAccent", bundle: .module)
-    static let nodooSecondary = Color("nodooSecondary", bundle: .module)
-    static let nodooText = Color("nodooText", bundle: .module)
+    init(hex: String) {
+        let sanitized = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var value: UInt64 = 0
+        Scanner(string: sanitized).scanHexInt64(&value)
 
-    static let nodooAdaptiveText = Color(
-        nsColor: NSColor(name: nil) { appearance in
-            let bestMatch = appearance.bestMatch(from: [.darkAqua, .aqua])
-            switch bestMatch {
-            case .aqua:
-                return NSColor(calibratedRed: 11 / 255, green: 19 / 255, blue: 32 / 255, alpha: 1)
-            default:
-                return NSColor(named: NSColor.Name("nodooText"), bundle: .module)
-                    ?? NSColor(calibratedWhite: 0.91, alpha: 1)
-            }
-        }
-    )
+        let red = Double((value >> 16) & 0xFF) / 255
+        let green = Double((value >> 8) & 0xFF) / 255
+        let blue = Double(value & 0xFF) / 255
+
+        self.init(red: red, green: green, blue: blue)
+    }
+
+    static var nodooBackground: Color { Color(hex: "#050912") }
+    static var nodooAccent: Color { Color(hex: "#8db3ce") }
+    static var nodooSecondary: Color { Color(hex: "#4b708c") }
+    static var nodooText: Color { Color(hex: "#e6e8e9") }
+}
+
+extension ShapeStyle where Self == Color {
+    static var nodooBackground: Color { Color(hex: "#050912") }
+    static var nodooAccent: Color { Color(hex: "#8db3ce") }
+    static var nodooSecondary: Color { Color(hex: "#4b708c") }
+    static var nodooText: Color { Color(hex: "#e6e8e9") }
 }
 
 struct WindowBlurView: NSViewRepresentable {

@@ -19,7 +19,7 @@ struct LanguageSelectionView: View {
                     Text(L10n.text("language.selection.title"))
                         .font(.title3.weight(.semibold))
                     Text(L10n.text("language.selection.subtitle"))
-                        .foregroundStyle(.nodooAdaptiveText.opacity(0.72))
+                        .foregroundStyle(.nodooText.opacity(0.72))
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: 420)
                 }
@@ -33,7 +33,7 @@ struct LanguageSelectionView: View {
             .glassCard(cornerRadius: 28, fillOpacity: 0.14)
             .padding(32)
         }
-        .foregroundStyle(.nodooAdaptiveText)
+        .foregroundStyle(.nodooText)
         .tint(.nodooAccent)
     }
 
