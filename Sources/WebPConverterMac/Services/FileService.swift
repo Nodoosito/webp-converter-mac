@@ -59,7 +59,14 @@ struct FileService {
     }
 
     func uniqueOutputURL(for inputURL: URL, in outputFolder: URL, pathExtension: String = "webp") -> URL {
-        let baseName = inputURL.deletingPathExtension().lastPathComponent
+        uniqueOutputURL(
+            forBaseName: inputURL.deletingPathExtension().lastPathComponent,
+            in: outputFolder,
+            pathExtension: pathExtension
+        )
+    }
+
+    func uniqueOutputURL(forBaseName baseName: String, in outputFolder: URL, pathExtension: String = "webp") -> URL {
         var candidate = outputFolder
             .appendingPathComponent(baseName)
             .appendingPathExtension(pathExtension)
