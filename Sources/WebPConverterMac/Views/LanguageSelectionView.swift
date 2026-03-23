@@ -4,26 +4,37 @@ struct LanguageSelectionView: View {
     @Binding var selectedLanguage: String
 
     var body: some View {
-        VStack(spacing: 20) {
-            VStack(spacing: 8) {
-                Text(L10n.text("app.name"))
-                    .font(.largeTitle.bold())
-                Text(L10n.text("language.selection.title"))
-                    .font(.title3.weight(.semibold))
-                Text(L10n.text("language.selection.subtitle"))
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: 420)
-            }
+        ZStack {
+            Color.nodooBackground
+                .ignoresSafeArea()
 
-            HStack(spacing: 16) {
-                languageButton(code: AppLanguage.fr.rawValue, title: L10n.text("language.selection.french"))
-                languageButton(code: AppLanguage.en.rawValue, title: L10n.text("language.selection.english"))
+            WindowBlurView(material: .underWindowBackground)
+                .ignoresSafeArea()
+                .opacity(0.88)
+
+            VStack(spacing: 24) {
+                VStack(spacing: 10) {
+                    Text(L10n.text("app.name"))
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                    Text(L10n.text("language.selection.title"))
+                        .font(.title3.weight(.semibold))
+                    Text(L10n.text("language.selection.subtitle"))
+                        .foregroundStyle(.nodooText.opacity(0.72))
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: 420)
+                }
+
+                HStack(spacing: 16) {
+                    languageButton(code: AppLanguage.fr.rawValue, title: L10n.text("language.selection.french"))
+                    languageButton(code: AppLanguage.en.rawValue, title: L10n.text("language.selection.english"))
+                }
             }
+            .padding(36)
+            .glassCard(cornerRadius: 28, fillOpacity: 0.14)
+            .padding(32)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(32)
-        .background(.quaternary.opacity(0.2))
+        .foregroundStyle(.nodooText)
+        .tint(.nodooAccent)
     }
 
     private func languageButton(code: String, title: String) -> some View {
@@ -35,5 +46,6 @@ struct LanguageSelectionView: View {
         }
         .buttonStyle(.borderedProminent)
         .controlSize(.large)
+        .tint(.nodooAccent)
     }
 }

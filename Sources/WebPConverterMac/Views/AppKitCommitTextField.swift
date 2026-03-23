@@ -13,14 +13,21 @@ struct AppKitCommitTextField: NSViewRepresentable {
     func makeNSView(context: Context) -> NSTextField {
         let textField = LoggingTextField(string: text)
         textField.placeholderString = placeholder
-        textField.isBordered = true
-        textField.isBezeled = true
+        textField.isBordered = false
+        textField.isBezeled = false
         textField.isEditable = true
         textField.isSelectable = true
         textField.delegate = context.coordinator
         textField.target = context.coordinator
         textField.action = #selector(Coordinator.commitFromAction)
-        textField.focusRingType = .default
+        textField.focusRingType = .none
+        textField.drawsBackground = true
+        textField.backgroundColor = NSColor.windowBackgroundColor.withAlphaComponent(0.18)
+        textField.textColor = NSColor.labelColor
+        textField.placeholderAttributedString = NSAttributedString(
+            string: placeholder,
+            attributes: [.foregroundColor: NSColor.secondaryLabelColor]
+        )
         textField.refusesFirstResponder = false
 
         #if DEBUG
@@ -41,7 +48,12 @@ struct AppKitCommitTextField: NSViewRepresentable {
             nsView.stringValue = text
         }
 
-        nsView.placeholderString = placeholder
+        nsView.placeholderAttributedString = NSAttributedString(
+            string: placeholder,
+            attributes: [.foregroundColor: NSColor.secondaryLabelColor]
+        )
+        nsView.backgroundColor = NSColor.windowBackgroundColor.withAlphaComponent(0.18)
+        nsView.textColor = NSColor.labelColor
         context.coordinator.onCommit = onCommit
     }
 
