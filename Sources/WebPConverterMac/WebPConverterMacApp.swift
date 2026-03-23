@@ -5,12 +5,25 @@ import SwiftUI
 struct WebPConverterMacApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var viewModel = ConversionViewModel()
+    @AppStorage(AppLanguage.storageKey) private var selectedLanguage = ""
+
+    private var effectiveLanguage: AppLanguage {
+        AppLanguage(rawValue: selectedLanguage).map { $0 } ?? .fallback
+    }
 
     var body: some Scene {
-        WindowGroup {
-            ContentView(viewModel: viewModel)
-                .frame(minWidth: 980, minHeight: 680)
-                .background(MainWindowConfigurator())
+        WindowGroup(L10n.text("app.window.title", language: effectiveLanguage)) {
+            Group {
+                if selectedLanguage.isEmpty {
+                    LanguageSelectionView(selectedLanguage: $selectedLanguage)
+                        .environment(\.locale, .init(identifier: effectiveLanguage.rawValue))
+                } else {
+                    ContentView(viewModel: viewModel)
+                        .environment(\.locale, .init(identifier: effectiveLanguage.rawValue))
+                }
+            }
+            .frame(minWidth: 980, minHeight: 680)
+            .background(MainWindowConfigurator())
         }
         .windowResizability(.contentSize)
     }
@@ -33,6 +46,7 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
 
+        window.title = L10n.text("app.window.title", language: .current)
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
     }
@@ -56,6 +70,8 @@ private struct MainWindowConfigurator: NSViewRepresentable {
             if !NSApp.isActive {
                 NSApp.activate(ignoringOtherApps: true)
             }
+
+            window.title = L10n.text("app.window.title", language: .current)
 
             if !window.isKeyWindow {
                 window.makeKeyAndOrderFront(nil)
