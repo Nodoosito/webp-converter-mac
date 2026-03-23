@@ -17,6 +17,10 @@ struct ContentView: View {
 
     private let columnWidths: [CGFloat] = [280, 100, 100, 90, 220, 60]
 
+    private var currentLanguage: AppLanguage {
+        AppLanguage(rawValue: selectedLanguage) ?? .fallback
+    }
+
     var body: some View {
         VStack(spacing: 16) {
             header
@@ -46,7 +50,7 @@ struct ContentView: View {
             return true
         }
         .alert(
-            L10n.text("alert.preset.delete.title"),
+            L10n.text("alert.preset.delete.title", language: currentLanguage),
             isPresented: Binding(
                 get: { presetPendingDeletion != nil },
                 set: { isPresented in
@@ -56,10 +60,10 @@ struct ContentView: View {
                 }
             ),
             actions: {
-                Button(L10n.text("alert.cancel"), role: .cancel) {
+                Button(L10n.text("alert.cancel", language: currentLanguage), role: .cancel) {
                     presetPendingDeletion = nil
                 }
-                Button(L10n.text("alert.delete"), role: .destructive) {
+                Button(L10n.text("alert.delete", language: currentLanguage), role: .destructive) {
                     guard let presetPendingDeletion else { return }
                     viewModel.deletePreset(id: presetPendingDeletion.id)
                     self.presetPendingDeletion = nil
@@ -67,23 +71,23 @@ struct ContentView: View {
             },
             message: {
                 if let presetPendingDeletion {
-                    Text(L10n.format("alert.preset.delete.message", presetPendingDeletion.localizedDisplayName))
+                    Text(L10n.format("alert.preset.delete.message", language: currentLanguage, presetPendingDeletion.localizedDisplayName))
                 }
             }
         )
-        .alert(L10n.text("alert.conversion.complete.title"), isPresented: $viewModel.showCompletionAlert) {
-            Button(L10n.text("alert.ok"), role: .cancel) {}
+        .alert(L10n.text("alert.conversion.complete.title", language: currentLanguage), isPresented: $viewModel.showCompletionAlert) {
+            Button(L10n.text("alert.ok", language: currentLanguage), role: .cancel) {}
         } message: {
-            Text(L10n.format("alert.conversion.complete.message", viewModel.formattedTotalGain))
+            Text(L10n.format("alert.conversion.complete.message", language: currentLanguage, viewModel.formattedTotalGain))
         }
     }
 
     private var header: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text(L10n.text("app.header.title"))
+                Text(L10n.text("app.header.title", language: currentLanguage))
                     .font(.title.bold())
-                Text(L10n.text("app.header.tagline"))
+                Text(LocalizedStringKey(L10n.text("app.header.tagline", language: currentLanguage)))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
@@ -92,7 +96,7 @@ struct ContentView: View {
 
             settingsMenu
 
-            Button(L10n.text("button.add_files")) {
+            Button(L10n.text("button.add_files", language: currentLanguage)) {
                 viewModel.addFilesFromPanel()
             }
         }
@@ -100,10 +104,10 @@ struct ContentView: View {
 
     private var settingsMenu: some View {
         Menu {
-            Section(L10n.text("settings.language.section")) {
-                Picker(L10n.text("settings.language.label"), selection: $selectedLanguage) {
-                    Text(L10n.text("settings.language.french")).tag(AppLanguage.fr.rawValue)
-                    Text(L10n.text("settings.language.english")).tag(AppLanguage.en.rawValue)
+            Section(L10n.text("settings.language.section", language: currentLanguage)) {
+                Picker(L10n.text("settings.language.label", language: currentLanguage), selection: $selectedLanguage) {
+                    Text(L10n.text("settings.language.french", language: currentLanguage)).tag(AppLanguage.fr.rawValue)
+                    Text(L10n.text("settings.language.english", language: currentLanguage)).tag(AppLanguage.en.rawValue)
                 }
             }
         } label: {
@@ -111,17 +115,17 @@ struct ContentView: View {
                 .font(.title3)
         }
         .menuStyle(.borderlessButton)
-        .help(L10n.text("settings.menu"))
+        .help(L10n.text("settings.menu", language: currentLanguage))
     }
 
     private var settingsPanel: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .center, spacing: 12) {
-                Picker(L10n.text("settings.preset.label"), selection: Binding<UUID?>(
+                Picker(L10n.text("settings.preset.label", language: currentLanguage), selection: Binding<UUID?>(
                     get: { viewModel.selectedPresetID },
                     set: { viewModel.applyPreset(id: $0) }
                 )) {
-                    Text(L10n.text("settings.preset.current")).tag(UUID?.none)
+                    Text(L10n.text("settings.preset.current", language: currentLanguage)).tag(UUID?.none)
                     ForEach(viewModel.presets) { preset in
                         Text(viewModel.displayName(for: preset)).tag(Optional(preset.id))
                     }
@@ -134,12 +138,12 @@ struct ContentView: View {
                     } label: {
                         Image(systemName: "trash")
                     }
-                    .help(L10n.text("settings.preset.delete_help"))
+                    .help(L10n.text("settings.preset.delete_help", language: currentLanguage))
                 }
 
-                TextField(L10n.text("settings.preset.new_name.placeholder"), text: $presetNameInput)
+                TextField(L10n.text("settings.preset.new_name.placeholder", language: currentLanguage), text: $presetNameInput)
 
-                Button(L10n.text("button.save")) {
+                Button(L10n.text("button.save", language: currentLanguage)) {
                     commitAllResizeInputs()
                     viewModel.saveCurrentPreset(named: presetNameInput)
                     if viewModel.globalError == nil {
@@ -151,8 +155,8 @@ struct ContentView: View {
 
             HStack {
                 labelWithInfo(
-                    L10n.text("settings.quality.label"),
-                    help: L10n.text("settings.quality.help"),
+                    L10n.text("settings.quality.label", language: currentLanguage),
+                    help: L10n.text("settings.quality.help", language: currentLanguage),
                     isPresented: $isQualityHelpPresented
                 )
 
@@ -177,8 +181,8 @@ struct ContentView: View {
                 )
             ) {
                 labelWithInfo(
-                    L10n.text("settings.metadata.label"),
-                    help: L10n.text("settings.metadata.help"),
+                    L10n.text("settings.metadata.label", language: currentLanguage),
+                    help: L10n.text("settings.metadata.help", language: currentLanguage),
                     isPresented: $isMetadataHelpPresented
                 )
             }
@@ -186,12 +190,12 @@ struct ContentView: View {
 
             HStack {
                 labelWithInfo(
-                    L10n.text("settings.suffix.label"),
-                    help: L10n.text("settings.suffix.help"),
+                    L10n.text("settings.suffix.label", language: currentLanguage),
+                    help: L10n.text("settings.suffix.help", language: currentLanguage),
                     isPresented: $isSuffixHelpPresented
                 )
 
-                Picker(L10n.text("settings.suffix.label"), selection: Binding(
+                Picker(L10n.text("settings.suffix.label", language: currentLanguage), selection: Binding(
                     get: { viewModel.settings.suffixMode },
                     set: { viewModel.updateSuffixMode($0) }
                 )) {
@@ -204,12 +208,12 @@ struct ContentView: View {
 
             HStack {
                 labelWithInfo(
-                    L10n.text("settings.resize.label"),
-                    help: L10n.text("settings.resize.help"),
+                    L10n.text("settings.resize.label", language: currentLanguage),
+                    help: L10n.text("settings.resize.help", language: currentLanguage),
                     isPresented: $isResizeHelpPresented
                 )
 
-                Picker(L10n.text("settings.resize.label"), selection: Binding(
+                Picker(L10n.text("settings.resize.label", language: currentLanguage), selection: Binding(
                     get: { viewModel.settings.resizeSettings.mode },
                     set: { viewModel.updateResizeMode($0) }
                 )) {
@@ -259,7 +263,7 @@ struct ContentView: View {
 
                 if viewModel.settings.resizeSettings.mode == .width ||
                     viewModel.settings.resizeSettings.mode == .height {
-                    Toggle(L10n.text("settings.keep_aspect_ratio"), isOn: Binding(
+                    Toggle(L10n.text("settings.keep_aspect_ratio", language: currentLanguage), isOn: Binding(
                         get: { viewModel.settings.resizeSettings.keepAspectRatio },
                         set: { viewModel.updateKeepAspectRatio($0) }
                     ))
@@ -267,16 +271,16 @@ struct ContentView: View {
             }
 
             HStack {
-                Text(L10n.text("settings.output.label"))
+                Text(L10n.text("settings.output.label", language: currentLanguage))
 
-                Text(viewModel.settings.outputFolder?.path ?? L10n.text("settings.output.none"))
+                Text(viewModel.settings.outputFolder?.path ?? L10n.text("settings.output.none", language: currentLanguage))
                     .lineLimit(1)
                     .truncationMode(.middle)
                     .foregroundStyle(.secondary)
 
                 Spacer()
 
-                Button(L10n.text("button.choose")) {
+                Button(L10n.text("button.choose", language: currentLanguage)) {
                     viewModel.selectOutputFolder()
                 }
             }
@@ -288,12 +292,12 @@ struct ContentView: View {
     private var listPanel: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text(L10n.text("files.section.title"))
+                Text(L10n.text("files.section.title", language: currentLanguage))
                     .font(.headline)
 
                 Spacer()
 
-                Button(L10n.text("button.clear")) {
+                Button(L10n.text("button.clear", language: currentLanguage)) {
                     viewModel.clearAll()
                 }
                 .disabled(viewModel.items.isEmpty || viewModel.isConverting)
@@ -320,12 +324,12 @@ struct ContentView: View {
 
     private var tableHeader: some View {
         HStack(spacing: 12) {
-            sortHeader(L10n.text("table.name"), column: .name, width: columnWidths[0], alignment: .leading)
-            sortHeader(L10n.text("table.before"), column: .beforeSize, width: columnWidths[1], alignment: .trailing)
-            sortHeader(L10n.text("table.after"), column: .afterSize, width: columnWidths[2], alignment: .trailing)
-            sortHeader(L10n.text("table.gain"), column: .gain, width: columnWidths[3], alignment: .trailing)
-            sortHeader(L10n.text("table.status"), column: .status, width: columnWidths[4], alignment: .leading)
-            Text(L10n.text("table.action"))
+            sortHeader(L10n.text("table.name", language: currentLanguage), column: .name, width: columnWidths[0], alignment: .leading)
+            sortHeader(L10n.text("table.before", language: currentLanguage), column: .beforeSize, width: columnWidths[1], alignment: .trailing)
+            sortHeader(L10n.text("table.after", language: currentLanguage), column: .afterSize, width: columnWidths[2], alignment: .trailing)
+            sortHeader(L10n.text("table.gain", language: currentLanguage), column: .gain, width: columnWidths[3], alignment: .trailing)
+            sortHeader(L10n.text("table.status", language: currentLanguage), column: .status, width: columnWidths[4], alignment: .leading)
+            Text(L10n.text("table.action", language: currentLanguage))
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary.opacity(0.85))
                 .frame(width: columnWidths[5], alignment: .center)
@@ -391,9 +395,9 @@ struct ContentView: View {
 
     private var previewPanel: some View {
         HStack(spacing: 12) {
-            previewCard(title: L10n.text("preview.original"), info: viewModel.originalPreview, gainText: nil)
+            previewCard(title: L10n.text("preview.original", language: currentLanguage), info: viewModel.originalPreview, gainText: nil)
             previewCard(
-                title: L10n.text("preview.converted"),
+                title: L10n.text("preview.converted", language: currentLanguage),
                 info: viewModel.convertedPreview,
                 gainText: viewModel.selectedItem.map { viewModel.formattedGain(for: $0) }
             )
@@ -428,14 +432,14 @@ struct ContentView: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 if let info {
-                    Text(L10n.format("preview.size", viewModel.formattedSize(info.fileSize)))
+                    Text(L10n.format("preview.size", language: currentLanguage, viewModel.formattedSize(info.fileSize)))
                         .foregroundStyle(.secondary)
                     if let dimensions = info.dimensions {
-                        Text(L10n.format("preview.dimensions", Int(dimensions.width), Int(dimensions.height)))
+                        Text(L10n.format("preview.dimensions", language: currentLanguage, Int(dimensions.width), Int(dimensions.height)))
                             .foregroundStyle(.secondary)
                     }
                     if let gainText, gainText != "-" {
-                        Text(L10n.format("preview.gain", gainText))
+                        Text(L10n.format("preview.gain", language: currentLanguage, gainText))
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -460,11 +464,11 @@ struct ContentView: View {
     private func statusView(for status: FileConversionStatus) -> some View {
         switch status {
         case .pending:
-            Text(L10n.text("status.pending")).foregroundStyle(.secondary)
+            Text(L10n.text("status.pending", language: currentLanguage)).foregroundStyle(.secondary)
         case .processing:
-            Text(L10n.text("status.processing")).foregroundStyle(.orange)
+            Text(L10n.text("status.processing", language: currentLanguage)).foregroundStyle(.orange)
         case .success:
-            Text(L10n.text("status.success")).foregroundStyle(.green)
+            Text(L10n.text("status.success", language: currentLanguage)).foregroundStyle(.green)
         case .failure(let message):
             Text(message).foregroundStyle(.red).lineLimit(2)
         }
@@ -484,7 +488,7 @@ struct ContentView: View {
                         .frame(maxWidth: 240)
                     Text(progressLabel)
                         .foregroundStyle(.secondary)
-                    Button(L10n.text("button.stop")) {
+                    Button(L10n.text("button.stop", language: currentLanguage)) {
                         viewModel.stopConversion()
                     }
                     .buttonStyle(.bordered)
@@ -495,7 +499,7 @@ struct ContentView: View {
 
                 Spacer()
 
-                Button(L10n.text("button.convert")) {
+                Button(L10n.text("button.convert", language: currentLanguage)) {
                     commitAllResizeInputs()
                     viewModel.convertAll()
                 }
@@ -505,7 +509,7 @@ struct ContentView: View {
     }
 
     private var progressLabel: String {
-        L10n.format("progress.label", Int(viewModel.progress * 100))
+        L10n.format("progress.label", language: currentLanguage, Int(viewModel.progress * 100))
     }
 
     private func ensureLanguageFallback() {

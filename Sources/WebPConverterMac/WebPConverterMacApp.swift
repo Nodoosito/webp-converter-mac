@@ -12,16 +12,17 @@ struct WebPConverterMacApp: App {
     }
 
     var body: some Scene {
-        WindowGroup(L10n.text("app.window.title")) {
+        WindowGroup(L10n.text("app.window.title", language: effectiveLanguage)) {
             Group {
                 if selectedLanguage.isEmpty {
                     LanguageSelectionView(selectedLanguage: $selectedLanguage)
+                        .environment(\.locale, .init(identifier: effectiveLanguage.rawValue))
                 } else {
                     ContentView(viewModel: viewModel)
+                        .environment(\.locale, .init(identifier: effectiveLanguage.rawValue))
                 }
             }
             .frame(minWidth: 980, minHeight: 680)
-            .environment(\.locale, effectiveLanguage.locale)
             .background(MainWindowConfigurator())
         }
         .windowResizability(.contentSize)
@@ -45,7 +46,7 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
 
-        window.title = L10n.text("app.window.title")
+        window.title = L10n.text("app.window.title", language: .current)
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
     }
@@ -70,7 +71,7 @@ private struct MainWindowConfigurator: NSViewRepresentable {
                 NSApp.activate(ignoringOtherApps: true)
             }
 
-            window.title = L10n.text("app.window.title")
+            window.title = L10n.text("app.window.title", language: .current)
 
             if !window.isKeyWindow {
                 window.makeKeyAndOrderFront(nil)
