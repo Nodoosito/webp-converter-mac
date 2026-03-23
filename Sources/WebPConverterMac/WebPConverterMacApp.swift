@@ -22,7 +22,7 @@ struct WebPConverterMacApp: App {
                         .environment(\.locale, .init(identifier: effectiveLanguage.rawValue))
                 }
             }
-            .frame(minWidth: 980, minHeight: 680)
+            .frame(minWidth: 1180, minHeight: 760)
             .background(MainWindowConfigurator())
         }
         .windowResizability(.contentSize)
@@ -72,6 +72,10 @@ private struct MainWindowConfigurator: NSViewRepresentable {
             }
 
             window.title = L10n.text("app.window.title", language: .current)
+            window.isOpaque = false
+            window.backgroundColor = .clear
+            window.titlebarAppearsTransparent = true
+            window.toolbarStyle = .unifiedCompact
 
             if !window.isKeyWindow {
                 window.makeKeyAndOrderFront(nil)
