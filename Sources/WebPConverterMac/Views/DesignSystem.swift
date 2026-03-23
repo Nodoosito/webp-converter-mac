@@ -6,20 +6,19 @@ extension Color {
     static let nodooAccent = Color("nodooAccent", bundle: .module)
     static let nodooSecondary = Color("nodooSecondary", bundle: .module)
     static let nodooText = Color("nodooText", bundle: .module)
-}
 
-extension ShapeStyle where Self == Color {
-    static var nodooAdaptiveText: Color {
-        Color(nsColor: NSColor { appearance in
+    static let nodooAdaptiveText = Color(
+        nsColor: NSColor(name: nil) { appearance in
             let bestMatch = appearance.bestMatch(from: [.darkAqua, .aqua])
             switch bestMatch {
             case .aqua:
                 return NSColor(calibratedRed: 11 / 255, green: 19 / 255, blue: 32 / 255, alpha: 1)
             default:
-                return NSColor(named: NSColor.Name("nodooText"), bundle: .module) ?? NSColor(calibratedWhite: 0.91, alpha: 1)
+                return NSColor(named: NSColor.Name("nodooText"), bundle: .module)
+                    ?? NSColor(calibratedWhite: 0.91, alpha: 1)
             }
-        })
-    }
+        }
+    )
 }
 
 struct WindowBlurView: NSViewRepresentable {
@@ -49,18 +48,22 @@ struct GlassCardModifier: ViewModifier {
     var fillOpacity: Double = 0.14
     var strokeOpacity: Double = 0.2
 
+    private var shape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+    }
+
     func body(content: Content) -> some View {
         content
             .background(
-                ZStack {
-                    WindowBlurView(material: .hudWindow, blendingMode: .withinWindow)
-                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .fill(Color.white.opacity(fillOpacity))
-                }
-                .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+                WindowBlurView(material: .hudWindow, blendingMode: .withinWindow)
+                    .overlay(
+                        shape
+                            .fill(Color.white.opacity(fillOpacity))
+                    )
+                    .clipShape(shape)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                shape
                     .stroke(Color.nodooSecondary.opacity(strokeOpacity), lineWidth: 1)
             )
     }
