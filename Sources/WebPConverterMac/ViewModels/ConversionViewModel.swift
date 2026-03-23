@@ -20,12 +20,16 @@ final class ConversionViewModel: ObservableObject {
 
     private let percentageRange: ClosedRange<Double> = 1...100
     private let dimensionRange: ClosedRange<Double> = 1...20_000
+    private let outputFolderDefaultsKey = "selectedOutputFolderPath"
 
     @Published private(set) var items: [FileConversionItem] = []
     @Published var settings = ConversionSettings()
     @Published var globalError: String?
     @Published private(set) var isConverting = false
     @Published private(set) var progress: Double = 0
+    @Published var showCompletionAlert = false
+    @Published private(set) var presets: [ConversionPreset] = []
+    @Published var selectedPresetID: UUID?
 
     @Published var currentSortColumn: SortColumn?
     @Published var currentSortDirection: SortDirection = .none
@@ -37,9 +41,46 @@ final class ConversionViewModel: ObservableObject {
 
     private let fileService = FileService()
     private let conversionService = ImageConversionService()
+    private let presetStore: ConversionPresetStore
+    private let userDefaults: UserDefaults
+    private var conversionTask: Task<Void, Never>?
 
     var canConvert: Bool { !items.isEmpty && settings.outputFolder != nil && !isConverting }
     var nativeWebPAvailable: Bool { conversionService.isNativeWebPEncodingAvailable }
+    var totalGainInMegabytes: Double {
+        let successfulItems = items.compactMap { item -> (inputSize: Int64, outputSize: Int64)? in
+            guard case .success(_, let outputSize) = item.status else { return nil }
+            return (item.inputSize, outputSize)
+        }
+
+        let totalInputSize = successfulItems.reduce(Int64(0)) { $0 + $1.inputSize }
+        let totalOutputSize = successfulItems.reduce(Int64(0)) { $0 + $1.outputSize }
+        return Double(totalInputSize - totalOutputSize) / 1_048_576
+    }
+    var formattedTotalGain: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 2
+        formatter.maximumFractionDigits = 2
+        let formattedValue = formatter.string(from: NSNumber(value: totalGainInMegabytes)) ?? "0.00"
+        return "\(formattedValue) Mo"
+    }
+    var selectedPreset: ConversionPreset? {
+        guard let selectedPresetID else { return nil }
+        return presets.first(where: { $0.id == selectedPresetID })
+    }
+    var canDeleteSelectedPreset: Bool { selectedPreset?.isSystemPreset == false }
+
+    init(
+        presetStore: ConversionPresetStore = ConversionPresetStore(),
+        userDefaults: UserDefaults = .standard
+    ) {
+        self.presetStore = presetStore
+        self.userDefaults = userDefaults
+        presets = presetStore.loadPresets()
+        settings.outputFolder = restoredOutputFolder()
+        selectedPresetID = matchingPresetID(for: settings)
+    }
 
     var sortedItems: [FileConversionItem] {
         guard let column = currentSortColumn, currentSortDirection != .none else { return items }
@@ -117,14 +158,24 @@ final class ConversionViewModel: ObservableObject {
     }
 
     func clearAll() {
+        stopConversion()
         items.removeAll()
         progress = 0
         globalError = nil
+        showCompletionAlert = false
         selectedItemID = nil
         clearPreviewState(message: "Sélectionnez un fichier pour voir l'aperçu")
     }
 
-    func selectOutputFolder() { settings.outputFolder = fileService.openOutputFolderPanel() }
+    func selectOutputFolder() {
+        guard let outputFolder = fileService.openOutputFolderPanel() else { return }
+        settings.outputFolder = outputFolder
+        persistOutputFolder(outputFolder)
+    }
+
+    func stopConversion() {
+        conversionTask?.cancel()
+    }
 
     func handleDrop(providers: [NSItemProvider]) {
         Task {
@@ -138,30 +189,119 @@ final class ConversionViewModel: ObservableObject {
         updated.resizeSettings.mode = mode
         if mode == .percentage { updated.resizeSettings.keepAspectRatio = true }
         settings = updated
+        refreshSelectedPreset()
+    }
+
+    func updateQuality(_ quality: Double) {
+        var updated = settings
+        updated.quality = quality
+        settings = updated
+        refreshSelectedPreset()
     }
 
     func updatePercentage(_ percentage: Double) {
         var updated = settings
         updated.resizeSettings.percentage = min(max(percentageRange.lowerBound, percentage), percentageRange.upperBound)
         settings = updated
+        refreshSelectedPreset()
     }
 
     func updateWidth(_ width: Double) {
         var updated = settings
         updated.resizeSettings.width = min(max(dimensionRange.lowerBound, width), dimensionRange.upperBound)
         settings = updated
+        refreshSelectedPreset()
     }
 
     func updateHeight(_ height: Double) {
         var updated = settings
         updated.resizeSettings.height = min(max(dimensionRange.lowerBound, height), dimensionRange.upperBound)
         settings = updated
+        refreshSelectedPreset()
     }
 
     func updateKeepAspectRatio(_ keep: Bool) {
         var updated = settings
         updated.resizeSettings.keepAspectRatio = keep
         settings = updated
+        refreshSelectedPreset()
+    }
+
+    func updateRemoveMetadata(_ removeMetadata: Bool) {
+        var updated = settings
+        updated.removeMetadata = removeMetadata
+        settings = updated
+        refreshSelectedPreset()
+    }
+
+    func updateSuffixMode(_ suffixMode: SuffixMode) {
+        var updated = settings
+        updated.suffixMode = suffixMode
+        settings = updated
+        refreshSelectedPreset()
+    }
+
+    func applyPreset(id: UUID?) {
+        guard let id, let preset = presets.first(where: { $0.id == id }) else {
+            selectedPresetID = nil
+            return
+        }
+
+        let outputFolder = settings.outputFolder
+        settings = ConversionSettings(
+            quality: preset.quality,
+            resizeSettings: preset.resizeSettings,
+            outputFolder: outputFolder,
+            removeMetadata: preset.removeMetadata,
+            suffixMode: preset.suffixMode,
+            selectedPresetName: preset.name
+        )
+        selectedPresetID = preset.id
+    }
+
+    func saveCurrentPreset(named name: String) {
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else {
+            globalError = "Le nom du préréglage ne peut pas être vide."
+            return
+        }
+        guard !presetStore.isProtectedPresetName(trimmedName) else {
+            globalError = "Ce nom est réservé à un préréglage par défaut."
+            return
+        }
+
+        globalError = nil
+
+        let preset = ConversionPreset(
+            name: trimmedName,
+            quality: settings.quality,
+            resizeSettings: settings.resizeSettings,
+            removeMetadata: settings.removeMetadata,
+            suffixMode: settings.suffixMode
+        )
+
+        presets.append(preset)
+        presetStore.savePresets(presets)
+        selectedPresetID = preset.id
+    }
+
+    func deletePreset(id: UUID) {
+        guard
+            let preset = presets.first(where: { $0.id == id }),
+            !preset.isSystemPreset,
+            !presetStore.isProtectedPresetName(preset.name)
+        else {
+            return
+        }
+
+        presets = presetStore.deletePreset(id: id, from: presets)
+
+        if selectedPresetID == id {
+            applyDefaultPreset()
+            return
+        }
+
+        refreshSelectedPreset()
     }
 
     func updateSelectedItem(id: UUID?) {
@@ -176,27 +316,45 @@ final class ConversionViewModel: ObservableObject {
         }
 
         globalError = nil
+        showCompletionAlert = false
         isConverting = true
         progress = 0
         for index in items.indices { items[index].status = .pending }
 
         let itemsToConvert = items
-        let settingsSnapshot = settings
+        var settingsSnapshot = settings
+        settingsSnapshot.selectedPresetName = selectedPreset?.name
         let conversionService = self.conversionService
 
-        Task { @MainActor [weak self, itemsToConvert, settingsSnapshot, outputFolder, conversionService] in
+        conversionTask?.cancel()
+        conversionTask = Task { @MainActor [weak self, itemsToConvert, settingsSnapshot, outputFolder, conversionService] in
             guard let self else { return }
+            defer { self.conversionTask = nil }
 
             let total = itemsToConvert.count
             var converted = 0
 
             for item in itemsToConvert {
+                if Task.isCancelled {
+                    self.finishStoppedConversion()
+                    return
+                }
+
                 self.updateStatus(.processing, for: item.id)
                 do {
                     let result = try await Task.detached(priority: .userInitiated) {
                         try conversionService.convert(inputURL: item.inputURL, settings: settingsSnapshot, outputFolder: outputFolder)
                     }.value
+
+                    if Task.isCancelled {
+                        self.finishStoppedConversion()
+                        return
+                    }
+
                     self.updateStatus(.success(outputURL: result.outputURL, outputSize: result.outputSize), for: item.id)
+                } catch is CancellationError {
+                    self.finishStoppedConversion()
+                    return
                 } catch {
                     self.updateStatus(.failure(message: error.localizedDescription), for: item.id)
                 }
@@ -206,6 +364,7 @@ final class ConversionViewModel: ObservableObject {
             }
 
             self.isConverting = false
+            self.showCompletionAlert = true
         }
     }
 
@@ -279,6 +438,50 @@ final class ConversionViewModel: ObservableObject {
         previewMessage = message
         originalPreview = nil
         convertedPreview = nil
+    }
+
+    private func persistOutputFolder(_ url: URL) {
+        userDefaults.set(url.path, forKey: outputFolderDefaultsKey)
+    }
+
+    private func restoredOutputFolder() -> URL? {
+        guard let savedPath = userDefaults.string(forKey: outputFolderDefaultsKey) else {
+            return nil
+        }
+
+        var isDirectory = ObjCBool(false)
+        guard FileManager.default.fileExists(atPath: savedPath, isDirectory: &isDirectory), isDirectory.boolValue else {
+            userDefaults.removeObject(forKey: outputFolderDefaultsKey)
+            return nil
+        }
+
+        return URL(fileURLWithPath: savedPath, isDirectory: true)
+    }
+
+    private func finishStoppedConversion() {
+        isConverting = false
+        showCompletionAlert = false
+        globalError = "Traitement arrêté."
+    }
+
+    private var defaultPresetID: UUID? {
+        presets.first(where: { $0.name == ConversionPresetStore.defaultPresetName })?.id
+    }
+
+    private func applyDefaultPreset() {
+        applyPreset(id: defaultPresetID)
+    }
+
+    private func refreshSelectedPreset() {
+        selectedPresetID = matchingPresetID(for: settings)
+    }
+
+    private func matchingPresetID(for settings: ConversionSettings) -> UUID? {
+        presets.first {
+            $0.quality == settings.quality &&
+            $0.resizeSettings == settings.resizeSettings &&
+            $0.removeMetadata == settings.removeMetadata
+        }?.id
     }
 
     private func sortAfterColumnKeepingMissingAtBottom() -> [FileConversionItem] {
