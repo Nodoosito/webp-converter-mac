@@ -14,17 +14,41 @@ extension Color {
         self.init(red: red, green: green, blue: blue)
     }
 
-    static var nodooBackground: Color { Color(hex: "#050912") }
+    static var nodooBackground: Color {
+        Color(
+            nsColor: NSColor(name: nil) { appearance in
+                let bestMatch = appearance.bestMatch(from: [.darkAqua, .aqua])
+                if bestMatch == .darkAqua {
+                    return NSColor(calibratedRed: 5 / 255, green: 9 / 255, blue: 18 / 255, alpha: 1)
+                }
+
+                return NSColor(calibratedRed: 243 / 255, green: 246 / 255, blue: 250 / 255, alpha: 1)
+            }
+        )
+    }
+
     static var nodooAccent: Color { Color(hex: "#8db3ce") }
     static var nodooSecondary: Color { Color(hex: "#4b708c") }
-    static var nodooText: Color { Color(hex: "#e6e8e9") }
+
+    static var nodooText: Color {
+        Color(
+            nsColor: NSColor(name: nil) { appearance in
+                let bestMatch = appearance.bestMatch(from: [.darkAqua, .aqua])
+                if bestMatch == .darkAqua {
+                    return NSColor.white
+                }
+
+                return NSColor(calibratedRed: 11 / 255, green: 19 / 255, blue: 32 / 255, alpha: 1)
+            }
+        )
+    }
 }
 
 extension ShapeStyle where Self == Color {
-    static var nodooBackground: Color { Color(hex: "#050912") }
-    static var nodooAccent: Color { Color(hex: "#8db3ce") }
-    static var nodooSecondary: Color { Color(hex: "#4b708c") }
-    static var nodooText: Color { Color(hex: "#e6e8e9") }
+    static var nodooBackground: Color { Color.nodooBackground }
+    static var nodooAccent: Color { Color.nodooAccent }
+    static var nodooSecondary: Color { Color.nodooSecondary }
+    static var nodooText: Color { Color.nodooText }
 }
 
 struct WindowBlurView: NSViewRepresentable {
@@ -51,7 +75,7 @@ struct WindowBlurView: NSViewRepresentable {
 
 struct GlassCardModifier: ViewModifier {
     var cornerRadius: CGFloat = 20
-    var fillOpacity: Double = 0.14
+    var fillOpacity: Double = 0.08
     var strokeOpacity: Double = 0.2
 
     private var shape: RoundedRectangle {
@@ -60,13 +84,10 @@ struct GlassCardModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .background(
-                WindowBlurView(material: .hudWindow, blendingMode: .withinWindow)
-                    .overlay(
-                        shape
-                            .fill(Color.white.opacity(fillOpacity))
-                    )
-                    .clipShape(shape)
+            .background(.thinMaterial, in: shape)
+            .overlay(
+                shape
+                    .fill(Color.white.opacity(fillOpacity))
             )
             .overlay(
                 shape
@@ -76,7 +97,7 @@ struct GlassCardModifier: ViewModifier {
 }
 
 extension View {
-    func glassCard(cornerRadius: CGFloat = 20, fillOpacity: Double = 0.14, strokeOpacity: Double = 0.2) -> some View {
+    func glassCard(cornerRadius: CGFloat = 20, fillOpacity: Double = 0.08, strokeOpacity: Double = 0.2) -> some View {
         modifier(GlassCardModifier(cornerRadius: cornerRadius, fillOpacity: fillOpacity, strokeOpacity: strokeOpacity))
     }
 }
