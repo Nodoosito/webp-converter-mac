@@ -3,6 +3,7 @@ import UniformTypeIdentifiers
 
 struct ContentView: View {
     @ObservedObject var viewModel: ConversionViewModel
+    @AppStorage(AppLanguage.storageKey) private var selectedLanguage = AppLanguage.fallback.rawValue
 
     @State private var presetPendingDeletion: ConversionPreset?
     @State private var presetNameInput = ""
@@ -26,6 +27,16 @@ struct ContentView: View {
         .padding(20)
         .onAppear {
             syncInputsFromSettings()
+            ensureLanguageFallback()
+        }
+        .onChange(of: viewModel.settings.resizeSettings.percentage) { _ in
+            syncInputsFromSettings()
+        }
+        .onChange(of: viewModel.settings.resizeSettings.width) { _ in
+            syncInputsFromSettings()
+        }
+        .onChange(of: viewModel.settings.resizeSettings.height) { _ in
+            syncInputsFromSettings()
         }
         .onChange(of: viewModel.settings.resizeSettings.percentage) { _ in
             syncInputsFromSettings()
@@ -44,7 +55,7 @@ struct ContentView: View {
             return true
         }
         .alert(
-            "Supprimer le préréglage ?",
+            L10n.text("alert.preset.delete.title"),
             isPresented: Binding(
                 get: { presetPendingDeletion != nil },
                 set: { isPresented in
@@ -54,10 +65,10 @@ struct ContentView: View {
                 }
             ),
             actions: {
-                Button("Annuler", role: .cancel) {
+                Button(L10n.text("alert.cancel"), role: .cancel) {
                     presetPendingDeletion = nil
                 }
-                Button("Supprimer", role: .destructive) {
+                Button(L10n.text("alert.delete"), role: .destructive) {
                     guard let presetPendingDeletion else { return }
                     viewModel.deletePreset(id: presetPendingDeletion.id)
                     self.presetPendingDeletion = nil
@@ -65,45 +76,63 @@ struct ContentView: View {
             },
             message: {
                 if let presetPendingDeletion {
-                    Text("Le préréglage “\(presetPendingDeletion.name)” sera supprimé définitivement.")
+                    Text(L10n.format("alert.preset.delete.message", presetPendingDeletion.localizedDisplayName))
                 }
             }
         )
-        .alert("Traitement terminé", isPresented: $viewModel.showCompletionAlert) {
-            Button("OK", role: .cancel) {}
+        .alert(L10n.text("alert.conversion.complete.title"), isPresented: $viewModel.showCompletionAlert) {
+            Button(L10n.text("alert.ok"), role: .cancel) {}
         } message: {
-            Text("Traitement terminé. Gain total : \(viewModel.formattedTotalGain)")
+            Text(L10n.format("alert.conversion.complete.message", viewModel.formattedTotalGain))
         }
     }
 
     private var header: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text("Orlo — Batch Image Converter")
+                Text(L10n.text("app.header.title"))
                     .font(.title.bold())
-                Text("Organiser, réduire, lisser, optimiser")
+                Text(L10n.text("app.header.tagline"))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
 
             Spacer()
 
-            Button("Ajouter des fichiers") {
+            settingsMenu
+
+            Button(L10n.text("button.add_files")) {
                 viewModel.addFilesFromPanel()
             }
         }
     }
 
+    private var settingsMenu: some View {
+        Menu {
+            Section(L10n.text("settings.language.section")) {
+                Picker(L10n.text("settings.language.label"), selection: $selectedLanguage) {
+                    Text(L10n.text("settings.language.french")).tag(AppLanguage.fr.rawValue)
+                    Text(L10n.text("settings.language.english")).tag(AppLanguage.en.rawValue)
+                }
+            }
+        } label: {
+            Image(systemName: "gearshape")
+                .font(.title3)
+        }
+        .menuStyle(.borderlessButton)
+        .help(L10n.text("settings.menu"))
+    }
+
     private var settingsPanel: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .center, spacing: 12) {
-                Picker("Préréglage", selection: Binding<UUID?>(
+                Picker(L10n.text("settings.preset.label"), selection: Binding<UUID?>(
                     get: { viewModel.selectedPresetID },
                     set: { viewModel.applyPreset(id: $0) }
                 )) {
-                    Text("Configuration actuelle").tag(UUID?.none)
+                    Text(L10n.text("settings.preset.current")).tag(UUID?.none)
                     ForEach(viewModel.presets) { preset in
-                        Text(preset.name).tag(Optional(preset.id))
+                        Text(viewModel.displayName(for: preset)).tag(Optional(preset.id))
                     }
                 }
                 .frame(maxWidth: 280)
@@ -114,12 +143,12 @@ struct ContentView: View {
                     } label: {
                         Image(systemName: "trash")
                     }
-                    .help("Supprimer ce préréglage personnalisé")
+                    .help(L10n.text("settings.preset.delete_help"))
                 }
 
-                TextField("Nom du nouveau préréglage", text: $presetNameInput)
+                TextField(L10n.text("settings.preset.new_name.placeholder"), text: $presetNameInput)
 
-                Button("Enregistrer") {
+                Button(L10n.text("button.save")) {
                     commitAllResizeInputs()
                     viewModel.saveCurrentPreset(named: presetNameInput)
                     if viewModel.globalError == nil {
@@ -131,8 +160,8 @@ struct ContentView: View {
 
             HStack {
                 labelWithInfo(
-                    "Qualité WEBP",
-                    help: "Ajuste le niveau de compression. Une valeur élevée préserve les détails originaux, une valeur basse maximise l'espace disque économisé.",
+                    L10n.text("settings.quality.label"),
+                    help: L10n.text("settings.quality.help"),
                     isPresented: $isQualityHelpPresented
                 )
 
@@ -157,8 +186,8 @@ struct ContentView: View {
                 )
             ) {
                 labelWithInfo(
-                    "Supprimer les métadonnées",
-                    help: "Supprime les données techniques (EXIF, GPS, réglages boîtier) pour alléger le fichier et protéger la confidentialité de vos prises de vue.",
+                    L10n.text("settings.metadata.label"),
+                    help: L10n.text("settings.metadata.help"),
                     isPresented: $isMetadataHelpPresented
                 )
             }
@@ -166,17 +195,17 @@ struct ContentView: View {
 
             HStack {
                 labelWithInfo(
-                    "Suffixe",
-                    help: "Ajoute un texte au nom du fichier pour identifier rapidement ses variantes (ex: dimensions ou usage).",
+                    L10n.text("settings.suffix.label"),
+                    help: L10n.text("settings.suffix.help"),
                     isPresented: $isSuffixHelpPresented
                 )
 
-                Picker("Suffixe", selection: Binding(
+                Picker(L10n.text("settings.suffix.label"), selection: Binding(
                     get: { viewModel.settings.suffixMode },
                     set: { viewModel.updateSuffixMode($0) }
                 )) {
                     ForEach(SuffixMode.allCases) { mode in
-                        Text(mode.rawValue).tag(mode)
+                        Text(mode.localizedTitle).tag(mode)
                     }
                 }
                 .frame(maxWidth: 220)
@@ -184,17 +213,17 @@ struct ContentView: View {
 
             HStack {
                 labelWithInfo(
-                    "Redimensionnement",
-                    help: "Modifie les dimensions physiques de l'image. Redimensionner est la méthode la plus directe pour réduire radicalement le poids d'un fichier.",
+                    L10n.text("settings.resize.label"),
+                    help: L10n.text("settings.resize.help"),
                     isPresented: $isResizeHelpPresented
                 )
 
-                Picker("Redimensionnement", selection: Binding(
+                Picker(L10n.text("settings.resize.label"), selection: Binding(
                     get: { viewModel.settings.resizeSettings.mode },
                     set: { viewModel.updateResizeMode($0) }
                 )) {
                     ForEach(ResizeMode.allCases) { mode in
-                        Text(mode.rawValue).tag(mode)
+                        Text(mode.localizedTitle).tag(mode)
                     }
                 }
                 .frame(maxWidth: 260)
@@ -239,7 +268,7 @@ struct ContentView: View {
 
                 if viewModel.settings.resizeSettings.mode == .width ||
                     viewModel.settings.resizeSettings.mode == .height {
-                    Toggle("Conserver les proportions", isOn: Binding(
+                    Toggle(L10n.text("settings.keep_aspect_ratio"), isOn: Binding(
                         get: { viewModel.settings.resizeSettings.keepAspectRatio },
                         set: { viewModel.updateKeepAspectRatio($0) }
                     ))
@@ -247,16 +276,16 @@ struct ContentView: View {
             }
 
             HStack {
-                Text("Sortie :")
+                Text(L10n.text("settings.output.label"))
 
-                Text(viewModel.settings.outputFolder?.path ?? "Aucun dossier sélectionné")
+                Text(viewModel.settings.outputFolder?.path ?? L10n.text("settings.output.none"))
                     .lineLimit(1)
                     .truncationMode(.middle)
                     .foregroundStyle(.secondary)
 
                 Spacer()
 
-                Button("Choisir") {
+                Button(L10n.text("button.choose")) {
                     viewModel.selectOutputFolder()
                 }
             }
@@ -268,12 +297,12 @@ struct ContentView: View {
     private var listPanel: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("Fichiers")
+                Text(L10n.text("files.section.title"))
                     .font(.headline)
 
                 Spacer()
 
-                Button("Vider") {
+                Button(L10n.text("button.clear")) {
                     viewModel.clearAll()
                 }
                 .disabled(viewModel.items.isEmpty || viewModel.isConverting)
@@ -300,12 +329,12 @@ struct ContentView: View {
 
     private var tableHeader: some View {
         HStack(spacing: 12) {
-            sortHeader("Nom", column: .name, width: columnWidths[0], alignment: .leading)
-            sortHeader("Avant", column: .beforeSize, width: columnWidths[1], alignment: .trailing)
-            sortHeader("Après", column: .afterSize, width: columnWidths[2], alignment: .trailing)
-            sortHeader("Gain", column: .gain, width: columnWidths[3], alignment: .trailing)
-            sortHeader("Statut", column: .status, width: columnWidths[4], alignment: .leading)
-            Text("Action")
+            sortHeader(L10n.text("table.name"), column: .name, width: columnWidths[0], alignment: .leading)
+            sortHeader(L10n.text("table.before"), column: .beforeSize, width: columnWidths[1], alignment: .trailing)
+            sortHeader(L10n.text("table.after"), column: .afterSize, width: columnWidths[2], alignment: .trailing)
+            sortHeader(L10n.text("table.gain"), column: .gain, width: columnWidths[3], alignment: .trailing)
+            sortHeader(L10n.text("table.status"), column: .status, width: columnWidths[4], alignment: .leading)
+            Text(L10n.text("table.action"))
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary.opacity(0.85))
                 .frame(width: columnWidths[5], alignment: .center)
@@ -371,9 +400,9 @@ struct ContentView: View {
 
     private var previewPanel: some View {
         HStack(spacing: 12) {
-            previewCard(title: "Original", info: viewModel.originalPreview, gainText: nil)
+            previewCard(title: L10n.text("preview.original"), info: viewModel.originalPreview, gainText: nil)
             previewCard(
-                title: "WebP converti",
+                title: L10n.text("preview.converted"),
                 info: viewModel.convertedPreview,
                 gainText: viewModel.selectedItem.map { viewModel.formattedGain(for: $0) }
             )
@@ -408,14 +437,14 @@ struct ContentView: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 if let info {
-                    Text("Taille: \(viewModel.formattedSize(info.fileSize))")
+                    Text(L10n.format("preview.size", viewModel.formattedSize(info.fileSize)))
                         .foregroundStyle(.secondary)
                     if let dimensions = info.dimensions {
-                        Text("Dimensions: \(Int(dimensions.width)) × \(Int(dimensions.height))")
+                        Text(L10n.format("preview.dimensions", Int(dimensions.width), Int(dimensions.height)))
                             .foregroundStyle(.secondary)
                     }
                     if let gainText, gainText != "-" {
-                        Text("Gain: \(gainText)")
+                        Text(L10n.format("preview.gain", gainText))
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -440,16 +469,15 @@ struct ContentView: View {
     private func statusView(for status: FileConversionStatus) -> some View {
         switch status {
         case .pending:
-            Text("En attente").foregroundStyle(.secondary)
+            Text(L10n.text("status.pending")).foregroundStyle(.secondary)
         case .processing:
-            Text("Conversion...").foregroundStyle(.orange)
+            Text(L10n.text("status.processing")).foregroundStyle(.orange)
         case .success:
-            Text("OK").foregroundStyle(.green)
+            Text(L10n.text("status.success")).foregroundStyle(.green)
         case .failure(let message):
             Text(message).foregroundStyle(.red).lineLimit(2)
         }
     }
-
 
     private var footer: some View {
         VStack(spacing: 8) {
@@ -463,25 +491,35 @@ struct ContentView: View {
                 if viewModel.isConverting {
                     ProgressView(value: viewModel.progress)
                         .frame(maxWidth: 240)
-                    Text("Progression : \(Int(viewModel.progress * 100))%")
+                    Text(progressLabel)
                         .foregroundStyle(.secondary)
-                    Button("Arrêter") {
+                    Button(L10n.text("button.stop")) {
                         viewModel.stopConversion()
                     }
                     .buttonStyle(.bordered)
                 } else {
-                    Text("Progression : \(Int(viewModel.progress * 100))%")
+                    Text(progressLabel)
                         .foregroundStyle(.secondary)
                 }
 
                 Spacer()
 
-                Button("Convertir") {
+                Button(L10n.text("button.convert")) {
                     commitAllResizeInputs()
                     viewModel.convertAll()
                 }
                 .disabled(viewModel.items.isEmpty || viewModel.isConverting)
             }
+        }
+    }
+
+    private var progressLabel: String {
+        L10n.format("progress.label", Int(viewModel.progress * 100))
+    }
+
+    private func ensureLanguageFallback() {
+        if AppLanguage(rawValue: selectedLanguage) == nil {
+            selectedLanguage = AppLanguage.fallback.rawValue
         }
     }
 

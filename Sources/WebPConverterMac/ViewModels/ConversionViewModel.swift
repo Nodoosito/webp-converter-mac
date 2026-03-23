@@ -1,5 +1,5 @@
-import Foundation
 import AppKit
+import Foundation
 import ImageIO
 
 @MainActor
@@ -18,13 +18,56 @@ final class ConversionViewModel: ObservableObject {
         let dimensions: CGSize?
     }
 
+    private enum PreviewMessageState {
+        case selectFile
+        case loading
+        case availableAfterConversion
+        case none
+
+        var localizedText: String {
+            switch self {
+            case .selectFile:
+                return L10n.text("vm.preview.select_file")
+            case .loading:
+                return L10n.text("vm.preview.loading")
+            case .availableAfterConversion:
+                return L10n.text("vm.preview.available_after_conversion")
+            case .none:
+                return ""
+            }
+        }
+    }
+
+    private enum GlobalErrorDescriptor {
+        case emptyPresetName
+        case protectedPresetName
+        case missingOutputFolder
+        case processingStopped
+        case custom(String)
+
+        var localizedText: String {
+            switch self {
+            case .emptyPresetName:
+                return L10n.text("vm.error.preset.empty")
+            case .protectedPresetName:
+                return L10n.text("vm.error.preset.protected")
+            case .missingOutputFolder:
+                return L10n.text("vm.error.output_folder.missing")
+            case .processingStopped:
+                return L10n.text("vm.error.processing_stopped")
+            case .custom(let value):
+                return value
+            }
+        }
+    }
+
     private let percentageRange: ClosedRange<Double> = 1...100
     private let dimensionRange: ClosedRange<Double> = 1...20_000
     private let outputFolderDefaultsKey = "selectedOutputFolderPath"
 
     @Published private(set) var items: [FileConversionItem] = []
     @Published var settings = ConversionSettings()
-    @Published var globalError: String?
+    @Published private var globalErrorDescriptor: GlobalErrorDescriptor?
     @Published private(set) var isConverting = false
     @Published private(set) var progress: Double = 0
     @Published var showCompletionAlert = false
@@ -37,13 +80,21 @@ final class ConversionViewModel: ObservableObject {
 
     @Published private(set) var originalPreview: PreviewInfo?
     @Published private(set) var convertedPreview: PreviewInfo?
-    @Published private(set) var previewMessage: String = "Sélectionnez un fichier pour voir l'aperçu"
+    @Published private var previewState: PreviewMessageState = .selectFile
 
     private let fileService = FileService()
     private let conversionService = ImageConversionService()
     private let presetStore: ConversionPresetStore
     private let userDefaults: UserDefaults
     private var conversionTask: Task<Void, Never>?
+
+    var globalError: String? {
+        globalErrorDescriptor?.localizedText
+    }
+
+    var previewMessage: String {
+        previewState.localizedText
+    }
 
     var canConvert: Bool { !items.isEmpty && settings.outputFolder != nil && !isConverting }
     var nativeWebPAvailable: Bool { conversionService.isNativeWebPEncodingAvailable }
@@ -57,18 +108,22 @@ final class ConversionViewModel: ObservableObject {
         let totalOutputSize = successfulItems.reduce(Int64(0)) { $0 + $1.outputSize }
         return Double(totalInputSize - totalOutputSize) / 1_048_576
     }
+
     var formattedTotalGain: String {
         let formatter = NumberFormatter()
+        formatter.locale = AppLanguage.current.locale
         formatter.numberStyle = .decimal
         formatter.minimumFractionDigits = 2
         formatter.maximumFractionDigits = 2
         let formattedValue = formatter.string(from: NSNumber(value: totalGainInMegabytes)) ?? "0.00"
-        return "\(formattedValue) Mo"
+        return L10n.format("vm.total_gain.megabytes", formattedValue)
     }
+
     var selectedPreset: ConversionPreset? {
         guard let selectedPresetID else { return nil }
         return presets.first(where: { $0.id == selectedPresetID })
     }
+
     var canDeleteSelectedPreset: Bool { selectedPreset?.isSystemPreset == false }
 
     init(
@@ -118,6 +173,10 @@ final class ConversionViewModel: ObservableObject {
         return items.first(where: { $0.id == selectedItemID })
     }
 
+    func displayName(for preset: ConversionPreset) -> String {
+        preset.localizedDisplayName
+    }
+
     func cycleSort(for column: SortColumn) {
         if currentSortColumn != column {
             currentSortColumn = column
@@ -153,7 +212,7 @@ final class ConversionViewModel: ObservableObject {
         items.removeAll { $0.id == item.id }
         if selectedItemID == item.id {
             selectedItemID = nil
-            clearPreviewState(message: "Sélectionnez un fichier pour voir l'aperçu")
+            clearPreviewState(.selectFile)
         }
     }
 
@@ -161,10 +220,10 @@ final class ConversionViewModel: ObservableObject {
         stopConversion()
         items.removeAll()
         progress = 0
-        globalError = nil
+        globalErrorDescriptor = nil
         showCompletionAlert = false
         selectedItemID = nil
-        clearPreviewState(message: "Sélectionnez un fichier pour voir l'aperçu")
+        clearPreviewState(.selectFile)
     }
 
     func selectOutputFolder() {
@@ -262,15 +321,15 @@ final class ConversionViewModel: ObservableObject {
     func saveCurrentPreset(named name: String) {
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty else {
-            globalError = "Le nom du préréglage ne peut pas être vide."
+            globalErrorDescriptor = .emptyPresetName
             return
         }
         guard !presetStore.isProtectedPresetName(trimmedName) else {
-            globalError = "Ce nom est réservé à un préréglage par défaut."
+            globalErrorDescriptor = .protectedPresetName
             return
         }
 
-        globalError = nil
+        globalErrorDescriptor = nil
 
         let preset = ConversionPreset(
             name: trimmedName,
@@ -311,11 +370,11 @@ final class ConversionViewModel: ObservableObject {
 
     func convertAll() {
         guard let outputFolder = settings.outputFolder else {
-            globalError = "Aucun dossier de sortie sélectionné."
+            globalErrorDescriptor = .missingOutputFolder
             return
         }
 
-        globalError = nil
+        globalErrorDescriptor = nil
         showCompletionAlert = false
         isConverting = true
         progress = 0
@@ -369,12 +428,17 @@ final class ConversionViewModel: ObservableObject {
     }
 
     func formattedSize(_ bytes: Int64) -> String {
-        ByteCountFormatter.string(fromByteCount: bytes, countStyle: .file)
+        let formatter = ByteCountFormatter()
+        formatter.allowedUnits = .useAll
+        formatter.countStyle = .file
+        formatter.includesUnit = true
+        formatter.locale = AppLanguage.current.locale
+        return formatter.string(fromByteCount: bytes)
     }
 
     func formattedGain(for item: FileConversionItem) -> String {
         guard let gain = gainPercentage(for: item) else { return "-" }
-        return "\(Int(gain.rounded()))%"
+        return L10n.format("vm.gain.percent", Int(gain.rounded()))
     }
 
     func sortIndicator(for column: SortColumn) -> String? {
@@ -394,12 +458,12 @@ final class ConversionViewModel: ObservableObject {
 
     private func refreshPreviewIfNeeded() {
         guard let item = selectedItem else {
-            clearPreviewState(message: "Sélectionnez un fichier pour voir l'aperçu")
+            clearPreviewState(.selectFile)
             return
         }
 
         let requestedID = item.id
-        previewMessage = "Chargement de l'aperçu..."
+        previewState = .loading
 
         Task {
             let originalLoaded = await loadPreview(for: item.inputURL)
@@ -408,7 +472,7 @@ final class ConversionViewModel: ObservableObject {
 
             originalPreview = PreviewInfo(image: originalLoaded.image, fileSize: item.inputSize, dimensions: originalLoaded.dimensions)
             convertedPreview = converted
-            previewMessage = converted == nil ? "Preview available after conversion" : ""
+            previewState = converted == nil ? .availableAfterConversion : .none
         }
     }
 
@@ -434,8 +498,8 @@ final class ConversionViewModel: ObservableObject {
         return CGSize(width: width, height: height)
     }
 
-    private func clearPreviewState(message: String) {
-        previewMessage = message
+    private func clearPreviewState(_ state: PreviewMessageState) {
+        previewState = state
         originalPreview = nil
         convertedPreview = nil
     }
@@ -461,7 +525,7 @@ final class ConversionViewModel: ObservableObject {
     private func finishStoppedConversion() {
         isConverting = false
         showCompletionAlert = false
-        globalError = "Traitement arrêté."
+        globalErrorDescriptor = .processingStopped
     }
 
     private var defaultPresetID: UUID? {

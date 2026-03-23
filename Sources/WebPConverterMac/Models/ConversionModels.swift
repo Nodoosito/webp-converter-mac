@@ -7,6 +7,19 @@ enum ResizeMode: String, CaseIterable, Identifiable, Codable, Sendable {
     case height = "Hauteur"
 
     var id: String { rawValue }
+
+    var localizedTitle: String {
+        switch self {
+        case .original:
+            return L10n.text("resize.original")
+        case .percentage:
+            return L10n.text("resize.percentage")
+        case .width:
+            return L10n.text("resize.width")
+        case .height:
+            return L10n.text("resize.height")
+        }
+    }
 }
 
 enum SuffixMode: String, CaseIterable, Identifiable, Codable, Sendable {
@@ -15,6 +28,17 @@ enum SuffixMode: String, CaseIterable, Identifiable, Codable, Sendable {
     case dimensions = "Dimensions"
 
     var id: String { rawValue }
+
+    var localizedTitle: String {
+        switch self {
+        case .none:
+            return L10n.text("suffix.none")
+        case .presetName:
+            return L10n.text("suffix.preset_name")
+        case .dimensions:
+            return L10n.text("suffix.dimensions")
+        }
+    }
 }
 
 struct ResizeSettings: Codable, Equatable, Sendable {
@@ -75,6 +99,21 @@ struct ConversionPreset: Codable, Identifiable, Equatable, Sendable {
         self.removeMetadata = removeMetadata
         self.suffixMode = suffixMode
         self.isSystemPreset = isSystemPreset
+    }
+
+    var localizedDisplayName: String {
+        guard isSystemPreset else { return name }
+
+        switch name {
+        case ConversionPresetStore.defaultPresetName:
+            return L10n.text("preset.default")
+        case ConversionPresetStore.wordpressThumbnailPresetName:
+            return L10n.text("preset.wordpress_thumbnail")
+        case ConversionPresetStore.webBannerPresetName:
+            return L10n.text("preset.web_banner")
+        default:
+            return name
+        }
     }
 
     private enum CodingKeys: String, CodingKey {

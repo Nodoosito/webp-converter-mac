@@ -12,7 +12,10 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "WebPConverterMac",
-            path: "Sources/WebPConverterMac"
+            path: "Sources/WebPConverterMac",
+            resources: [
+                .process("Resources")
+            ]
         )
     ]
 )

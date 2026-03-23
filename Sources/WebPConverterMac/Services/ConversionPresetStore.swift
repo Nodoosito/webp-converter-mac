@@ -51,15 +51,18 @@ struct ConversionPresetStore {
     }
 
     static let defaultPresetName = "Défaut"
+    static let wordpressThumbnailPresetName = "WordPress Thumbnail"
+    static let webBannerPresetName = "Bannière Web"
+
     static let protectedPresetNames: Set<String> = [
         defaultPresetName,
-        "WordPress Thumbnail",
-        "Bannière Web"
+        wordpressThumbnailPresetName,
+        webBannerPresetName
     ]
 
     static let defaultPresets: [ConversionPreset] = [
         ConversionPreset(
-            name: "Défaut",
+            name: defaultPresetName,
             quality: 0.8,
             resizeSettings: ResizeSettings(mode: .original, percentage: 100, width: 1920, height: 1080, keepAspectRatio: true),
             removeMetadata: true,
@@ -67,7 +70,7 @@ struct ConversionPresetStore {
             isSystemPreset: true
         ),
         ConversionPreset(
-            name: "WordPress Thumbnail",
+            name: wordpressThumbnailPresetName,
             quality: 0.75,
             resizeSettings: ResizeSettings(mode: .width, percentage: 100, width: 150, height: 150, keepAspectRatio: true),
             removeMetadata: true,
@@ -75,7 +78,7 @@ struct ConversionPresetStore {
             isSystemPreset: true
         ),
         ConversionPreset(
-            name: "Bannière Web",
+            name: webBannerPresetName,
             quality: 0.82,
             resizeSettings: ResizeSettings(mode: .width, percentage: 100, width: 1600, height: 900, keepAspectRatio: true),
             removeMetadata: true,

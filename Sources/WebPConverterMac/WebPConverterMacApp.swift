@@ -5,12 +5,24 @@ import SwiftUI
 struct WebPConverterMacApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var viewModel = ConversionViewModel()
+    @AppStorage(AppLanguage.storageKey) private var selectedLanguage = ""
+
+    private var effectiveLanguage: AppLanguage {
+        AppLanguage(rawValue: selectedLanguage).map { $0 } ?? .fallback
+    }
 
     var body: some Scene {
-        WindowGroup("Orlo") {
-            ContentView(viewModel: viewModel)
-                .frame(minWidth: 980, minHeight: 680)
-                .background(MainWindowConfigurator())
+        WindowGroup(L10n.text("app.window.title")) {
+            Group {
+                if selectedLanguage.isEmpty {
+                    LanguageSelectionView(selectedLanguage: $selectedLanguage)
+                } else {
+                    ContentView(viewModel: viewModel)
+                }
+            }
+            .frame(minWidth: 980, minHeight: 680)
+            .environment(\.locale, effectiveLanguage.locale)
+            .background(MainWindowConfigurator())
         }
         .windowResizability(.contentSize)
     }
@@ -33,7 +45,7 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
 
-        window.title = "Orlo"
+        window.title = L10n.text("app.window.title")
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
     }
@@ -58,7 +70,7 @@ private struct MainWindowConfigurator: NSViewRepresentable {
                 NSApp.activate(ignoringOtherApps: true)
             }
 
-            window.title = "Orlo"
+            window.title = L10n.text("app.window.title")
 
             if !window.isKeyWindow {
                 window.makeKeyAndOrderFront(nil)
