@@ -21,8 +21,6 @@ struct ContentView: View {
         AppLanguage(rawValue: selectedLanguage) ?? .fallback
     }
 
-    // MARK: - Body
-
     var body: some View {
         NavigationSplitView {
             sidebar
@@ -79,7 +77,13 @@ struct ContentView: View {
             },
             message: {
                 if let presetPendingDeletion {
-                    Text(L10n.format("alert.preset.delete.message", language: currentLanguage, presetPendingDeletion.localizedDisplayName))
+                    Text(
+                        L10n.format(
+                            "alert.preset.delete.message",
+                            language: currentLanguage,
+                            presetPendingDeletion.localizedDisplayName
+                        )
+                    )
                 }
             }
         )
@@ -90,6 +94,7 @@ struct ContentView: View {
         }
     }
 
+    @ViewBuilder
     private var windowBackground: some View {
         ZStack {
             Color.nodooBackground
@@ -108,6 +113,7 @@ struct ContentView: View {
         .ignoresSafeArea()
     }
 
+    @ViewBuilder
     private var appearanceToggleButton: some View {
         Button {
             cycleAppearanceMode()
@@ -127,9 +133,9 @@ struct ContentView: View {
         default:
             return "Appearance: Auto"
         }
-        .scrollIndicators(.hidden)
     }
 
+    @ViewBuilder
     private var sidebar: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
@@ -147,6 +153,7 @@ struct ContentView: View {
         .scrollIndicators(.hidden)
     }
 
+    @ViewBuilder
     private var sidebarHeader: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(L10n.text("app.header.title", language: currentLanguage))
@@ -159,12 +166,19 @@ struct ContentView: View {
         }
     }
 
+    @ViewBuilder
     private var presetsSection: some View {
-        sidebarSection(title: L10n.text("settings.preset.label", language: currentLanguage), systemImage: "slider.horizontal.3") {
-            Picker(L10n.text("settings.preset.label", language: currentLanguage), selection: Binding<UUID?>(
-                get: { viewModel.selectedPresetID },
-                set: { viewModel.applyPreset(id: $0) }
-            )) {
+        sidebarSection(
+            title: L10n.text("settings.preset.label", language: currentLanguage),
+            systemImage: "slider.horizontal.3"
+        ) {
+            Picker(
+                L10n.text("settings.preset.label", language: currentLanguage),
+                selection: Binding<UUID?>(
+                    get: { viewModel.selectedPresetID },
+                    set: { viewModel.applyPreset(id: $0) }
+                )
+            ) {
                 Text(L10n.text("settings.preset.current", language: currentLanguage)).tag(UUID?.none)
                 ForEach(viewModel.presets) { preset in
                     Text(viewModel.displayName(for: preset)).tag(Optional(preset.id))
@@ -173,9 +187,12 @@ struct ContentView: View {
             .pickerStyle(.menu)
 
             HStack(spacing: 10) {
-                TextField(L10n.text("settings.preset.new_name.placeholder", language: currentLanguage), text: $presetNameInput)
-                    .textFieldStyle(.roundedBorder)
-                    .frame(maxWidth: .infinity)
+                TextField(
+                    L10n.text("settings.preset.new_name.placeholder", language: currentLanguage),
+                    text: $presetNameInput
+                )
+                .textFieldStyle(.roundedBorder)
+                .frame(maxWidth: .infinity)
 
                 Button(L10n.text("button.save", language: currentLanguage)) {
                     commitAllResizeInputs()
@@ -183,20 +200,21 @@ struct ContentView: View {
                     if viewModel.globalError == nil {
                         presetNameInput = ""
                     }
-                    .buttonStyle(.bordered)
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(presetNameInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
-        }
-    }
 
             presetDeleteButton
         }
     }
 
+    @ViewBuilder
     private var qualitySection: some View {
-        sidebarSection(title: L10n.text("settings.quality.label", language: currentLanguage), systemImage: "dial.medium") {
+        sidebarSection(
+            title: L10n.text("settings.quality.label", language: currentLanguage),
+            systemImage: "dial.medium"
+        ) {
             labelWithInfo(
                 L10n.text("settings.quality.label", language: currentLanguage),
                 help: L10n.text("settings.quality.help", language: currentLanguage),
@@ -219,38 +237,42 @@ struct ContentView: View {
                     .frame(width: 52, alignment: .trailing)
             }
 
-                Toggle(
-                    isOn: Binding(
-                        get: { viewModel.settings.removeMetadata },
-                        set: { viewModel.updateRemoveMetadata($0) }
-                    )
-                ) {
-                    labelWithInfo(
-                        L10n.text("settings.metadata.label", language: currentLanguage),
-                        help: L10n.text("settings.metadata.help", language: currentLanguage),
-                        isPresented: $isMetadataHelpPresented
-                    )
-                }
-                .toggleStyle(.switch)
-                .tint(.nodooAccent)
+            Toggle(
+                isOn: Binding(
+                    get: { viewModel.settings.removeMetadata },
+                    set: { viewModel.updateRemoveMetadata($0) }
+                )
+            ) {
+                labelWithInfo(
+                    L10n.text("settings.metadata.label", language: currentLanguage),
+                    help: L10n.text("settings.metadata.help", language: currentLanguage),
+                    isPresented: $isMetadataHelpPresented
+                )
             }
             .toggleStyle(.switch)
             .tint(.nodooAccent)
         }
     }
 
+    @ViewBuilder
     private var suffixSection: some View {
-        sidebarSection(title: L10n.text("settings.suffix.label", language: currentLanguage), systemImage: "textformat") {
+        sidebarSection(
+            title: L10n.text("settings.suffix.label", language: currentLanguage),
+            systemImage: "textformat"
+        ) {
             labelWithInfo(
                 L10n.text("settings.suffix.label", language: currentLanguage),
                 help: L10n.text("settings.suffix.help", language: currentLanguage),
                 isPresented: $isSuffixHelpPresented
             )
 
-            Picker(L10n.text("settings.suffix.label", language: currentLanguage), selection: Binding(
-                get: { viewModel.settings.suffixMode },
-                set: { viewModel.updateSuffixMode($0) }
-            )) {
+            Picker(
+                L10n.text("settings.suffix.label", language: currentLanguage),
+                selection: Binding(
+                    get: { viewModel.settings.suffixMode },
+                    set: { viewModel.updateSuffixMode($0) }
+                )
+            ) {
                 ForEach(SuffixMode.allCases) { mode in
                     Text(mode.localizedTitle).tag(mode)
                 }
@@ -259,18 +281,25 @@ struct ContentView: View {
         }
     }
 
+    @ViewBuilder
     private var resizeSection: some View {
-        sidebarSection(title: L10n.text("settings.resize.label", language: currentLanguage), systemImage: "arrow.up.left.and.arrow.down.right") {
+        sidebarSection(
+            title: L10n.text("settings.resize.label", language: currentLanguage),
+            systemImage: "arrow.up.left.and.arrow.down.right"
+        ) {
             labelWithInfo(
                 L10n.text("settings.resize.label", language: currentLanguage),
                 help: L10n.text("settings.resize.help", language: currentLanguage),
                 isPresented: $isResizeHelpPresented
             )
 
-            Picker(L10n.text("settings.resize.label", language: currentLanguage), selection: Binding(
-                get: { viewModel.settings.resizeSettings.mode },
-                set: { viewModel.updateResizeMode($0) }
-            )) {
+            Picker(
+                L10n.text("settings.resize.label", language: currentLanguage),
+                selection: Binding(
+                    get: { viewModel.settings.resizeSettings.mode },
+                    set: { viewModel.updateResizeMode($0) }
+                )
+            ) {
                 ForEach(ResizeMode.allCases) { mode in
                     Text(mode.localizedTitle).tag(mode)
                 }
@@ -281,18 +310,25 @@ struct ContentView: View {
 
             if viewModel.settings.resizeSettings.mode == .width ||
                 viewModel.settings.resizeSettings.mode == .height {
-                Toggle(L10n.text("settings.keep_aspect_ratio", language: currentLanguage), isOn: Binding(
-                    get: { viewModel.settings.resizeSettings.keepAspectRatio },
-                    set: { viewModel.updateKeepAspectRatio($0) }
-                ))
+                Toggle(
+                    L10n.text("settings.keep_aspect_ratio", language: currentLanguage),
+                    isOn: Binding(
+                        get: { viewModel.settings.resizeSettings.keepAspectRatio },
+                        set: { viewModel.updateKeepAspectRatio($0) }
+                    )
+                )
                 .toggleStyle(.switch)
                 .tint(.nodooAccent)
             }
         }
     }
 
+    @ViewBuilder
     private var languageSection: some View {
-        sidebarSection(title: L10n.text("settings.language.section", language: currentLanguage), systemImage: "globe") {
+        sidebarSection(
+            title: L10n.text("settings.language.section", language: currentLanguage),
+            systemImage: "globe"
+        ) {
             Picker(L10n.text("settings.language.label", language: currentLanguage), selection: $selectedLanguage) {
                 Text(L10n.text("settings.language.french", language: currentLanguage)).tag(AppLanguage.fr.rawValue)
                 Text(L10n.text("settings.language.english", language: currentLanguage)).tag(AppLanguage.en.rawValue)
@@ -301,8 +337,12 @@ struct ContentView: View {
         }
     }
 
+    @ViewBuilder
     private var exportSection: some View {
-        sidebarSection(title: L10n.text("settings.output.label", language: currentLanguage), systemImage: "folder") {
+        sidebarSection(
+            title: L10n.text("settings.output.label", language: currentLanguage),
+            systemImage: "folder"
+        ) {
             Text(viewModel.settings.outputFolder?.path ?? L10n.text("settings.output.none", language: currentLanguage))
                 .font(.caption)
                 .foregroundStyle(.nodooText.opacity(0.72))
@@ -319,7 +359,7 @@ struct ContentView: View {
 
     @ViewBuilder
     private var presetDeleteButton: some View {
-        if let selectedPreset = viewModel.selectedPreset, viewModel.canDeleteSelectedPreset {
+        if let selectedPreset = viewModel.selectedPreset, viewModel.isCustomPreset(selectedPreset) {
             Button(role: .destructive) {
                 presetPendingDeletion = selectedPreset
             } label: {
@@ -377,6 +417,7 @@ struct ContentView: View {
         .glassCard(cornerRadius: 16, fillOpacity: 0.05)
     }
 
+    @ViewBuilder
     private var mainCanvas: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
@@ -395,6 +436,7 @@ struct ContentView: View {
         }
     }
 
+    @ViewBuilder
     private var topBar: some View {
         HStack(alignment: .center, spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
@@ -421,6 +463,7 @@ struct ContentView: View {
         }
     }
 
+    @ViewBuilder
     private var dropCanvas: some View {
         VStack(spacing: 14) {
             Image(systemName: isDropTargeted ? "sparkles.rectangle.stack.fill" : "square.and.arrow.down.on.square")
@@ -448,6 +491,7 @@ struct ContentView: View {
         .glassCard(cornerRadius: 28, fillOpacity: isDropTargeted ? 0.12 : 0.06)
     }
 
+    @ViewBuilder
     private var fileListPanel: some View {
         VStack(alignment: .leading, spacing: 14) {
             sortControls
@@ -468,6 +512,7 @@ struct ContentView: View {
         .glassCard(cornerRadius: 24, fillOpacity: 0.08)
     }
 
+    @ViewBuilder
     private var sortControls: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
@@ -499,6 +544,7 @@ struct ContentView: View {
         .buttonStyle(.plain)
     }
 
+    @ViewBuilder
     private var emptyFilesState: some View {
         VStack(spacing: 10) {
             Image(systemName: "photo.stack")
@@ -547,7 +593,11 @@ struct ContentView: View {
                 statTile(title: L10n.text("table.before", language: currentLanguage), value: viewModel.formattedSize(item.inputSize))
                 statTile(title: L10n.text("table.after", language: currentLanguage), value: afterSizeText(for: item))
                 statTile(title: L10n.text("table.gain", language: currentLanguage), value: viewModel.formattedGain(for: item))
-                statTile(title: L10n.text("table.status", language: currentLanguage), value: statusText(for: item.status), accent: statusColor(for: item.status))
+                statTile(
+                    title: L10n.text("table.status", language: currentLanguage),
+                    value: statusText(for: item.status),
+                    accent: statusColor(for: item.status)
+                )
             }
         }
         .padding(18)
@@ -578,6 +628,7 @@ struct ContentView: View {
         .glassCard(cornerRadius: 16, fillOpacity: 0.04, strokeOpacity: 0.12)
     }
 
+    @ViewBuilder
     private var previewPanel: some View {
         ViewThatFits(in: .horizontal) {
             HStack(spacing: 14) {
@@ -646,21 +697,7 @@ struct ContentView: View {
         .glassCard(cornerRadius: 24, fillOpacity: 0.05)
     }
 
-    private func statusColor(for status: FileConversionStatus) -> Color {
-        switch status {
-        case .pending:
-            return .nodooText
-        case .processing:
-            return .orange
-        case .success:
-            return .green
-        case .failure:
-            return .red
-        }
-    }
-
-    // MARK: - Footer
-
+    @ViewBuilder
     private var footer: some View {
         VStack(spacing: 10) {
             if let error = viewModel.globalError {
@@ -695,6 +732,7 @@ struct ContentView: View {
         }
     }
 
+    @ViewBuilder
     private var footerLeadingContent: some View {
         Group {
             if viewModel.isConverting {
@@ -714,19 +752,9 @@ struct ContentView: View {
                     .foregroundStyle(.nodooText.opacity(0.76))
             }
         }
-        .buttonStyle(.borderedProminent)
-        .disabled(viewModel.items.isEmpty || viewModel.isConverting)
     }
 
-    private var convertButton: some View {
-        Button(L10n.text("button.convert", language: currentLanguage)) {
-            commitAllResizeInputs()
-            viewModel.convertAll()
-        }
-        .buttonStyle(.borderedProminent)
-        .disabled(viewModel.items.isEmpty || viewModel.isConverting)
-    }
-
+    @ViewBuilder
     private var convertButton: some View {
         Button(L10n.text("button.convert", language: currentLanguage)) {
             commitAllResizeInputs()
