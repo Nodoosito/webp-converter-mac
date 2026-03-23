@@ -90,6 +90,18 @@ struct ContentView: View {
         }
     }
 
+    @ViewBuilder
+    private var presetDeleteButton: some View {
+        if let selectedPreset = viewModel.selectedPreset, viewModel.canDeleteSelectedPreset {
+            Button(role: .destructive) {
+                presetPendingDeletion = selectedPreset
+            } label: {
+                Label(L10n.text("settings.preset.delete_help", language: currentLanguage), systemImage: "trash")
+            }
+            .buttonStyle(.bordered)
+        }
+    }
+
     // MARK: - Window and Toolbar
 
     private var windowBackground: some View {
@@ -199,18 +211,6 @@ struct ContentView: View {
         }
     }
 
-
-    @ViewBuilder
-    private var presetDeleteButton: some View {
-        if let selectedPreset = viewModel.selectedPreset, viewModel.canDeleteSelectedPreset {
-            Button(role: .destructive) {
-                presetPendingDeletion = selectedPreset
-            } label: {
-                Label(L10n.text("settings.preset.delete_help", language: currentLanguage), systemImage: "trash")
-            }
-            .buttonStyle(.bordered)
-        }
-    }
 
     private var qualitySection: some View {
         sidebarSection(title: L10n.text("settings.quality.label", language: currentLanguage), systemImage: "dial.medium") {
@@ -742,15 +742,6 @@ struct ContentView: View {
                 Text(progressLabel)
                     .foregroundStyle(.nodooText.opacity(0.76))
             }
-        }
-        .padding(18)
-        .glassCard(cornerRadius: 24, fillOpacity: 0.08)
-    }
-
-    private var convertButton: some View {
-        Button(L10n.text("button.convert", language: currentLanguage)) {
-            commitAllResizeInputs()
-            viewModel.convertAll()
         }
         .buttonStyle(.borderedProminent)
         .disabled(viewModel.items.isEmpty || viewModel.isConverting)
