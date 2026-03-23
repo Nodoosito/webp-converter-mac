@@ -21,6 +21,10 @@ struct ContentView: View {
         AppLanguage(rawValue: selectedLanguage) ?? .fallback
     }
 
+    private var hasFiles: Bool {
+        !viewModel.items.isEmpty
+    }
+
     var body: some View {
         NavigationSplitView {
             sidebar
@@ -109,8 +113,10 @@ struct ContentView: View {
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
+            .allowsHitTesting(false)
         }
         .ignoresSafeArea()
+        .allowsHitTesting(false)
     }
 
     @ViewBuilder
@@ -138,7 +144,7 @@ struct ContentView: View {
     @ViewBuilder
     private var sidebar: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 16) {
                 sidebarHeader
                 presetsSection
                 qualitySection
@@ -146,24 +152,31 @@ struct ContentView: View {
                 resizeSection
                 languageSection
                 exportSection
+                if hasFiles {
+                    sidebarConvertSection
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(20)
+            .padding(.horizontal, 18)
+            .padding(.vertical, 20)
         }
         .scrollIndicators(.hidden)
     }
 
     @ViewBuilder
     private var sidebarHeader: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             Text(L10n.text("app.header.title", language: currentLanguage))
-                .font(.system(size: 30, weight: .bold, design: .rounded))
+                .font(.system(size: 24, weight: .bold, design: .rounded))
                 .foregroundStyle(.nodooAccent)
+                .lineLimit(2)
+                .minimumScaleFactor(0.8)
             Text(LocalizedStringKey(L10n.text("app.header.tagline", language: currentLanguage)))
-                .font(.subheadline)
+                .font(.footnote)
                 .foregroundStyle(.nodooText.opacity(0.76))
                 .fixedSize(horizontal: false, vertical: true)
         }
+        .padding(.horizontal, 8)
     }
 
     @ViewBuilder
@@ -358,6 +371,24 @@ struct ContentView: View {
     }
 
     @ViewBuilder
+    private var sidebarConvertSection: some View {
+        sidebarSection(
+            title: L10n.text("button.convert", language: currentLanguage),
+            systemImage: "play.fill"
+        ) {
+            convertButton
+                .frame(maxWidth: .infinity)
+
+            Button(L10n.text("button.clear", language: currentLanguage)) {
+                viewModel.clearAll()
+            }
+            .buttonStyle(.bordered)
+            .frame(maxWidth: .infinity)
+            .disabled(viewModel.items.isEmpty || viewModel.isConverting)
+        }
+    }
+
+    @ViewBuilder
     private var presetDeleteButton: some View {
         if let selectedPreset = viewModel.selectedPreset, viewModel.isCustomPreset(selectedPreset) {
             Button(role: .destructive) {
@@ -393,6 +424,8 @@ struct ContentView: View {
                 content()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(14)
+            .background(Color.white.opacity(0.02), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(18)
@@ -419,21 +452,40 @@ struct ContentView: View {
 
     @ViewBuilder
     private var mainCanvas: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
-                topBar
-                dropCanvas
-                fileListPanel
-                previewPanel
-                footer
+        Group {
+            if hasFiles {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 18) {
+                        topBar
+                        fileListPanel
+                        previewPanel
+                        footer
+                    }
+                    .padding(24)
+                }
+            } else {
+                emptyStateCanvas
+                    .padding(32)
             }
-            .padding(24)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .contentShape(Rectangle())
         .scrollIndicators(.hidden)
         .onDrop(of: [UTType.fileURL.identifier], isTargeted: $isDropTargeted) { providers in
             viewModel.handleDrop(providers: providers)
             return true
         }
+    }
+
+    @ViewBuilder
+    private var emptyStateCanvas: some View {
+        VStack {
+            Spacer(minLength: 0)
+            dropCanvas
+                .frame(maxWidth: 760)
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     @ViewBuilder
@@ -443,7 +495,7 @@ struct ContentView: View {
                 Text(L10n.text("files.section.title", language: currentLanguage))
                     .font(.system(size: 24, weight: .semibold, design: .rounded))
                     .foregroundStyle(.nodooAccent)
-                Text(viewModel.items.isEmpty ? L10n.text("app.header.tagline", language: currentLanguage) : progressLabel)
+                Text(progressLabel)
                     .font(.subheadline)
                     .foregroundStyle(.nodooText.opacity(0.76))
             }
@@ -456,10 +508,7 @@ struct ContentView: View {
             .buttonStyle(.bordered)
             .disabled(viewModel.items.isEmpty || viewModel.isConverting)
 
-            Button(L10n.text("button.add_files", language: currentLanguage)) {
-                viewModel.addFilesFromPanel()
-            }
-            .buttonStyle(.borderedProminent)
+            convertButton
         }
     }
 
@@ -477,16 +526,22 @@ struct ContentView: View {
                 .foregroundStyle(.nodooText.opacity(0.7))
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 520)
+
+            Button(L10n.text("button.add_files", language: currentLanguage)) {
+                viewModel.addFilesFromPanel()
+            }
+            .buttonStyle(.borderedProminent)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 28)
-        .padding(.horizontal, 20)
+        .padding(.vertical, hasFiles ? 28 : 56)
+        .padding(.horizontal, hasFiles ? 20 : 28)
         .overlay(
             RoundedRectangle(cornerRadius: 28, style: .continuous)
                 .strokeBorder(
                     isDropTargeted ? Color.nodooAccent.opacity(0.85) : Color.nodooSecondary.opacity(0.2),
                     style: StrokeStyle(lineWidth: isDropTargeted ? 1.5 : 1, dash: [8, 8])
                 )
+                .allowsHitTesting(false)
         )
         .glassCard(cornerRadius: 28, fillOpacity: isDropTargeted ? 0.12 : 0.06)
     }
@@ -509,6 +564,7 @@ struct ContentView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(minHeight: 180)
+        .padding(18)
         .glassCard(cornerRadius: 24, fillOpacity: 0.08)
     }
 
@@ -606,6 +662,7 @@ struct ContentView: View {
         .overlay(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .stroke(viewModel.selectedItemID == item.id ? Color.nodooAccent.opacity(0.55) : .clear, lineWidth: 1.2)
+                .allowsHitTesting(false)
         )
         .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .onTapGesture {
@@ -721,12 +778,18 @@ struct ContentView: View {
                 HStack(spacing: 12) {
                     footerLeadingContent
                     Spacer(minLength: 0)
-                    convertButton
+                    Button(L10n.text("button.add_files", language: currentLanguage)) {
+                        viewModel.addFilesFromPanel()
+                    }
+                    .buttonStyle(.bordered)
                 }
             } else {
                 VStack(alignment: .leading, spacing: 12) {
                     footerLeadingContent
-                    convertButton
+                    Button(L10n.text("button.add_files", language: currentLanguage)) {
+                        viewModel.addFilesFromPanel()
+                    }
+                    .buttonStyle(.bordered)
                 }
             }
         }
@@ -761,6 +824,7 @@ struct ContentView: View {
             viewModel.convertAll()
         }
         .buttonStyle(.borderedProminent)
+        .controlSize(.large)
         .disabled(viewModel.items.isEmpty || viewModel.isConverting)
     }
 
