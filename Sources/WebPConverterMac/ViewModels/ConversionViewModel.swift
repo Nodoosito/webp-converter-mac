@@ -428,12 +428,7 @@ final class ConversionViewModel: ObservableObject {
     }
 
     func formattedSize(_ bytes: Int64) -> String {
-        let formatter = ByteCountFormatter()
-        formatter.allowedUnits = .useAll
-        formatter.countStyle = .file
-        formatter.includesUnit = true
-        formatter.locale = AppLanguage.current.locale
-        return formatter.string(fromByteCount: bytes)
+        ByteCountFormatter.string(fromByteCount: Int64(bytes), countStyle: .file)
     }
 
     func formattedGain(for item: FileConversionItem) -> String {
