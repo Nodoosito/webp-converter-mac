@@ -38,6 +38,15 @@ struct ContentView: View {
         .onChange(of: viewModel.settings.resizeSettings.height) { _ in
             syncInputsFromSettings()
         }
+        .onChange(of: viewModel.settings.resizeSettings.percentage) { _ in
+            syncInputsFromSettings()
+        }
+        .onChange(of: viewModel.settings.resizeSettings.width) { _ in
+            syncInputsFromSettings()
+        }
+        .onChange(of: viewModel.settings.resizeSettings.height) { _ in
+            syncInputsFromSettings()
+        }
         .onChange(of: viewModel.settings.resizeSettings.mode) { _ in
             syncInputsFromSettings()
         }
