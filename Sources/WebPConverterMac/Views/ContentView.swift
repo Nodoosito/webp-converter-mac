@@ -141,6 +141,7 @@ struct ContentView: View {
         default:
             return "Appearance: Auto"
         }
+        .scrollIndicators(.hidden)
     }
 
     // MARK: - Sidebar
@@ -198,10 +199,13 @@ struct ContentView: View {
                     if viewModel.globalError == nil {
                         presetNameInput = ""
                     }
+                    .buttonStyle(.bordered)
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(presetNameInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
+        }
+    }
 
             presetDeleteButton
         }
@@ -232,17 +236,20 @@ struct ContentView: View {
                     .frame(width: 52, alignment: .trailing)
             }
 
-            Toggle(
-                isOn: Binding(
-                    get: { viewModel.settings.removeMetadata },
-                    set: { viewModel.updateRemoveMetadata($0) }
-                )
-            ) {
-                labelWithInfo(
-                    L10n.text("settings.metadata.label", language: currentLanguage),
-                    help: L10n.text("settings.metadata.help", language: currentLanguage),
-                    isPresented: $isMetadataHelpPresented
-                )
+                Toggle(
+                    isOn: Binding(
+                        get: { viewModel.settings.removeMetadata },
+                        set: { viewModel.updateRemoveMetadata($0) }
+                    )
+                ) {
+                    labelWithInfo(
+                        L10n.text("settings.metadata.label", language: currentLanguage),
+                        help: L10n.text("settings.metadata.help", language: currentLanguage),
+                        isPresented: $isMetadataHelpPresented
+                    )
+                }
+                .toggleStyle(.switch)
+                .tint(.nodooAccent)
             }
             .toggleStyle(.switch)
             .tint(.nodooAccent)
@@ -460,8 +467,12 @@ struct ContentView: View {
                         fileCard(item)
                     }
                 }
+                .scrollIndicators(.hidden)
             }
         }
+        .frame(maxWidth: .infinity)
+        .frame(minHeight: 180)
+        .glassCard(cornerRadius: 24, fillOpacity: 0.08)
     }
 
     private var sortControls: some View {
@@ -732,6 +743,8 @@ struct ContentView: View {
                     .foregroundStyle(.nodooText.opacity(0.76))
             }
         }
+        .buttonStyle(.borderedProminent)
+        .disabled(viewModel.items.isEmpty || viewModel.isConverting)
     }
 
     private var convertButton: some View {
