@@ -88,10 +88,12 @@ struct GlassCardModifier: ViewModifier {
             .overlay(
                 shape
                     .fill(Color.white.opacity(fillOpacity))
+                    .allowsHitTesting(false)
             )
             .overlay(
                 shape
                     .stroke(Color.nodooSecondary.opacity(strokeOpacity), lineWidth: 1)
+                    .allowsHitTesting(false)
             )
     }
 }

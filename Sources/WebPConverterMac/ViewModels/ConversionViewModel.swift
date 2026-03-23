@@ -126,6 +126,8 @@ final class ConversionViewModel: ObservableObject {
 
     var canDeleteSelectedPreset: Bool { selectedPreset?.isSystemPreset == false }
 
+    func isCustomPreset(_ preset: ConversionPreset) -> Bool { !preset.isSystemPreset }
+
     init(
         presetStore: ConversionPresetStore = ConversionPresetStore(),
         userDefaults: UserDefaults = .standard
