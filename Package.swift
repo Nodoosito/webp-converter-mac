@@ -10,7 +10,7 @@ let package = Package(
         .library(name: "Orlo", targets: ["WebPConverterMac"])
     ],
     targets: [
-        .Target(
+        .target(
             name: "WebPConverterMac",
             path: "Sources/WebPConverterMac",
             resources: [
