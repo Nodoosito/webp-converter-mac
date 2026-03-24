@@ -1,7 +1,7 @@
 import AppKit
 import SwiftUI
 
-@main
+//@main
 struct WebPConverterMacApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var viewModel = ConversionViewModel()
