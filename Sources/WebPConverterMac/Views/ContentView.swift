@@ -1,8 +1,11 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct ContentView: View {
-    @ObservedObject var viewModel: ConversionViewModel
+public typealias WebPConverterContentView = ContentView
+
+
+public struct ContentView: View {
+    @ObservedObject private var viewModel: ConversionViewModel
     @AppStorage(AppLanguage.storageKey) private var selectedLanguage = AppLanguage.fallback.rawValue
     @AppStorage("appearanceMode") private var appearanceMode = 0
 
@@ -17,6 +20,10 @@ struct ContentView: View {
     @State private var isResizeHelpPresented = false
     @State private var isDropTargeted = false
 
+    public init(viewModel: ConversionViewModel) {
+        self.viewModel = viewModel
+    }
+
     private var currentLanguage: AppLanguage {
         AppLanguage(rawValue: selectedLanguage) ?? .fallback
     }
@@ -25,7 +32,7 @@ struct ContentView: View {
         !viewModel.items.isEmpty
     }
 
-    var body: some View {
+    public var body: some View {
         NavigationSplitView {
             sidebar
                 .frame(minWidth: 300, idealWidth: 340)
