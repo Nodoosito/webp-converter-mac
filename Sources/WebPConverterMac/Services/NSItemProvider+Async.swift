@@ -16,36 +16,35 @@ enum NSItemProviderAsyncError: LocalizedError {
 }
 
 extension NSItemProvider {
-    func loadFileURL() async throws -> URL {
-        try await withCheckedThrowingContinuation { continuation in
-            loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { item, error in
-                if let error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-
-                if let url = item as? URL {
-                    continuation.resume(returning: url)
-                    return
-                }
-
-                if let nsURL = item as? NSURL, let url = nsURL as URL? {
-                    continuation.resume(returning: url)
-                    return
-                }
-
-                if let data = item as? Data {
-                    guard let droppedURL = URL(dataRepresentation: data, relativeTo: nil) else {
-                        continuation.resume(throwing: NSItemProviderAsyncError.invalidFileURLData)
-                        return
-                    }
-
-                    continuation.resume(returning: droppedURL)
-                    return
-                }
-
-                continuation.resume(throwing: NSItemProviderAsyncError.unsupportedDroppedItem)
+    @MainActor
+    func loadFileURL(completion: @escaping @Sendable (Result<URL, Error>) -> Void) {
+        loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { item, error in
+            if let error {
+                completion(.failure(error))
+                return
             }
+
+            if let url = item as? URL {
+                completion(.success(url))
+                return
+            }
+
+            if let nsURL = item as? NSURL, let url = nsURL as URL? {
+                completion(.success(url))
+                return
+            }
+
+            if let data = item as? Data {
+                guard let droppedURL = URL(dataRepresentation: data, relativeTo: nil) else {
+                    completion(.failure(NSItemProviderAsyncError.invalidFileURLData))
+                    return
+                }
+
+                completion(.success(droppedURL))
+                return
+            }
+
+            completion(.failure(NSItemProviderAsyncError.unsupportedDroppedItem))
         }
     }
 }

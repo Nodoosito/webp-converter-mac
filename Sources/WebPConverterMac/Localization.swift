@@ -1,19 +1,19 @@
 import Foundation
 
-enum AppLanguage: String, CaseIterable, Identifiable {
+public enum AppLanguage: String, CaseIterable, Identifiable {
     case fr
     case en
 
-    static let storageKey = "selectedLanguage"
-    static let fallback: AppLanguage = .fr
+    public static let storageKey = "selectedLanguage"
+    public static let fallback: AppLanguage = .fr
 
-    var id: String { rawValue }
+    public var id: String { rawValue }
 
-    var locale: Locale {
+    public var locale: Locale {
         Locale(identifier: rawValue)
     }
 
-    static var current: AppLanguage {
+    public static var current: AppLanguage {
         let storedValue = UserDefaults.standard.string(forKey: storageKey) ?? fallback.rawValue
         return AppLanguage(rawValue: storedValue) ?? fallback
     }
