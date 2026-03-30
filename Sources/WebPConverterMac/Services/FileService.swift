@@ -1,6 +1,18 @@
 import AppKit
 import UniformTypeIdentifiers
 
+private actor URLAccumulator {
+    private var urls: [URL] = []
+
+    func append(contentsOf newURLs: [URL]) {
+        urls.append(contentsOf: newURLs)
+    }
+
+    func all() -> [URL] {
+        urls
+    }
+}
+
 struct FileService: Sendable {
     private let supportedExtensions: Set<String> = ["png", "jpg", "jpeg", "heic"]
 
@@ -40,15 +52,13 @@ struct FileService: Sendable {
         }
 
         let group = DispatchGroup()
-        let lock = NSLock()
-        var urls: [URL] = []
+        let accumulator = URLAccumulator()
 
         for provider in acceptedProviders {
             group.enter()
             provider.loadFileURL { result in
-                defer { group.leave() }
-
                 guard case .success(let droppedURL) = result else {
+                    group.leave()
                     return
                 }
 
@@ -61,15 +71,19 @@ struct FileService: Sendable {
                     discoveredURLs = []
                 }
 
-                guard !discoveredURLs.isEmpty else { return }
-                lock.lock()
-                urls.append(contentsOf: discoveredURLs)
-                lock.unlock()
+                Task {
+                    if !discoveredURLs.isEmpty {
+                        await accumulator.append(contentsOf: discoveredURLs)
+                    }
+                    group.leave()
+                }
             }
         }
 
         group.notify(queue: .main) {
-            completion(urls)
+            Task { @MainActor in
+                completion(await accumulator.all())
+            }
         }
     }
 
