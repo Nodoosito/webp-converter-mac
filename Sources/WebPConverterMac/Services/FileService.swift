@@ -1,12 +1,7 @@
 import AppKit
 import UniformTypeIdentifiers
 
-// On passe en 'final class' @MainActor pour sécuriser le Drag & Drop
-@MainActor
-public final class FileService: Sendable {
-    
-    public init() {} 
-
+struct FileService: Sendable {
     private let supportedExtensions: Set<String> = ["png", "jpg", "jpeg", "heic"]
 
     public func openImagePanel() -> [URL] {
@@ -30,24 +25,52 @@ public final class FileService: Sendable {
         return panel.runModal() == .OK ? panel.url : nil
     }
 
-    // Cette fonction peut maintenant recevoir les providers car elle est MainActor
-    public func acceptedImageURLs(from providers: [NSItemProvider]) async -> [URL] {
+    @MainActor
+    func acceptedImageURLs(
+        from providers: [NSItemProvider],
+        completion: @escaping @MainActor ([URL]) -> Void
+    ) {
+        let acceptedProviders = providers.filter {
+            $0.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier)
+        }
+
+        guard !acceptedProviders.isEmpty else {
+            completion([])
+            return
+        }
+
+        let group = DispatchGroup()
+        let lock = NSLock()
         var urls: [URL] = []
 
-        for provider in providers where provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
-            // Utilisation de loadFileURL (méthode de ton extension)
-            guard let droppedURL = try? await provider.loadFileURL() else {
-                continue
-            }
+        for provider in acceptedProviders {
+            group.enter()
+            provider.loadFileURL { result in
+                defer { group.leave() }
 
-            if isDirectory(url: droppedURL) {
-                urls.append(contentsOf: supportedImagesRecursively(in: droppedURL))
-            } else if isSupportedImage(url: droppedURL) {
-                urls.append(droppedURL)
+                guard case .success(let droppedURL) = result else {
+                    return
+                }
+
+                let discoveredURLs: [URL]
+                if isDirectory(url: droppedURL) {
+                    discoveredURLs = supportedImagesRecursively(in: droppedURL)
+                } else if isSupportedImage(url: droppedURL) {
+                    discoveredURLs = [droppedURL]
+                } else {
+                    discoveredURLs = []
+                }
+
+                guard !discoveredURLs.isEmpty else { return }
+                lock.lock()
+                urls.append(contentsOf: discoveredURLs)
+                lock.unlock()
             }
         }
 
-        return urls
+        group.notify(queue: .main) {
+            completion(urls)
+        }
     }
 
     public func isSupportedImage(url: URL) -> Bool {

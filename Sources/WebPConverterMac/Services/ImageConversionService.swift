@@ -3,7 +3,7 @@ import CoreGraphics
 import ImageIO
 import UniformTypeIdentifiers
 
-enum ConversionError: LocalizedError {
+enum ConversionError: LocalizedError, Sendable {
     case unableToReadImage
     case outputFolderUnavailable
     case nativeWebPUnsupported
