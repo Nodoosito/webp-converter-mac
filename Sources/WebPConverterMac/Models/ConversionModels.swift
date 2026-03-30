@@ -63,14 +63,16 @@ public struct ResizeSettings: Codable, Equatable, Sendable {
     }
 }
 
-public enum FileConversionStatus: Equatable {
+// 1. AJOUT DE 'Sendable' ICI
+public enum FileConversionStatus: Equatable, Sendable {
     case pending
     case processing
     case success(outputURL: URL, outputSize: Int64)
     case failure(message: String)
 }
 
-public struct FileConversionItem: Identifiable, Equatable {
+// 2. AJOUT DE 'Sendable' ICI
+public struct FileConversionItem: Identifiable, Equatable, Sendable {
     public let id = UUID()
     public let inputURL: URL
     public let inputSize: Int64
