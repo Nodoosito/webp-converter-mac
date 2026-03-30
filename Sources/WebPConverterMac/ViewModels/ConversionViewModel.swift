@@ -3,19 +3,19 @@ import Foundation
 import ImageIO
 
 @MainActor
-final class ConversionViewModel: ObservableObject {
-    enum SortColumn { case name, beforeSize, afterSize, gain, status }
-    enum SortDirection { case none, ascending, descending }
+public final class ConversionViewModel: ObservableObject {
+    public enum SortColumn { case name, beforeSize, afterSize, gain, status }
+    public enum SortDirection { case none, ascending, descending }
 
-    struct PreviewInfo {
-        let image: NSImage?
-        let fileSize: Int64
-        let dimensions: CGSize?
+    public struct PreviewInfo {
+        public let image: NSImage?
+        public let fileSize: Int64
+        public let dimensions: CGSize?
     }
 
     private struct LoadedPreview {
-        let image: NSImage?
-        let dimensions: CGSize?
+        public let image: NSImage?
+        public let dimensions: CGSize?
     }
 
     private enum PreviewMessageState {
@@ -65,21 +65,21 @@ final class ConversionViewModel: ObservableObject {
     private let dimensionRange: ClosedRange<Double> = 1...20_000
     private let outputFolderDefaultsKey = "selectedOutputFolderPath"
 
-    @Published private(set) var items: [FileConversionItem] = []
-    @Published var settings = ConversionSettings()
+    @Published public private(set) var items: [FileConversionItem] = []
+    @Published public var settings = ConversionSettings()
     @Published private var globalErrorDescriptor: GlobalErrorDescriptor?
-    @Published private(set) var isConverting = false
-    @Published private(set) var progress: Double = 0
-    @Published var showCompletionAlert = false
-    @Published private(set) var presets: [ConversionPreset] = []
-    @Published var selectedPresetID: UUID?
+    @Published public private(set) var isConverting = false
+    @Published public private(set) var progress: Double = 0
+    @Published public var showCompletionAlert = false
+    @Published public private(set) var presets: [ConversionPreset] = []
+    @Published public var selectedPresetID: UUID?
 
-    @Published var currentSortColumn: SortColumn?
-    @Published var currentSortDirection: SortDirection = .none
-    @Published var selectedItemID: UUID?
+    @Published public var currentSortColumn: SortColumn?
+    @Published public var currentSortDirection: SortDirection = .none
+    @Published public var selectedItemID: UUID?
 
-    @Published private(set) var originalPreview: PreviewInfo?
-    @Published private(set) var convertedPreview: PreviewInfo?
+    @Published public private(set) var originalPreview: PreviewInfo?
+    @Published public private(set) var convertedPreview: PreviewInfo?
     @Published private var previewState: PreviewMessageState = .selectFile
 
     private let fileService = FileService()
@@ -88,17 +88,17 @@ final class ConversionViewModel: ObservableObject {
     private let userDefaults: UserDefaults
     private var conversionTask: Task<Void, Never>?
 
-    var globalError: String? {
+    public var globalError: String? {
         globalErrorDescriptor?.localizedText
     }
 
-    var previewMessage: String {
+    public var previewMessage: String {
         previewState.localizedText
     }
 
-    var canConvert: Bool { !items.isEmpty && settings.outputFolder != nil && !isConverting }
-    var nativeWebPAvailable: Bool { conversionService.isNativeWebPEncodingAvailable }
-    var totalGainInMegabytes: Double {
+    public var canConvert: Bool { !items.isEmpty && settings.outputFolder != nil && !isConverting }
+    public var nativeWebPAvailable: Bool { conversionService.isNativeWebPEncodingAvailable }
+    public var totalGainInMegabytes: Double {
         let successfulItems = items.compactMap { item -> (inputSize: Int64, outputSize: Int64)? in
             guard case .success(_, let outputSize) = item.status else { return nil }
             return (item.inputSize, outputSize)
@@ -109,7 +109,7 @@ final class ConversionViewModel: ObservableObject {
         return Double(totalInputSize - totalOutputSize) / 1_048_576
     }
 
-    var formattedTotalGain: String {
+    public var formattedTotalGain: String {
         let formatter = NumberFormatter()
         formatter.locale = AppLanguage.current.locale
         formatter.numberStyle = .decimal
@@ -119,14 +119,22 @@ final class ConversionViewModel: ObservableObject {
         return L10n.format("vm.total_gain.megabytes", formattedValue)
     }
 
-    var selectedPreset: ConversionPreset? {
+    public var selectedPreset: ConversionPreset? {
         guard let selectedPresetID else { return nil }
         return presets.first(where: { $0.id == selectedPresetID })
     }
 
-    var canDeleteSelectedPreset: Bool { selectedPreset?.isSystemPreset == false }
+    public var canDeleteSelectedPreset: Bool { selectedPreset?.isSystemPreset == false }
 
-    func isCustomPreset(_ preset: ConversionPreset) -> Bool { !preset.isSystemPreset }
+    public func isCustomPreset(_ preset: ConversionPreset) -> Bool { !preset.isSystemPreset }
+
+    public init() {
+        self.presetStore = ConversionPresetStore()
+        self.userDefaults = .standard
+        presets = presetStore.loadPresets()
+        settings.outputFolder = restoredOutputFolder()
+        selectedPresetID = matchingPresetID(for: settings)
+    }
 
     init(
         presetStore: ConversionPresetStore = ConversionPresetStore(),
@@ -139,7 +147,7 @@ final class ConversionViewModel: ObservableObject {
         selectedPresetID = matchingPresetID(for: settings)
     }
 
-    var sortedItems: [FileConversionItem] {
+    public var sortedItems: [FileConversionItem] {
         guard let column = currentSortColumn, currentSortDirection != .none else { return items }
 
         if column == .afterSize {
@@ -170,16 +178,16 @@ final class ConversionViewModel: ObservableObject {
         }
     }
 
-    var selectedItem: FileConversionItem? {
+    public var selectedItem: FileConversionItem? {
         guard let selectedItemID else { return nil }
         return items.first(where: { $0.id == selectedItemID })
     }
 
-    func displayName(for preset: ConversionPreset) -> String {
+    public func displayName(for preset: ConversionPreset) -> String {
         preset.localizedDisplayName
     }
 
-    func cycleSort(for column: SortColumn) {
+    public func cycleSort(for column: SortColumn) {
         if currentSortColumn != column {
             currentSortColumn = column
             currentSortDirection = .descending
@@ -195,11 +203,11 @@ final class ConversionViewModel: ObservableObject {
         }
     }
 
-    func addFilesFromPanel() {
+    public func addFilesFromPanel() {
         addFiles(fileService.openImagePanel())
     }
 
-    func addFiles(_ urls: [URL]) {
+    public func addFiles(_ urls: [URL]) {
         let existing = Set(items.map { $0.inputURL.standardizedFileURL })
         let newItems = urls
             .filter { fileService.isSupportedImage(url: $0) }
@@ -210,7 +218,7 @@ final class ConversionViewModel: ObservableObject {
         refreshPreviewIfNeeded()
     }
 
-    func removeItem(_ item: FileConversionItem) {
+    public func removeItem(_ item: FileConversionItem) {
         items.removeAll { $0.id == item.id }
         if selectedItemID == item.id {
             selectedItemID = nil
@@ -218,7 +226,7 @@ final class ConversionViewModel: ObservableObject {
         }
     }
 
-    func clearAll() {
+    public func clearAll() {
         stopConversion()
         items.removeAll()
         progress = 0
@@ -228,24 +236,24 @@ final class ConversionViewModel: ObservableObject {
         clearPreviewState(.selectFile)
     }
 
-    func selectOutputFolder() {
+    public func selectOutputFolder() {
         guard let outputFolder = fileService.openOutputFolderPanel() else { return }
         settings.outputFolder = outputFolder
         persistOutputFolder(outputFolder)
     }
 
-    func stopConversion() {
+    public func stopConversion() {
         conversionTask?.cancel()
     }
 
-    func handleDrop(providers: [NSItemProvider]) {
+    public func handleDrop(providers: [NSItemProvider]) {
         Task {
             let urls = await fileService.acceptedImageURLs(from: providers)
             addFiles(urls)
         }
     }
 
-    func updateResizeMode(_ mode: ResizeMode) {
+    public func updateResizeMode(_ mode: ResizeMode) {
         var updated = settings
         updated.resizeSettings.mode = mode
         if mode == .percentage { updated.resizeSettings.keepAspectRatio = true }
@@ -253,7 +261,7 @@ final class ConversionViewModel: ObservableObject {
         refreshSelectedPreset()
     }
 
-    func updateQuality(_ quality: Double) {
+    public func updateQuality(_ quality: Double) {
         var updated = settings
         updated.quality = quality
         settings = updated
@@ -267,14 +275,14 @@ final class ConversionViewModel: ObservableObject {
         refreshSelectedPreset()
     }
 
-    func updateWidth(_ width: Double) {
+    public func updateWidth(_ width: Double) {
         var updated = settings
         updated.resizeSettings.width = min(max(dimensionRange.lowerBound, width), dimensionRange.upperBound)
         settings = updated
         refreshSelectedPreset()
     }
 
-    func updateHeight(_ height: Double) {
+    public func updateHeight(_ height: Double) {
         var updated = settings
         updated.resizeSettings.height = min(max(dimensionRange.lowerBound, height), dimensionRange.upperBound)
         settings = updated
@@ -302,7 +310,7 @@ final class ConversionViewModel: ObservableObject {
         refreshSelectedPreset()
     }
 
-    func applyPreset(id: UUID?) {
+    public func applyPreset(id: UUID?) {
         guard let id, let preset = presets.first(where: { $0.id == id }) else {
             selectedPresetID = nil
             return
@@ -320,7 +328,7 @@ final class ConversionViewModel: ObservableObject {
         selectedPresetID = preset.id
     }
 
-    func saveCurrentPreset(named name: String) {
+    public func saveCurrentPreset(named name: String) {
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty else {
             globalErrorDescriptor = .emptyPresetName
@@ -346,7 +354,7 @@ final class ConversionViewModel: ObservableObject {
         selectedPresetID = preset.id
     }
 
-    func deletePreset(id: UUID) {
+    public func deletePreset(id: UUID) {
         guard
             let preset = presets.first(where: { $0.id == id }),
             !preset.isSystemPreset,
@@ -370,7 +378,7 @@ final class ConversionViewModel: ObservableObject {
         refreshPreviewIfNeeded()
     }
 
-    func convertAll() {
+    public func convertAll() {
         guard let outputFolder = settings.outputFolder else {
             globalErrorDescriptor = .missingOutputFolder
             return

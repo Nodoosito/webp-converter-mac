@@ -1,14 +1,14 @@
 import Foundation
 
-enum ResizeMode: String, CaseIterable, Identifiable, Codable, Sendable {
+public enum ResizeMode: String, CaseIterable, Identifiable, Codable, Sendable {
     case original = "Taille originale"
     case percentage = "Pourcentage"
     case width = "Largeur"
     case height = "Hauteur"
 
-    var id: String { rawValue }
+    public var id: String { rawValue }
 
-    var localizedTitle: String {
+    public var localizedTitle: String {
         switch self {
         case .original:
             return L10n.text("resize.original")
@@ -22,14 +22,14 @@ enum ResizeMode: String, CaseIterable, Identifiable, Codable, Sendable {
     }
 }
 
-enum SuffixMode: String, CaseIterable, Identifiable, Codable, Sendable {
+public enum SuffixMode: String, CaseIterable, Identifiable, Codable, Sendable {
     case none = "Aucun"
     case presetName = "Nom du préréglage"
     case dimensions = "Dimensions"
 
-    var id: String { rawValue }
+    public var id: String { rawValue }
 
-    var localizedTitle: String {
+    public var localizedTitle: String {
         switch self {
         case .none:
             return L10n.text("suffix.none")
@@ -41,49 +41,85 @@ enum SuffixMode: String, CaseIterable, Identifiable, Codable, Sendable {
     }
 }
 
-struct ResizeSettings: Codable, Equatable, Sendable {
-    var mode: ResizeMode = .original
-    var percentage: Double = 100
-    var width: Double = 1920
-    var height: Double = 1080
-    var keepAspectRatio: Bool = true
+public struct ResizeSettings: Codable, Equatable, Sendable {
+    public var mode: ResizeMode = .original
+    public var percentage: Double = 100
+    public var width: Double = 1920
+    public var height: Double = 1080
+    public var keepAspectRatio: Bool = true
+
+    public init(
+        mode: ResizeMode = .original,
+        percentage: Double = 100,
+        width: Double = 1920,
+        height: Double = 1080,
+        keepAspectRatio: Bool = true
+    ) {
+        self.mode = mode
+        self.percentage = percentage
+        self.width = width
+        self.height = height
+        self.keepAspectRatio = keepAspectRatio
+    }
 }
 
-enum FileConversionStatus: Equatable {
+public enum FileConversionStatus: Equatable {
     case pending
     case processing
     case success(outputURL: URL, outputSize: Int64)
     case failure(message: String)
 }
 
-struct FileConversionItem: Identifiable, Equatable {
-    let id = UUID()
-    let inputURL: URL
-    let inputSize: Int64
-    var status: FileConversionStatus = .pending
+public struct FileConversionItem: Identifiable, Equatable {
+    public let id = UUID()
+    public let inputURL: URL
+    public let inputSize: Int64
+    public var status: FileConversionStatus = .pending
 
-    var filename: String { inputURL.lastPathComponent }
+    public var filename: String { inputURL.lastPathComponent }
+
+    public init(inputURL: URL, inputSize: Int64, status: FileConversionStatus = .pending) {
+        self.inputURL = inputURL
+        self.inputSize = inputSize
+        self.status = status
+    }
 }
 
-struct ConversionSettings: Sendable {
-    var quality: Double = 0.8
-    var resizeSettings = ResizeSettings()
-    var outputFolder: URL?
-    var removeMetadata: Bool = true
-    var suffixMode: SuffixMode = .none
-    var selectedPresetName: String?
+public struct ConversionSettings: Sendable {
+    public var quality: Double = 0.8
+    public var resizeSettings = ResizeSettings()
+    public var outputFolder: URL?
+    public var removeMetadata: Bool = true
+    public var suffixMode: SuffixMode = .none
+    public var selectedPresetName: String?
+
+    public init(
+        quality: Double = 0.8,
+        resizeSettings: ResizeSettings = ResizeSettings(),
+        outputFolder: URL? = nil,
+        removeMetadata: Bool = true,
+        suffixMode: SuffixMode = .none,
+        selectedPresetName: String? = nil
+    ) {
+        self.quality = quality
+        self.resizeSettings = resizeSettings
+        self.outputFolder = outputFolder
+        self.removeMetadata = removeMetadata
+        self.suffixMode = suffixMode
+        self.selectedPresetName = selectedPresetName
+    }
 }
 
-struct ConversionPreset: Codable, Identifiable, Equatable, Sendable {
-    let id: UUID
-    var name: String
-    var quality: Double
-    var resizeSettings: ResizeSettings
-    var removeMetadata: Bool
-    var suffixMode: SuffixMode
-    var isSystemPreset: Bool
+public struct ConversionPreset: Codable, Identifiable, Equatable, Sendable {
+    public let id: UUID
+    public var name: String
+    public var quality: Double
+    public var resizeSettings: ResizeSettings
+    public var removeMetadata: Bool
+    public var suffixMode: SuffixMode
+    public var isSystemPreset: Bool
 
-    init(
+    public init(
         id: UUID = UUID(),
         name: String,
         quality: Double,
@@ -101,7 +137,7 @@ struct ConversionPreset: Codable, Identifiable, Equatable, Sendable {
         self.isSystemPreset = isSystemPreset
     }
 
-    var localizedDisplayName: String {
+    public var localizedDisplayName: String {
         guard isSystemPreset else { return name }
 
         switch name {
@@ -126,7 +162,7 @@ struct ConversionPreset: Codable, Identifiable, Equatable, Sendable {
         case isSystemPreset
     }
 
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(UUID.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
@@ -137,7 +173,7 @@ struct ConversionPreset: Codable, Identifiable, Equatable, Sendable {
         isSystemPreset = try container.decodeIfPresent(Bool.self, forKey: .isSystemPreset) ?? false
     }
 
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encode(name, forKey: .name)
