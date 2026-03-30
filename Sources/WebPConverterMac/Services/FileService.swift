@@ -1,11 +1,15 @@
 import AppKit
 import UniformTypeIdentifiers
 
-struct FileService {
+// On passe en 'final class' @MainActor pour sécuriser le Drag & Drop
+@MainActor
+public final class FileService: Sendable {
+    
+    public init() {} 
+
     private let supportedExtensions: Set<String> = ["png", "jpg", "jpeg", "heic"]
 
-    @MainActor
-    func openImagePanel() -> [URL] {
+    public func openImagePanel() -> [URL] {
         let panel = NSOpenPanel()
         panel.allowedContentTypes = [.png, .jpeg, .heic]
         panel.canChooseFiles = true
@@ -16,8 +20,7 @@ struct FileService {
         return panel.runModal() == .OK ? panel.urls : []
     }
 
-    @MainActor
-    func openOutputFolderPanel() -> URL? {
+    public func openOutputFolderPanel() -> URL? {
         let panel = NSOpenPanel()
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
@@ -27,10 +30,12 @@ struct FileService {
         return panel.runModal() == .OK ? panel.url : nil
     }
 
-    func acceptedImageURLs(from providers: [NSItemProvider]) async -> [URL] {
+    // Cette fonction peut maintenant recevoir les providers car elle est MainActor
+    public func acceptedImageURLs(from providers: [NSItemProvider]) async -> [URL] {
         var urls: [URL] = []
 
         for provider in providers where provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
+            // Utilisation de loadFileURL (méthode de ton extension)
             guard let droppedURL = try? await provider.loadFileURL() else {
                 continue
             }
@@ -45,11 +50,11 @@ struct FileService {
         return urls
     }
 
-    func isSupportedImage(url: URL) -> Bool {
+    public func isSupportedImage(url: URL) -> Bool {
         supportedExtensions.contains(url.pathExtension.lowercased())
     }
 
-    func fileSize(for url: URL) -> Int64 {
+    public func fileSize(for url: URL) -> Int64 {
         guard
             let values = try? url.resourceValues(forKeys: [.fileSizeKey]),
             let fileSize = values.fileSize
@@ -58,7 +63,7 @@ struct FileService {
         return Int64(fileSize)
     }
 
-    func uniqueOutputURL(for inputURL: URL, in outputFolder: URL, pathExtension: String = "webp") -> URL {
+    public func uniqueOutputURL(for inputURL: URL, in outputFolder: URL, pathExtension: String = "webp") -> URL {
         uniqueOutputURL(
             forBaseName: inputURL.deletingPathExtension().lastPathComponent,
             in: outputFolder,
@@ -66,7 +71,7 @@ struct FileService {
         )
     }
 
-    func uniqueOutputURL(forBaseName baseName: String, in outputFolder: URL, pathExtension: String = "webp") -> URL {
+    public func uniqueOutputURL(forBaseName baseName: String, in outputFolder: URL, pathExtension: String = "webp") -> URL {
         var candidate = outputFolder
             .appendingPathComponent(baseName)
             .appendingPathExtension(pathExtension)
