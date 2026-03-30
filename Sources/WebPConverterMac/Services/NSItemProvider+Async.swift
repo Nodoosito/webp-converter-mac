@@ -16,6 +16,7 @@ enum NSItemProviderAsyncError: LocalizedError {
 }
 
 extension NSItemProvider {
+    @MainActor
     func loadFileURL() async throws -> URL {
         try await withCheckedThrowingContinuation { continuation in
             loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { item, error in
