@@ -247,7 +247,7 @@ public final class ConversionViewModel: ObservableObject {
     }
 
     public func handleDrop(providers: [NSItemProvider]) {
-        Task {
+        Task { @MainActor in 
             let urls = await fileService.acceptedImageURLs(from: providers)
             addFiles(urls)
         }
