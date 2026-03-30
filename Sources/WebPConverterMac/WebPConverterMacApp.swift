@@ -1,12 +1,16 @@
 import AppKit
 import SwiftUI
 
-//@main
+enum AppStorageKeys {
+    static let appearanceMode = "appearanceMode"
+}
+
+@main
 struct WebPConverterMacApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var viewModel = ConversionViewModel()
     @AppStorage(AppLanguage.storageKey) private var selectedLanguage = ""
-    @AppStorage("appearanceMode") private var appearanceMode = 0
+    @AppStorage(AppStorageKeys.appearanceMode) private var appearanceMode = 0
 
     private var effectiveLanguage: AppLanguage {
         AppLanguage(rawValue: selectedLanguage).map { $0 } ?? .fallback
@@ -36,7 +40,7 @@ struct WebPConverterMacApp: App {
             }
             .preferredColorScheme(preferredColorScheme)
             .frame(minWidth: 960, minHeight: 680)
-            .background(MainWindowConfigurator())
+            .background(MainWindowConfigurator(appearanceMode: appearanceMode))
         }
         .windowResizability(.contentSize)
     }
@@ -66,6 +70,19 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 private struct MainWindowConfigurator: NSViewRepresentable {
+    let appearanceMode: Int
+
+    private var nsAppearance: NSAppearance? {
+        switch appearanceMode {
+        case 1:
+            return NSAppearance(named: .aqua)
+        case 2:
+            return NSAppearance(named: .darkAqua)
+        default:
+            return nil
+        }
+    }
+
     func makeNSView(context: Context) -> NSView {
         let view = NSView()
 
@@ -89,6 +106,7 @@ private struct MainWindowConfigurator: NSViewRepresentable {
             window.backgroundColor = .clear
             window.titlebarAppearsTransparent = true
             window.toolbarStyle = .unifiedCompact
+            window.appearance = nsAppearance
 
             if !window.isKeyWindow {
                 window.makeKeyAndOrderFront(nil)

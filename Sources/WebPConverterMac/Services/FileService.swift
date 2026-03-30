@@ -1,6 +1,32 @@
 import AppKit
 import UniformTypeIdentifiers
 
+enum FileServiceError: LocalizedError, Sendable {
+    case securityScopedAccessDenied
+    case invalidSecurityScopedBookmark
+
+    var errorDescription: String? {
+        switch self {
+        case .securityScopedAccessDenied:
+            return "Accès refusé au dossier de sortie sélectionné. Veuillez le sélectionner à nouveau."
+        case .invalidSecurityScopedBookmark:
+            return "Le signet de sécurité du dossier de sortie est invalide ou a expiré."
+        }
+    }
+}
+
+private actor URLAccumulator {
+    private var urls: [URL] = []
+
+    func append(contentsOf newURLs: [URL]) {
+        urls.append(contentsOf: newURLs)
+    }
+
+    func all() -> [URL] {
+        urls
+    }
+}
+
 struct FileService: Sendable {
     private let supportedExtensions: Set<String> = ["png", "jpg", "jpeg", "heic"]
 
@@ -40,15 +66,13 @@ struct FileService: Sendable {
         }
 
         let group = DispatchGroup()
-        let lock = NSLock()
-        var urls: [URL] = []
+        let accumulator = URLAccumulator()
 
         for provider in acceptedProviders {
             group.enter()
             provider.loadFileURL { result in
-                defer { group.leave() }
-
                 guard case .success(let droppedURL) = result else {
+                    group.leave()
                     return
                 }
 
@@ -61,15 +85,19 @@ struct FileService: Sendable {
                     discoveredURLs = []
                 }
 
-                guard !discoveredURLs.isEmpty else { return }
-                lock.lock()
-                urls.append(contentsOf: discoveredURLs)
-                lock.unlock()
+                Task {
+                    if !discoveredURLs.isEmpty {
+                        await accumulator.append(contentsOf: discoveredURLs)
+                    }
+                    group.leave()
+                }
             }
         }
 
         group.notify(queue: .main) {
-            completion(urls)
+            Task { @MainActor in
+                completion(await accumulator.all())
+            }
         }
     }
 
@@ -115,6 +143,35 @@ struct FileService: Sendable {
 
             index += 1
         }
+    }
+
+    public func makeSecurityScopedBookmark(for url: URL) throws -> Data {
+        try url.bookmarkData(
+            options: [.withSecurityScope],
+            includingResourceValuesForKeys: nil,
+            relativeTo: nil
+        )
+    }
+
+    public func resolveSecurityScopedBookmark(_ bookmarkData: Data) throws -> (url: URL, isStale: Bool) {
+        var isStale = false
+        let resolvedURL = try URL(
+            resolvingBookmarkData: bookmarkData,
+            options: [.withSecurityScope],
+            relativeTo: nil,
+            bookmarkDataIsStale: &isStale
+        )
+        return (resolvedURL, isStale)
+    }
+
+    public func withSecurityScopedAccess<T>(to url: URL, operation: () throws -> T) throws -> T {
+        let startedAccess = url.startAccessingSecurityScopedResource()
+        guard startedAccess else {
+            throw FileServiceError.securityScopedAccessDenied
+        }
+
+        defer { url.stopAccessingSecurityScopedResource() }
+        return try operation()
     }
 
     private func isDirectory(url: URL) -> Bool {

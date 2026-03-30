@@ -7,7 +7,7 @@ public typealias WebPConverterContentView = ContentView
 public struct ContentView: View {
     @ObservedObject private var viewModel: ConversionViewModel
     @AppStorage(AppLanguage.storageKey) private var selectedLanguage = AppLanguage.fallback.rawValue
-    @AppStorage("appearanceMode") private var appearanceMode = 0
+    @AppStorage(AppStorageKeys.appearanceMode) private var appearanceMode = 0
 
     @State private var presetPendingDeletion: ConversionPreset?
     @State private var presetNameInput = ""

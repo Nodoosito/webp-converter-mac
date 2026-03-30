@@ -64,6 +64,7 @@ public final class ConversionViewModel: ObservableObject {
     private let percentageRange: ClosedRange<Double> = 1...100
     private let dimensionRange: ClosedRange<Double> = 1...20_000
     private let outputFolderDefaultsKey = "selectedOutputFolderPath"
+    private let outputFolderBookmarkDefaultsKey = "selectedOutputFolderBookmarkData"
 
     @Published public private(set) var items: [FileConversionItem] = []
     @Published public var settings = ConversionSettings()
@@ -239,7 +240,12 @@ public final class ConversionViewModel: ObservableObject {
     public func selectOutputFolder() {
         guard let outputFolder = fileService.openOutputFolderPanel() else { return }
         settings.outputFolder = outputFolder
-        persistOutputFolder(outputFolder)
+        do {
+            try persistOutputFolder(outputFolder)
+            globalErrorDescriptor = nil
+        } catch {
+            globalErrorDescriptor = .custom(error.localizedDescription)
+        }
     }
 
     public func stopConversion() {
@@ -411,7 +417,9 @@ public final class ConversionViewModel: ObservableObject {
                 self.updateStatus(.processing, for: item.id)
                 do {
                     let result = try await Task.detached(priority: .userInitiated) {
-                        try conversionService.convert(inputURL: item.inputURL, settings: settingsSnapshot, outputFolder: outputFolder)
+                        try fileService.withSecurityScopedAccess(to: outputFolder) {
+                            try conversionService.convert(inputURL: item.inputURL, settings: settingsSnapshot, outputFolder: outputFolder)
+                        }
                     }.value
 
                     if Task.isCancelled {
@@ -508,11 +516,40 @@ public final class ConversionViewModel: ObservableObject {
         convertedPreview = nil
     }
 
-    private func persistOutputFolder(_ url: URL) {
+    private func persistOutputFolder(_ url: URL) throws {
+        let bookmarkData = try fileService.makeSecurityScopedBookmark(for: url)
+        userDefaults.set(bookmarkData, forKey: outputFolderBookmarkDefaultsKey)
         userDefaults.set(url.path, forKey: outputFolderDefaultsKey)
     }
 
     private func restoredOutputFolder() -> URL? {
+        if let bookmarkData = userDefaults.data(forKey: outputFolderBookmarkDefaultsKey) {
+            do {
+                let resolved = try fileService.resolveSecurityScopedBookmark(bookmarkData)
+                var isDirectory = ObjCBool(false)
+                guard
+                    FileManager.default.fileExists(atPath: resolved.url.path, isDirectory: &isDirectory),
+                    isDirectory.boolValue
+                else {
+                    userDefaults.removeObject(forKey: outputFolderBookmarkDefaultsKey)
+                    userDefaults.removeObject(forKey: outputFolderDefaultsKey)
+                    return nil
+                }
+
+                if resolved.isStale {
+                    let refreshedBookmarkData = try fileService.makeSecurityScopedBookmark(for: resolved.url)
+                    userDefaults.set(refreshedBookmarkData, forKey: outputFolderBookmarkDefaultsKey)
+                }
+
+                userDefaults.set(resolved.url.path, forKey: outputFolderDefaultsKey)
+                return resolved.url
+            } catch {
+                userDefaults.removeObject(forKey: outputFolderBookmarkDefaultsKey)
+                userDefaults.removeObject(forKey: outputFolderDefaultsKey)
+                return nil
+            }
+        }
+
         guard let savedPath = userDefaults.string(forKey: outputFolderDefaultsKey) else {
             return nil
         }
@@ -523,7 +560,14 @@ public final class ConversionViewModel: ObservableObject {
             return nil
         }
 
-        return URL(fileURLWithPath: savedPath, isDirectory: true)
+        let fallbackURL = URL(fileURLWithPath: savedPath, isDirectory: true)
+        do {
+            try persistOutputFolder(fallbackURL)
+        } catch {
+            userDefaults.removeObject(forKey: outputFolderBookmarkDefaultsKey)
+        }
+
+        return fallbackURL
     }
 
     private func finishStoppedConversion() {
