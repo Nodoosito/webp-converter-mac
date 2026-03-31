@@ -6,9 +6,21 @@ struct WebPConverterMacApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var viewModel = ConversionViewModel()
     @AppStorage(AppLanguage.storageKey) private var selectedLanguage = ""
+    @AppStorage("appTheme") private var appTheme: Int = 0
 
     private var effectiveLanguage: AppLanguage {
         AppLanguage(rawValue: selectedLanguage).map { $0 } ?? .fallback
+    }
+
+    private var preferredColorScheme: ColorScheme? {
+        switch appTheme {
+        case 1:
+            return .light
+        case 2:
+            return .dark
+        default:
+            return nil
+        }
     }
 
     var body: some Scene {
@@ -24,6 +36,7 @@ struct WebPConverterMacApp: App {
             }
             .frame(minWidth: 980, minHeight: 680)
             .background(MainWindowConfigurator())
+            .preferredColorScheme(preferredColorScheme)
         }
         .windowResizability(.contentSize)
     }

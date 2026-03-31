@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 struct ContentView: View {
     @ObservedObject var viewModel: ConversionViewModel
     @AppStorage(AppLanguage.storageKey) private var selectedLanguage = AppLanguage.fallback.rawValue
+    @AppStorage("appTheme") private var appTheme: Int = 0
 
     @State private var presetPendingDeletion: ConversionPreset?
     @State private var presetNameInput = ""
@@ -19,6 +20,22 @@ struct ContentView: View {
 
     private var currentLanguage: AppLanguage {
         AppLanguage(rawValue: selectedLanguage) ?? .fallback
+    }
+
+    private var themeLabel: String {
+        currentLanguage == .fr ? "Thème" : "Theme"
+    }
+
+    private var themeSystemLabel: String {
+        currentLanguage == .fr ? "Système" : "System"
+    }
+
+    private var themeLightLabel: String {
+        currentLanguage == .fr ? "Clair" : "Light"
+    }
+
+    private var themeDarkLabel: String {
+        currentLanguage == .fr ? "Sombre" : "Dark"
     }
 
     var body: some View {
@@ -121,6 +138,17 @@ struct ContentView: View {
     private var settingsPanel: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .center, spacing: 12) {
+                HStack(spacing: 8) {
+                    Text(themeLabel)
+                    Picker(themeLabel, selection: $appTheme) {
+                        Text(themeSystemLabel).tag(0)
+                        Text(themeLightLabel).tag(1)
+                        Text(themeDarkLabel).tag(2)
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: 260)
+                }
+
                 Picker(L10n.text("settings.preset.label", language: currentLanguage), selection: Binding<UUID?>(
                     get: { viewModel.selectedPresetID },
                     set: { viewModel.applyPreset(id: $0) }
