@@ -3,7 +3,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct ContentView: View {
-    @ObservedObject var viewModel: ConversionViewModel
+    @StateObject private var viewModel = ConversionViewModel()
     @Environment(\.colorScheme) private var colorScheme
     @AppStorage(AppLanguage.storageKey) private var selectedLanguage = AppLanguage.fallback.rawValue
     @AppStorage("appTheme") private var appTheme: Int = 0
@@ -25,7 +25,7 @@ struct ContentView: View {
 
     var body: some View {
         VStack(spacing: 14) {
-            HeaderView(addFilesAction: viewModel.addFilesFromPanel, settingsMenu: settingsMenu)
+            HeaderView(viewModel: viewModel, settingsMenu: settingsMenu)
 
             HStack(spacing: 20) {
                 SidebarView(
@@ -41,10 +41,7 @@ struct ContentView: View {
                     isSuffixHelpPresented: $isSuffixHelpPresented,
                     isResizeHelpPresented: $isResizeHelpPresented,
                     presetPendingDeletion: $presetPendingDeletion,
-                    commitAllResizeInputs: commitAllResizeInputs,
-                    commitPercentageInput: commitPercentageInput,
-                    commitWidthInput: commitWidthInput,
-                    commitHeightInput: commitHeightInput
+                    commitAllResizeInputs: commitAllResizeInputs
                 )
                 .frame(width: 280)
 
@@ -158,38 +155,13 @@ struct ContentView: View {
         }
     }
 
-    private func digitsOnly(_ text: String) -> String {
-        text.filter { $0.isNumber }
-    }
-
     private func commitAllResizeInputs() {
-        commitPercentageInput()
-        commitWidthInput()
-        commitHeightInput()
-    }
-
-    private func commitPercentageInput() {
-        let sanitized = digitsOnly(percentageInput)
-        let source = sanitized.isEmpty ? "100" : sanitized
-        let value = Double(source) ?? viewModel.settings.resizeSettings.percentage
-        viewModel.updatePercentage(value)
-        percentageInput = String(Int(viewModel.settings.resizeSettings.percentage.rounded()))
-    }
-
-    private func commitWidthInput() {
-        let sanitized = digitsOnly(widthInput)
-        let source = sanitized.isEmpty ? "1" : sanitized
-        let value = Double(source) ?? viewModel.settings.resizeSettings.width
-        viewModel.updateWidth(value)
-        widthInput = String(Int(viewModel.settings.resizeSettings.width.rounded()))
-    }
-
-    private func commitHeightInput() {
-        let sanitized = digitsOnly(heightInput)
-        let source = sanitized.isEmpty ? "1" : sanitized
-        let value = Double(source) ?? viewModel.settings.resizeSettings.height
-        viewModel.updateHeight(value)
-        heightInput = String(Int(viewModel.settings.resizeSettings.height.rounded()))
+        commitAllResizeInputs(
+            viewModel: viewModel,
+            percentageInput: $percentageInput,
+            widthInput: $widthInput,
+            heightInput: $heightInput
+        )
     }
 
     private func syncInputsFromSettings() {
@@ -200,7 +172,7 @@ struct ContentView: View {
 }
 
 private struct HeaderView<SettingsMenu: View>: View {
-    let addFilesAction: () -> Void
+    @ObservedObject var viewModel: ConversionViewModel
     let settingsMenu: SettingsMenu
 
     var body: some View {
@@ -211,10 +183,12 @@ private struct HeaderView<SettingsMenu: View>: View {
 
             Spacer()
 
-            Button("Ajouter des fichiers", action: addFilesAction)
-                .buttonStyle(.borderedProminent)
-                .tint(Palette.accent)
-                .controlSize(.large)
+            Button("Add Files") {
+                viewModel.addFilesFromPanel()
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(Palette.accent)
+            .controlSize(.large)
 
             settingsMenu
         }
@@ -235,9 +209,6 @@ private struct SidebarView: View {
     @Binding var isResizeHelpPresented: Bool
     @Binding var presetPendingDeletion: ConversionPreset?
     let commitAllResizeInputs: () -> Void
-    let commitPercentageInput: () -> Void
-    let commitWidthInput: () -> Void
-    let commitHeightInput: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -394,16 +365,34 @@ private struct SidebarView: View {
             HStack {
                 switch viewModel.settings.resizeSettings.mode {
                 case .percentage:
-                    AppKitCommitTextField(placeholder: "100", text: $percentageInput, onCommit: commitPercentageInput)
-                        .frame(width: 70, height: 24)
+                    AppKitCommitTextField(
+                        placeholder: "100",
+                        text: $percentageInput,
+                        onCommit: {
+                            commitSingleResizeInput(viewModel: viewModel, text: $percentageInput, fallback: "100", mode: .percentage)
+                        }
+                    )
+                    .frame(width: 70, height: 24)
                     Text("%")
                 case .width:
-                    AppKitCommitTextField(placeholder: "1920", text: $widthInput, onCommit: commitWidthInput)
-                        .frame(width: 84, height: 24)
+                    AppKitCommitTextField(
+                        placeholder: "1920",
+                        text: $widthInput,
+                        onCommit: {
+                            commitSingleResizeInput(viewModel: viewModel, text: $widthInput, fallback: "1", mode: .width)
+                        }
+                    )
+                    .frame(width: 84, height: 24)
                     Text("px")
                 case .height:
-                    AppKitCommitTextField(placeholder: "1080", text: $heightInput, onCommit: commitHeightInput)
-                        .frame(width: 84, height: 24)
+                    AppKitCommitTextField(
+                        placeholder: "1080",
+                        text: $heightInput,
+                        onCommit: {
+                            commitSingleResizeInput(viewModel: viewModel, text: $heightInput, fallback: "1", mode: .height)
+                        }
+                    )
+                    .frame(width: 84, height: 24)
                     Text("px")
                 case .original:
                     Text("Original")
@@ -565,7 +554,6 @@ private struct MainAreaView: View {
         }
         .liquidCard(cornerRadius: 18)
     }
-}
 
     private var comparisonPanel: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -689,6 +677,52 @@ private struct ComparisonSliderView: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .liquidCard(cornerRadius: 12)
     }
+}
+
+private enum ResizeCommitMode {
+    case percentage
+    case width
+    case height
+}
+
+private func digitsOnly(_ text: String) -> String {
+    text.filter { $0.isNumber }
+}
+
+private func commitSingleResizeInput(
+    viewModel: ConversionViewModel,
+    text: Binding<String>,
+    fallback: String,
+    mode: ResizeCommitMode
+) {
+    let sanitized = digitsOnly(text.wrappedValue)
+    let source = sanitized.isEmpty ? fallback : sanitized
+
+    switch mode {
+    case .percentage:
+        let value = Double(source) ?? viewModel.settings.resizeSettings.percentage
+        viewModel.updatePercentage(value)
+        text.wrappedValue = String(Int(viewModel.settings.resizeSettings.percentage.rounded()))
+    case .width:
+        let value = Double(source) ?? viewModel.settings.resizeSettings.width
+        viewModel.updateWidth(value)
+        text.wrappedValue = String(Int(viewModel.settings.resizeSettings.width.rounded()))
+    case .height:
+        let value = Double(source) ?? viewModel.settings.resizeSettings.height
+        viewModel.updateHeight(value)
+        text.wrappedValue = String(Int(viewModel.settings.resizeSettings.height.rounded()))
+    }
+}
+
+private func commitAllResizeInputs(
+    viewModel: ConversionViewModel,
+    percentageInput: Binding<String>,
+    widthInput: Binding<String>,
+    heightInput: Binding<String>
+) {
+    commitSingleResizeInput(viewModel: viewModel, text: percentageInput, fallback: "100", mode: .percentage)
+    commitSingleResizeInput(viewModel: viewModel, text: widthInput, fallback: "1", mode: .width)
+    commitSingleResizeInput(viewModel: viewModel, text: heightInput, fallback: "1", mode: .height)
 }
 
 private enum Palette {
