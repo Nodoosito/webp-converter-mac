@@ -42,7 +42,10 @@ struct ContentView: View {
                     isSuffixHelpPresented: $isSuffixHelpPresented,
                     isResizeHelpPresented: $isResizeHelpPresented,
                     presetPendingDeletion: $presetPendingDeletion,
-                    commitAllResizeInputs: commitAllResizeInputs
+                    commitAllResizeInputs: commitAllResizeInputs,
+                    updatePercentage: updatePercentage,
+                    updateWidth: updateWidth,
+                    updateHeight: updateHeight
                 )
                 .frame(width: 280)
 
@@ -157,12 +160,33 @@ struct ContentView: View {
     }
 
     private func commitAllResizeInputs() {
-        commitAllResizeInputs(
-            viewModel: viewModel,
-            percentageInput: $percentageInput,
-            widthInput: $widthInput,
-            heightInput: $heightInput
-        )
+        updatePercentage()
+        updateWidth()
+        updateHeight()
+    }
+
+    private func updatePercentage() {
+        let sanitized = digitsOnly(percentageInput)
+        let source = sanitized.isEmpty ? "100" : sanitized
+        let value = Double(source) ?? viewModel.settings.resizeSettings.percentage
+        viewModel.updatePercentage(value)
+        percentageInput = String(Int(viewModel.settings.resizeSettings.percentage.rounded()))
+    }
+
+    private func updateWidth() {
+        let sanitized = digitsOnly(widthInput)
+        let source = sanitized.isEmpty ? "1" : sanitized
+        let value = Double(source) ?? viewModel.settings.resizeSettings.width
+        viewModel.updateWidth(value)
+        widthInput = String(Int(viewModel.settings.resizeSettings.width.rounded()))
+    }
+
+    private func updateHeight() {
+        let sanitized = digitsOnly(heightInput)
+        let source = sanitized.isEmpty ? "1" : sanitized
+        let value = Double(source) ?? viewModel.settings.resizeSettings.height
+        viewModel.updateHeight(value)
+        heightInput = String(Int(viewModel.settings.resizeSettings.height.rounded()))
     }
 
     private func syncInputsFromSettings() {
@@ -185,7 +209,7 @@ private struct HeaderView<SettingsMenu: View>: View {
 
             Spacer()
 
-            Button("Add Files") {
+            Button("Ajouter des fichiers") {
                 viewModel.addFilesFromPanel()
             }
             .buttonStyle(.borderedProminent)
@@ -212,6 +236,9 @@ private struct SidebarView: View {
     @Binding var isResizeHelpPresented: Bool
     @Binding var presetPendingDeletion: ConversionPreset?
     let commitAllResizeInputs: () -> Void
+    let updatePercentage: () -> Void
+    let updateWidth: () -> Void
+    let updateHeight: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -371,9 +398,7 @@ private struct SidebarView: View {
                     AppKitCommitTextField(
                         placeholder: "100",
                         text: $percentageInput,
-                        onCommit: {
-                            commitSingleResizeInput(viewModel: viewModel, text: $percentageInput, fallback: "100", mode: .percentage)
-                        }
+                        onCommit: { Task { @MainActor in updatePercentage() } }
                     )
                     .frame(width: 70, height: 24)
                     Text("%")
@@ -381,9 +406,7 @@ private struct SidebarView: View {
                     AppKitCommitTextField(
                         placeholder: "1920",
                         text: $widthInput,
-                        onCommit: {
-                            commitSingleResizeInput(viewModel: viewModel, text: $widthInput, fallback: "1", mode: .width)
-                        }
+                        onCommit: { Task { @MainActor in updateWidth() } }
                     )
                     .frame(width: 84, height: 24)
                     Text("px")
@@ -391,9 +414,7 @@ private struct SidebarView: View {
                     AppKitCommitTextField(
                         placeholder: "1080",
                         text: $heightInput,
-                        onCommit: {
-                            commitSingleResizeInput(viewModel: viewModel, text: $heightInput, fallback: "1", mode: .height)
-                        }
+                        onCommit: { Task { @MainActor in updateHeight() } }
                     )
                     .frame(width: 84, height: 24)
                     Text("px")
@@ -507,12 +528,12 @@ private struct MainAreaView: View {
             .width(min: 56, ideal: 60, max: 64)
 
             TableColumn("Filename") { item in
-                QueueRowView(text: item.filename)
+                QueueRowView(viewModel: viewModel, text: item.filename)
             }
             .width(min: 240, ideal: 280)
 
             TableColumn("Type") { item in
-                QueueRowView(text: item.inputURL.pathExtension.uppercased())
+                QueueRowView(viewModel: viewModel, text: item.inputURL.pathExtension.uppercased())
             }
             .width(min: 64, ideal: 72, max: 80)
 
@@ -535,7 +556,7 @@ private struct MainAreaView: View {
             .width(min: 82, ideal: 96, max: 108)
 
             TableColumn("Status") { item in
-                QueueRowView(text: uiStatusText(item.status))
+                QueueRowView(viewModel: viewModel, text: uiStatusText(item.status))
             }
             .width(min: 180, ideal: 220)
 
@@ -576,7 +597,7 @@ private struct MainAreaView: View {
                     .padding(.bottom, 12)
             } else if let original = viewModel.originalPreview?.image,
                       let converted = viewModel.convertedPreview?.image {
-                ComparisonSliderView(original: original, converted: converted)
+                ComparisonSliderView(viewModel: viewModel, original: original, converted: converted)
                     .padding(.horizontal, 12)
                     .padding(.bottom, 12)
             } else {
@@ -633,6 +654,7 @@ private struct MainAreaView: View {
 
 @MainActor
 private struct QueueRowView: View {
+    @ObservedObject var viewModel: ConversionViewModel
     let text: String
 
     var body: some View {
@@ -641,7 +663,9 @@ private struct QueueRowView: View {
     }
 }
 
+@MainActor
 private struct ComparisonSliderView: View {
+    @ObservedObject var viewModel: ConversionViewModel
     let original: NSImage
     let converted: NSImage
 
