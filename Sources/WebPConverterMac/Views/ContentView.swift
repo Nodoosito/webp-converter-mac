@@ -107,6 +107,35 @@ struct ContentView: View {
             } else {
                 LinearGradient(colors: [Palette.surfaceLight.opacity(0.7), .white], startPoint: .topLeading, endPoint: .bottomTrailing)
             }
+            .disabled(viewModel.items.isEmpty)
+            .buttonStyle(.plain)
+        }
+        .padding(14)
+        .liquidCard(cornerRadius: 18)
+    }
+
+    private func headerCell(_ text: String, width: CGFloat) -> some View {
+        Text(text)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(Palette.primary)
+            .frame(width: width, alignment: .leading)
+    }
+
+    private func afterSizeText(for item: FileConversionItem) -> String {
+        switch item.status {
+        case .success(_, let outputSize):
+            return viewModel.formattedSize(outputSize)
+        default:
+            return "-"
+        }
+    }
+
+    private func statusText(for status: FileConversionStatus) -> String {
+        switch status {
+        case .pending: return L10n.text("status.pending", language: currentLanguage)
+        case .processing: return L10n.text("status.processing", language: currentLanguage)
+        case .success: return L10n.text("status.success", language: currentLanguage)
+        case .failure(let message): return message
         }
         .ignoresSafeArea()
     }
@@ -367,9 +396,7 @@ private struct SidebarView: View {
                     get: { viewModel.settings.resizeSettings.mode },
                     set: { viewModel.updateResizeMode($0) }
                 )) {
-                    ForEach(ResizeMode.allCases) { mode in
-                        Text(mode.localizedTitle).tag(mode)
-                    }
+                    ForEach(ResizeMode.allCases) { mode in Text(mode.localizedTitle).tag(mode) }
                 }
                 .labelsHidden()
                 .frame(width: 120)
@@ -635,6 +662,13 @@ private struct QueueRowView: View {
         .task(id: item.id) {
             thumbnail = NSImage(contentsOf: item.inputURL)
         }
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue: Double(b) / 255,
+            opacity: 1
+        )
     }
 }
 
