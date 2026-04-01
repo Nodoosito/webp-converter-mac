@@ -2,8 +2,9 @@ import AppKit
 import SwiftUI
 import UniformTypeIdentifiers
 
+@MainActor
 struct ContentView: View {
-    @ObservedObject var viewModel: ConversionViewModel
+    @StateObject private var viewModel = ConversionViewModel()
     @Environment(\.colorScheme) private var colorScheme
     @AppStorage(AppLanguage.storageKey) private var selectedLanguage = AppLanguage.fallback.rawValue
     @AppStorage("appTheme") private var appTheme: Int = 0
@@ -25,7 +26,7 @@ struct ContentView: View {
 
     var body: some View {
         VStack(spacing: 14) {
-            HeaderView(addFilesAction: viewModel.addFilesFromPanel, settingsMenu: settingsMenu)
+            HeaderView(viewModel: viewModel, settingsMenu: settingsMenu)
 
             HStack(spacing: 20) {
                 SidebarView(
@@ -40,19 +41,14 @@ struct ContentView: View {
                     isMetadataHelpPresented: $isMetadataHelpPresented,
                     isSuffixHelpPresented: $isSuffixHelpPresented,
                     isResizeHelpPresented: $isResizeHelpPresented,
-                    presetPendingDeletion: $presetPendingDeletion,
-                    commitAllResizeInputs: commitAllResizeInputs,
-                    commitPercentageInput: commitPercentageInput,
-                    commitWidthInput: commitWidthInput,
-                    commitHeightInput: commitHeightInput
+                    presetPendingDeletion: $presetPendingDeletion
                 )
                 .frame(width: 280)
 
                 MainAreaView(
                     viewModel: viewModel,
                     uiStatusText: uiStatusText(for:),
-                    uiAfterSizeText: uiAfterSizeText(for:),
-                    commitAllResizeInputs: commitAllResizeInputs
+                    uiAfterSizeText: uiAfterSizeText(for:)
                 )
             }
         }
@@ -69,7 +65,9 @@ struct ContentView: View {
         .onChange(of: viewModel.settings.resizeSettings.height) { _ in syncInputsFromSettings() }
         .onChange(of: viewModel.settings.resizeSettings.mode) { _ in syncInputsFromSettings() }
         .onDrop(of: [UTType.fileURL.identifier], isTargeted: nil) { providers in
-            viewModel.handleDrop(providers: providers)
+            Task { @MainActor in
+                viewModel.handleDrop(providers: providers)
+            }
             return true
         }
         .alert(
@@ -81,9 +79,11 @@ struct ContentView: View {
             actions: {
                 Button(L10n.text("alert.cancel", language: currentLanguage), role: .cancel) { presetPendingDeletion = nil }
                 Button(L10n.text("alert.delete", language: currentLanguage), role: .destructive) {
-                    guard let presetPendingDeletion else { return }
-                    viewModel.deletePreset(id: presetPendingDeletion.id)
-                    self.presetPendingDeletion = nil
+                    Task { @MainActor in
+                        guard let presetPendingDeletion else { return }
+                        viewModel.deletePreset(id: presetPendingDeletion.id)
+                        self.presetPendingDeletion = nil
+                    }
                 }
             },
             message: {
@@ -158,40 +158,6 @@ struct ContentView: View {
         }
     }
 
-    private func digitsOnly(_ text: String) -> String {
-        text.filter { $0.isNumber }
-    }
-
-    private func commitAllResizeInputs() {
-        commitPercentageInput()
-        commitWidthInput()
-        commitHeightInput()
-    }
-
-    private func commitPercentageInput() {
-        let sanitized = digitsOnly(percentageInput)
-        let source = sanitized.isEmpty ? "100" : sanitized
-        let value = Double(source) ?? viewModel.settings.resizeSettings.percentage
-        viewModel.updatePercentage(value)
-        percentageInput = String(Int(viewModel.settings.resizeSettings.percentage.rounded()))
-    }
-
-    private func commitWidthInput() {
-        let sanitized = digitsOnly(widthInput)
-        let source = sanitized.isEmpty ? "1" : sanitized
-        let value = Double(source) ?? viewModel.settings.resizeSettings.width
-        viewModel.updateWidth(value)
-        widthInput = String(Int(viewModel.settings.resizeSettings.width.rounded()))
-    }
-
-    private func commitHeightInput() {
-        let sanitized = digitsOnly(heightInput)
-        let source = sanitized.isEmpty ? "1" : sanitized
-        let value = Double(source) ?? viewModel.settings.resizeSettings.height
-        viewModel.updateHeight(value)
-        heightInput = String(Int(viewModel.settings.resizeSettings.height.rounded()))
-    }
-
     private func syncInputsFromSettings() {
         percentageInput = String(Int(viewModel.settings.resizeSettings.percentage.rounded()))
         widthInput = String(Int(viewModel.settings.resizeSettings.width.rounded()))
@@ -199,8 +165,9 @@ struct ContentView: View {
     }
 }
 
+@MainActor
 private struct HeaderView<SettingsMenu: View>: View {
-    let addFilesAction: () -> Void
+    @ObservedObject var viewModel: ConversionViewModel
     let settingsMenu: SettingsMenu
 
     var body: some View {
@@ -211,16 +178,21 @@ private struct HeaderView<SettingsMenu: View>: View {
 
             Spacer()
 
-            Button("Ajouter des fichiers", action: addFilesAction)
-                .buttonStyle(.borderedProminent)
-                .tint(Palette.accent)
-                .controlSize(.large)
+            Button("Ajouter des fichiers") {
+                Task { @MainActor in
+                    viewModel.addFilesFromPanel()
+                }
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(Palette.accent)
+            .controlSize(.large)
 
             settingsMenu
         }
     }
 }
 
+@MainActor
 private struct SidebarView: View {
     @ObservedObject var viewModel: ConversionViewModel
     let currentLanguage: AppLanguage
@@ -234,10 +206,6 @@ private struct SidebarView: View {
     @Binding var isSuffixHelpPresented: Bool
     @Binding var isResizeHelpPresented: Bool
     @Binding var presetPendingDeletion: ConversionPreset?
-    let commitAllResizeInputs: () -> Void
-    let commitPercentageInput: () -> Void
-    let commitWidthInput: () -> Void
-    let commitHeightInput: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -255,6 +223,40 @@ private struct SidebarView: View {
         .liquidCard(cornerRadius: 18)
     }
 
+    private func digitsOnly(_ text: String) -> String {
+        text.filter { $0.isNumber }
+    }
+
+    private func commitAllResizeInputs() {
+        updatePercentage()
+        updateWidth()
+        updateHeight()
+    }
+
+    private func updatePercentage() {
+        let sanitized = digitsOnly(percentageInput)
+        let source = sanitized.isEmpty ? "100" : sanitized
+        let value = Double(source) ?? viewModel.settings.resizeSettings.percentage
+        viewModel.updatePercentage(value)
+        percentageInput = String(Int(viewModel.settings.resizeSettings.percentage.rounded()))
+    }
+
+    private func updateWidth() {
+        let sanitized = digitsOnly(widthInput)
+        let source = sanitized.isEmpty ? "1" : sanitized
+        let value = Double(source) ?? viewModel.settings.resizeSettings.width
+        viewModel.updateWidth(value)
+        widthInput = String(Int(viewModel.settings.resizeSettings.width.rounded()))
+    }
+
+    private func updateHeight() {
+        let sanitized = digitsOnly(heightInput)
+        let source = sanitized.isEmpty ? "1" : sanitized
+        let value = Double(source) ?? viewModel.settings.resizeSettings.height
+        viewModel.updateHeight(value)
+        heightInput = String(Int(viewModel.settings.resizeSettings.height.rounded()))
+    }
+
     private var presetSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
@@ -262,8 +264,12 @@ private struct SidebarView: View {
                     .foregroundStyle(Palette.primary)
                 Spacer()
                 Picker("", selection: Binding<UUID?>(
-                    get: { viewModel.selectedPresetID },
-                    set: { viewModel.applyPreset(id: $0) }
+                    get: { MainActor.assumeIsolated { viewModel.selectedPresetID } },
+                    set: { newValue in
+                        Task { @MainActor in
+                            viewModel.applyPreset(id: newValue)
+                        }
+                    }
                 )) {
                     Text("Actuel").tag(UUID?.none)
                     ForEach(viewModel.presets) { preset in
@@ -288,12 +294,14 @@ private struct SidebarView: View {
                 HStack(spacing: 8) {
                     TextField("Nom du préréglage", text: $presetNameInput)
                     Button("Save") {
-                        commitAllResizeInputs()
-                        viewModel.saveCurrentPreset(named: presetNameInput)
-                        if viewModel.globalError == nil {
-                            presetNameInput = ""
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                showPresetNameField = false
+                        Task { @MainActor in
+                            commitAllResizeInputs()
+                            viewModel.saveCurrentPreset(named: presetNameInput)
+                            if viewModel.globalError == nil {
+                                presetNameInput = ""
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    showPresetNameField = false
+                                }
                             }
                         }
                     }
@@ -320,8 +328,12 @@ private struct SidebarView: View {
             HStack {
                 Slider(
                     value: Binding(
-                        get: { viewModel.settings.quality * 100 },
-                        set: { viewModel.updateQuality($0 / 100) }
+                        get: { MainActor.assumeIsolated { viewModel.settings.quality * 100 } },
+                        set: { newValue in
+                            Task { @MainActor in
+                                viewModel.updateQuality(newValue / 100)
+                            }
+                        }
                     ),
                     in: 0...100,
                     step: 1
@@ -344,8 +356,12 @@ private struct SidebarView: View {
             )
             Spacer()
             Toggle("", isOn: Binding(
-                get: { viewModel.settings.removeMetadata },
-                set: { viewModel.updateRemoveMetadata($0) }
+                get: { MainActor.assumeIsolated { viewModel.settings.removeMetadata } },
+                set: { newValue in
+                    Task { @MainActor in
+                        viewModel.updateRemoveMetadata(newValue)
+                    }
+                }
             ))
             .labelsHidden()
         }
@@ -360,8 +376,12 @@ private struct SidebarView: View {
             )
             Spacer()
             Picker("", selection: Binding(
-                get: { viewModel.settings.suffixMode },
-                set: { viewModel.updateSuffixMode($0) }
+                get: { MainActor.assumeIsolated { viewModel.settings.suffixMode } },
+                set: { newValue in
+                    Task { @MainActor in
+                        viewModel.updateSuffixMode(newValue)
+                    }
+                }
             )) {
                 ForEach(SuffixMode.allCases) { mode in
                     Text(mode.localizedTitle).tag(mode)
@@ -382,8 +402,12 @@ private struct SidebarView: View {
                 )
                 Spacer()
                 Picker("", selection: Binding(
-                    get: { viewModel.settings.resizeSettings.mode },
-                    set: { viewModel.updateResizeMode($0) }
+                    get: { MainActor.assumeIsolated { viewModel.settings.resizeSettings.mode } },
+                    set: { newValue in
+                        Task { @MainActor in
+                            viewModel.updateResizeMode(newValue)
+                        }
+                    }
                 )) {
                     ForEach(ResizeMode.allCases) { mode in Text(mode.localizedTitle).tag(mode) }
                 }
@@ -394,16 +418,28 @@ private struct SidebarView: View {
             HStack {
                 switch viewModel.settings.resizeSettings.mode {
                 case .percentage:
-                    AppKitCommitTextField(placeholder: "100", text: $percentageInput, onCommit: commitPercentageInput)
-                        .frame(width: 70, height: 24)
+                    AppKitCommitTextField(
+                        placeholder: "100",
+                        text: $percentageInput,
+                        onCommit: { Task { @MainActor in updatePercentage() } }
+                    )
+                    .frame(width: 70, height: 24)
                     Text("%")
                 case .width:
-                    AppKitCommitTextField(placeholder: "1920", text: $widthInput, onCommit: commitWidthInput)
-                        .frame(width: 84, height: 24)
+                    AppKitCommitTextField(
+                        placeholder: "1920",
+                        text: $widthInput,
+                        onCommit: { Task { @MainActor in updateWidth() } }
+                    )
+                    .frame(width: 84, height: 24)
                     Text("px")
                 case .height:
-                    AppKitCommitTextField(placeholder: "1080", text: $heightInput, onCommit: commitHeightInput)
-                        .frame(width: 84, height: 24)
+                    AppKitCommitTextField(
+                        placeholder: "1080",
+                        text: $heightInput,
+                        onCommit: { Task { @MainActor in updateHeight() } }
+                    )
+                    .frame(width: 84, height: 24)
                     Text("px")
                 case .original:
                     Text("Original")
@@ -415,7 +451,9 @@ private struct SidebarView: View {
 
     private var outputFolderButton: some View {
         Button {
-            viewModel.selectOutputFolder()
+            Task { @MainActor in
+                viewModel.selectOutputFolder()
+            }
         } label: {
             Label(outputFolderTitle, systemImage: "folder")
                 .font(.subheadline.weight(.semibold))
@@ -455,11 +493,11 @@ private struct SidebarView: View {
     }
 }
 
+@MainActor
 private struct MainAreaView: View {
     @ObservedObject var viewModel: ConversionViewModel
     let uiStatusText: (FileConversionStatus) -> String
     let uiAfterSizeText: (FileConversionItem) -> String
-    let commitAllResizeInputs: () -> Void
 
     @State private var tableSelection: Set<UUID> = []
     @State private var thumbnails: [UUID: NSImage] = [:]
@@ -514,13 +552,12 @@ private struct MainAreaView: View {
             .width(min: 56, ideal: 60, max: 64)
 
             TableColumn("Filename") { item in
-                Text(item.filename)
-                    .lineLimit(1)
+                QueueRowView(viewModel: viewModel, text: item.filename)
             }
             .width(min: 240, ideal: 280)
 
             TableColumn("Type") { item in
-                Text(item.inputURL.pathExtension.uppercased())
+                QueueRowView(viewModel: viewModel, text: item.inputURL.pathExtension.uppercased())
             }
             .width(min: 64, ideal: 72, max: 80)
 
@@ -543,14 +580,15 @@ private struct MainAreaView: View {
             .width(min: 82, ideal: 96, max: 108)
 
             TableColumn("Status") { item in
-                Text(uiStatusText(item.status))
-                    .lineLimit(1)
+                QueueRowView(viewModel: viewModel, text: uiStatusText(item.status))
             }
             .width(min: 180, ideal: 220)
 
             TableColumn("Action") { item in
                 Button(role: .destructive) {
-                    viewModel.removeItem(item)
+                    Task { @MainActor in
+                        viewModel.removeItem(item)
+                    }
                 } label: {
                     Image(systemName: "trash")
                 }
@@ -561,11 +599,12 @@ private struct MainAreaView: View {
         }
         .tableStyle(.inset)
         .onChange(of: tableSelection) { newSelection in
-            viewModel.updateSelectedItem(id: newSelection.first)
+            Task { @MainActor in
+                viewModel.updateSelectedItem(id: newSelection.first)
+            }
         }
         .liquidCard(cornerRadius: 18)
     }
-}
 
     private var comparisonPanel: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -586,7 +625,7 @@ private struct MainAreaView: View {
                     .padding(.bottom, 12)
             } else if let original = viewModel.originalPreview?.image,
                       let converted = viewModel.convertedPreview?.image {
-                ComparisonSliderView(original: original, converted: converted)
+                ComparisonSliderView(viewModel: viewModel, original: original, converted: converted)
                     .padding(.horizontal, 12)
                     .padding(.bottom, 12)
             } else {
@@ -611,16 +650,19 @@ private struct MainAreaView: View {
                 .foregroundStyle(Palette.primary)
 
             Button("Annuler") {
-                viewModel.stopConversion()
+                Task { @MainActor in
+                    viewModel.stopConversion()
+                }
             }
             .disabled(!viewModel.isConverting)
 
             Button {
-                commitAllResizeInputs()
-                if viewModel.isConverting {
-                    viewModel.stopConversion()
-                } else {
-                    viewModel.convertAll()
+                Task { @MainActor in
+                    if viewModel.isConverting {
+                        viewModel.stopConversion()
+                    } else {
+                        viewModel.convertAll()
+                    }
                 }
             } label: {
                 Text("Optimiser et convertir tout")
@@ -641,7 +683,20 @@ private struct MainAreaView: View {
     }
 }
 
+@MainActor
+private struct QueueRowView: View {
+    @ObservedObject var viewModel: ConversionViewModel
+    let text: String
+
+    var body: some View {
+        Text(text)
+            .lineLimit(1)
+    }
+}
+
+@MainActor
 private struct ComparisonSliderView: View {
+    @ObservedObject var viewModel: ConversionViewModel
     let original: NSImage
     let converted: NSImage
 
