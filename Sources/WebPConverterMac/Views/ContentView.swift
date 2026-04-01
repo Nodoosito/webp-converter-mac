@@ -25,10 +25,7 @@ struct ContentView: View {
 
     var body: some View {
         VStack(spacing: 14) {
-            HeaderView(
-                addAction: viewModel.addFilesFromPanel,
-                settingsMenu: settingsMenu
-            )
+            HeaderView(addFilesAction: viewModel.addFilesFromPanel, settingsMenu: settingsMenu)
 
             HStack(spacing: 20) {
                 SidebarView(
@@ -51,8 +48,13 @@ struct ContentView: View {
                 )
                 .frame(width: 280)
 
-                mainPanel
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                MainAreaView(
+                    viewModel: viewModel,
+                    currentLanguage: currentLanguage,
+                    commitAllResizeInputs: commitAllResizeInputs,
+                    statusText: statusText(for:),
+                    afterSizeText: afterSizeText(for:)
+                )
             }
         }
         .padding(20)
@@ -105,129 +107,6 @@ struct ContentView: View {
             } else {
                 LinearGradient(colors: [Palette.surfaceLight.opacity(0.7), .white], startPoint: .topLeading, endPoint: .bottomTrailing)
             }
-        }
-        .ignoresSafeArea()
-    }
-
-    private var mainPanel: some View {
-        VStack(spacing: 12) {
-            VSplitView {
-                queuePanel
-                    .frame(minHeight: 220)
-
-                comparisonPanel
-                    .frame(minHeight: 300)
-            }
-
-            actionBar
-        }
-    }
-
-    private var queuePanel: some View {
-        VStack(spacing: 0) {
-            queueHeader
-            ScrollView {
-                LazyVStack(spacing: 6) {
-                    ForEach(viewModel.sortedItems) { item in
-                        QueueRowView(
-                            item: item,
-                            onDelete: { viewModel.removeItem(item) },
-                            onTap: { viewModel.updateSelectedItem(id: item.id) },
-                            statusText: statusText(for: item.status),
-                            beforeText: viewModel.formattedSize(item.inputSize),
-                            afterText: afterSizeText(for: item),
-                            gainText: viewModel.formattedGain(for: item),
-                            canDelete: !viewModel.isConverting
-                        )
-                    }
-                }
-                .padding(10)
-            }
-        }
-        .liquidCard(cornerRadius: 18)
-    }
-
-    private var queueHeader: some View {
-        HStack(spacing: 10) {
-            headerCell("Thumbnail", width: 56)
-            headerCell("Filename", width: 260)
-            headerCell("Type", width: 64)
-            headerCell("Original Size", width: 110)
-            headerCell("Est. After", width: 110)
-            headerCell("Gain", width: 90)
-            headerCell("Status", width: 190)
-            headerCell("Action", width: 70)
-            Spacer(minLength: 0)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .background(.regularMaterial)
-    }
-
-    private var comparisonPanel: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Comparaison")
-                .font(.headline)
-                .foregroundStyle(Palette.primary)
-                .padding(.horizontal, 12)
-                .padding(.top, 10)
-
-            if viewModel.selectedItem == nil {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(.ultraThinMaterial)
-                    .overlay(
-                        Text("Sélectionnez un fichier pour un aperçu comparatif")
-                            .foregroundStyle(Palette.primary.opacity(0.8))
-                    )
-                    .padding(.horizontal, 12)
-                    .padding(.bottom, 12)
-            } else if let original = viewModel.originalPreview?.image,
-                      let converted = viewModel.convertedPreview?.image {
-                ComparisonSliderView(original: original, converted: converted)
-                    .padding(.horizontal, 12)
-                    .padding(.bottom, 12)
-            } else {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(.ultraThinMaterial)
-                    .overlay(Text(viewModel.previewMessage).foregroundStyle(Palette.primary.opacity(0.75)))
-                    .padding(.horizontal, 12)
-                    .padding(.bottom, 12)
-            }
-        }
-        .liquidCard(cornerRadius: 18)
-    }
-
-    private var actionBar: some View {
-        HStack(spacing: 12) {
-            ProgressView(value: viewModel.progress)
-                .tint(Palette.accent)
-                .frame(maxWidth: .infinity)
-
-            Text("\(Int(viewModel.progress * 100))%")
-                .font(.system(.subheadline, design: .monospaced).weight(.semibold))
-                .foregroundStyle(Palette.primary)
-
-            Button("Annuler") { viewModel.stopConversion() }
-                .disabled(!viewModel.isConverting)
-
-            Button {
-                commitAllResizeInputs()
-                if viewModel.isConverting {
-                    viewModel.stopConversion()
-                } else {
-                    viewModel.convertAll()
-                }
-            } label: {
-                Text("Optimiser et convertir tout")
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 9)
-                    .background(
-                        LinearGradient(colors: [Palette.accent, Palette.primary], startPoint: .leading, endPoint: .trailing),
-                        in: Capsule()
-                    )
-            }
             .disabled(viewModel.items.isEmpty)
             .buttonStyle(.plain)
         }
@@ -258,6 +137,7 @@ struct ContentView: View {
         case .success: return L10n.text("status.success", language: currentLanguage)
         case .failure(let message): return message
         }
+        .ignoresSafeArea()
     }
 
     private var settingsMenu: some View {
@@ -282,6 +162,24 @@ struct ContentView: View {
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
         }
         .menuStyle(.borderlessButton)
+    }
+
+    private func statusText(for status: FileConversionStatus) -> String {
+        switch status {
+        case .pending: return L10n.text("status.pending", language: currentLanguage)
+        case .processing: return L10n.text("status.processing", language: currentLanguage)
+        case .success: return L10n.text("status.success", language: currentLanguage)
+        case .failure(let message): return message
+        }
+    }
+
+    private func afterSizeText(for item: FileConversionItem) -> String {
+        switch item.status {
+        case .success(_, let outputSize):
+            return viewModel.formattedSize(outputSize)
+        default:
+            return "-"
+        }
     }
 
     private func ensureLanguageFallback() {
@@ -330,7 +228,7 @@ struct ContentView: View {
 }
 
 private struct HeaderView<SettingsMenu: View>: View {
-    let addAction: () -> Void
+    let addFilesAction: () -> Void
     let settingsMenu: SettingsMenu
 
     var body: some View {
@@ -341,7 +239,7 @@ private struct HeaderView<SettingsMenu: View>: View {
 
             Spacer()
 
-            Button("Ajouter des fichiers", action: addAction)
+            Button("Ajouter des fichiers", action: addFilesAction)
                 .buttonStyle(.borderedProminent)
                 .tint(Palette.accent)
                 .controlSize(.large)
@@ -401,7 +299,7 @@ private struct SidebarView: View {
                     }
                 }
                 .labelsHidden()
-                .frame(width: 150)
+                .frame(width: 145)
 
                 Button {
                     withAnimation(.easeInOut(duration: 0.2)) {
@@ -447,14 +345,10 @@ private struct SidebarView: View {
         VStack(alignment: .leading, spacing: 8) {
             titleWithInfo("Qualité webp", help: L10n.text("settings.quality.help", language: currentLanguage), isPresented: $isQualityHelpPresented)
             HStack {
-                Slider(
-                    value: Binding(
-                        get: { viewModel.settings.quality * 100 },
-                        set: { viewModel.updateQuality($0 / 100) }
-                    ),
-                    in: 0...100,
-                    step: 1
-                )
+                Slider(value: Binding(
+                    get: { viewModel.settings.quality * 100 },
+                    set: { viewModel.updateQuality($0 / 100) }
+                ), in: 0...100, step: 1)
                 .tint(Palette.accent)
 
                 Text("\(Int(viewModel.settings.quality * 100))%")
@@ -484,7 +378,9 @@ private struct SidebarView: View {
                 get: { viewModel.settings.suffixMode },
                 set: { viewModel.updateSuffixMode($0) }
             )) {
-                ForEach(SuffixMode.allCases) { mode in Text(mode.localizedTitle).tag(mode) }
+                ForEach(SuffixMode.allCases) { mode in
+                    Text(mode.localizedTitle).tag(mode)
+                }
             }
             .labelsHidden()
             .frame(width: 120)
@@ -566,115 +462,146 @@ private struct SidebarView: View {
                     .padding(12)
                     .frame(width: 250, alignment: .leading)
             }
-            .disabled(!canDelete)
-            .buttonStyle(.borderless)
-            .frame(width: 70, alignment: .leading)
-
-            Spacer(minLength: 0)
         }
-        .font(.caption)
-        .foregroundStyle(Palette.primary)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(Palette.primary.opacity(isHovering ? 0.05 : 0), in: RoundedRectangle(cornerRadius: 12))
-        .onHover { isHovering = $0 }
-        .onTapGesture(perform: onTap)
     }
 }
 
-struct ComparisonSliderView: View {
-    let original: NSImage
-    let converted: NSImage
-    @State private var sliderOffset: CGFloat = 0.5
+private struct MainAreaView: View {
+    @ObservedObject var viewModel: ConversionViewModel
+    let currentLanguage: AppLanguage
+    let commitAllResizeInputs: () -> Void
+    let statusText: (FileConversionStatus) -> String
+    let afterSizeText: (FileConversionItem) -> String
 
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                Image(nsImage: original)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+        VStack(spacing: 12) {
+            VSplitView {
+                queuePanel
+                    .frame(minHeight: 220)
 
-                Image(nsImage: converted)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .mask(alignment: .leading) {
-                        Rectangle()
-                            .frame(width: geometry.size.width * sliderOffset)
-                    }
-
-                let x = geometry.size.width * sliderOffset
-                Capsule()
-                    .fill(Palette.accent)
-                    .frame(width: 3)
-                    .frame(maxHeight: .infinity)
-                    .overlay(alignment: .center) {
-                        Circle()
-                            .fill(Palette.accent)
-                            .frame(width: 18, height: 18)
-                            .overlay(Circle().stroke(.white.opacity(0.8), lineWidth: 2))
-                    }
-                    .position(x: x, y: geometry.size.height / 2)
+                comparisonPanel
+                    .frame(minHeight: 300)
             }
-            .contentShape(Rectangle())
-            .gesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged { value in
-                        sliderOffset = min(max(value.location.x / max(geometry.size.width, 1), 0), 1)
+
+            actionBar
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var queuePanel: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 10) {
+                headerCell("Thumbnail", width: 56)
+                headerCell("Filename", width: 260)
+                headerCell("Type", width: 64)
+                headerCell("Original Size", width: 110)
+                headerCell("Est. After", width: 110)
+                headerCell("Gain", width: 90)
+                headerCell("Status", width: 190)
+                headerCell("Action", width: 70)
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(.regularMaterial)
+
+            ScrollView {
+                LazyVStack(spacing: 6) {
+                    ForEach(viewModel.sortedItems) { item in
+                        QueueRowView(
+                            item: item,
+                            onDelete: { viewModel.removeItem(item) },
+                            onTap: { viewModel.updateSelectedItem(id: item.id) },
+                            statusText: statusText(item.status),
+                            beforeText: viewModel.formattedSize(item.inputSize),
+                            afterText: afterSizeText(item),
+                            gainText: viewModel.formattedGain(for: item),
+                            canDelete: !viewModel.isConverting
+                        )
                     }
-            )
+                }
+                .padding(10)
+            }
         }
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .liquidCard(cornerRadius: 12)
+        .liquidCard(cornerRadius: 18)
     }
-}
 
-private enum Palette {
-    static let accent = Color(hex: "#8DB3CE")
-    static let primary = Color(hex: "#4B708C")
-    static let surfaceLight = Color(hex: "#E6E8E9")
-    static let darkBackground = Color(hex: "#050A12")
-}
+    private var comparisonPanel: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Comparaison")
+                .font(.headline)
+                .foregroundStyle(Palette.primary)
+                .padding(.horizontal, 12)
+                .padding(.top, 10)
 
-private extension View {
-    func liquidCard(cornerRadius: CGFloat) -> some View {
-        self
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .stroke(
-                        LinearGradient(
-                            colors: [Palette.primary.opacity(0.3), .clear],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 0.5
+            if viewModel.selectedItem == nil {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(.ultraThinMaterial)
+                    .overlay(
+                        Text("Sélectionnez un fichier pour un aperçu comparatif")
+                            .foregroundStyle(Palette.primary.opacity(0.8))
                     )
-            )
-            .shadow(color: .black.opacity(0.08), radius: 15, x: 0, y: 10)
-    }
-}
-
-private extension Color {
-    init(hex: String) {
-        let hex = hex.replacingOccurrences(of: "#", with: "")
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let r, g, b: UInt64
-        switch hex.count {
-        case 6:
-            (r, g, b) = ((int >> 16) & 0xFF, (int >> 8) & 0xFF, int & 0xFF)
-        default:
-            (r, g, b) = (0, 0, 0)
+                    .padding(.horizontal, 12)
+                    .padding(.bottom, 12)
+            } else if let original = viewModel.originalPreview?.image,
+                      let converted = viewModel.convertedPreview?.image {
+                ComparisonSliderView(original: original, converted: converted)
+                    .padding(.horizontal, 12)
+                    .padding(.bottom, 12)
+            } else {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(.ultraThinMaterial)
+                    .overlay(Text(viewModel.previewMessage).foregroundStyle(Palette.primary.opacity(0.75)))
+                    .padding(.horizontal, 12)
+                    .padding(.bottom, 12)
+            }
         }
-        self.init(
-            .sRGB,
-            red: Double(r) / 255,
-            green: Double(g) / 255,
-            blue: Double(b) / 255,
-            opacity: 1
-        )
+        .liquidCard(cornerRadius: 18)
+    }
+
+    private var actionBar: some View {
+        HStack(spacing: 12) {
+            ProgressView(value: viewModel.progress)
+                .tint(Palette.accent)
+                .frame(maxWidth: .infinity)
+
+            Text("\(Int(viewModel.progress * 100))%")
+                .font(.system(.subheadline, design: .monospaced).weight(.semibold))
+                .foregroundStyle(Palette.primary)
+
+            Button("Annuler") { viewModel.stopConversion() }
+                .disabled(!viewModel.isConverting)
+
+            Button {
+                commitAllResizeInputs()
+                if viewModel.isConverting {
+                    viewModel.stopConversion()
+                } else {
+                    viewModel.convertAll()
+                }
+            } label: {
+                Text("Optimiser et convertir tout")
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 9)
+                    .background(
+                        LinearGradient(colors: [Palette.accent, Palette.primary], startPoint: .leading, endPoint: .trailing),
+                        in: Capsule()
+                    )
+            }
+            .disabled(viewModel.items.isEmpty)
+            .buttonStyle(.plain)
+        }
+        .padding(14)
+        .liquidCard(cornerRadius: 18)
+    }
+
+    private func headerCell(_ title: String, width: CGFloat) -> some View {
+        Text(title)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(Palette.primary)
+            .frame(width: width, alignment: .leading)
     }
 }
 
@@ -735,12 +662,20 @@ private struct QueueRowView: View {
         .task(id: item.id) {
             thumbnail = NSImage(contentsOf: item.inputURL)
         }
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue: Double(b) / 255,
+            opacity: 1
+        )
     }
 }
 
-struct ComparisonSliderView: View {
+private struct ComparisonSliderView: View {
     let original: NSImage
     let converted: NSImage
+
     @State private var sliderOffset: CGFloat = 0.5
 
     var body: some View {
@@ -781,17 +716,17 @@ struct ComparisonSliderView: View {
                     }
             )
         }
-        .frame(minHeight: 260)
+        .frame(minHeight: 300)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .liquidCard(cornerRadius: 12)
     }
 }
 
 private enum Palette {
-    static let accent = Color(hex: "#8DB3CE")
-    static let primary = Color(hex: "#4B708C")
-    static let surfaceLight = Color(hex: "#E6E8E9")
-    static let darkBackground = Color(hex: "#050A12")
+    static let accent = Color(hexString: "#8DB3CE")
+    static let primary = Color(hexString: "#4B708C")
+    static let surfaceLight = Color(hexString: "#E6E8E9")
+    static let darkBackground = Color(hexString: "#050A12")
 }
 
 private extension View {
@@ -814,12 +749,12 @@ private extension View {
 }
 
 private extension Color {
-    init(hex: String) {
-        let hex = hex.replacingOccurrences(of: "#", with: "")
+    init(hexString: String) {
+        let normalized = hexString.replacingOccurrences(of: "#", with: "")
         var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
+        Scanner(string: normalized).scanHexInt64(&int)
         let r, g, b: UInt64
-        switch hex.count {
+        switch normalized.count {
         case 6:
             (r, g, b) = ((int >> 16) & 0xFF, (int >> 8) & 0xFF, int & 0xFF)
         default:
