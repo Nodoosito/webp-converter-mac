@@ -159,10 +159,6 @@ struct ContentView: View {
         }
     }
 
-    private func digitsOnly(_ text: String) -> String {
-        text.filter { $0.isNumber }
-    }
-
     private func commitAllResizeInputs() {
         updatePercentage()
         updateWidth()
@@ -717,6 +713,52 @@ private struct ComparisonSliderView: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .liquidCard(cornerRadius: 12)
     }
+}
+
+private enum ResizeCommitMode {
+    case percentage
+    case width
+    case height
+}
+
+private func digitsOnly(_ text: String) -> String {
+    text.filter { $0.isNumber }
+}
+
+private func commitSingleResizeInput(
+    viewModel: ConversionViewModel,
+    text: Binding<String>,
+    fallback: String,
+    mode: ResizeCommitMode
+) {
+    let sanitized = digitsOnly(text.wrappedValue)
+    let source = sanitized.isEmpty ? fallback : sanitized
+
+    switch mode {
+    case .percentage:
+        let value = Double(source) ?? viewModel.settings.resizeSettings.percentage
+        viewModel.updatePercentage(value)
+        text.wrappedValue = String(Int(viewModel.settings.resizeSettings.percentage.rounded()))
+    case .width:
+        let value = Double(source) ?? viewModel.settings.resizeSettings.width
+        viewModel.updateWidth(value)
+        text.wrappedValue = String(Int(viewModel.settings.resizeSettings.width.rounded()))
+    case .height:
+        let value = Double(source) ?? viewModel.settings.resizeSettings.height
+        viewModel.updateHeight(value)
+        text.wrappedValue = String(Int(viewModel.settings.resizeSettings.height.rounded()))
+    }
+}
+
+private func commitAllResizeInputs(
+    viewModel: ConversionViewModel,
+    percentageInput: Binding<String>,
+    widthInput: Binding<String>,
+    heightInput: Binding<String>
+) {
+    commitSingleResizeInput(viewModel: viewModel, text: percentageInput, fallback: "100", mode: .percentage)
+    commitSingleResizeInput(viewModel: viewModel, text: widthInput, fallback: "1", mode: .width)
+    commitSingleResizeInput(viewModel: viewModel, text: heightInput, fallback: "1", mode: .height)
 }
 
 private enum Palette {
