@@ -566,7 +566,115 @@ private struct SidebarView: View {
                     .padding(12)
                     .frame(width: 250, alignment: .leading)
             }
+            .disabled(!canDelete)
+            .buttonStyle(.borderless)
+            .frame(width: 70, alignment: .leading)
+
+            Spacer(minLength: 0)
         }
+        .font(.caption)
+        .foregroundStyle(Palette.primary)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(Palette.primary.opacity(isHovering ? 0.05 : 0), in: RoundedRectangle(cornerRadius: 12))
+        .onHover { isHovering = $0 }
+        .onTapGesture(perform: onTap)
+    }
+}
+
+struct ComparisonSliderView: View {
+    let original: NSImage
+    let converted: NSImage
+    @State private var sliderOffset: CGFloat = 0.5
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                Image(nsImage: original)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                Image(nsImage: converted)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .mask(alignment: .leading) {
+                        Rectangle()
+                            .frame(width: geometry.size.width * sliderOffset)
+                    }
+
+                let x = geometry.size.width * sliderOffset
+                Capsule()
+                    .fill(Palette.accent)
+                    .frame(width: 3)
+                    .frame(maxHeight: .infinity)
+                    .overlay(alignment: .center) {
+                        Circle()
+                            .fill(Palette.accent)
+                            .frame(width: 18, height: 18)
+                            .overlay(Circle().stroke(.white.opacity(0.8), lineWidth: 2))
+                    }
+                    .position(x: x, y: geometry.size.height / 2)
+            }
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        sliderOffset = min(max(value.location.x / max(geometry.size.width, 1), 0), 1)
+                    }
+            )
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .liquidCard(cornerRadius: 12)
+    }
+}
+
+private enum Palette {
+    static let accent = Color(hex: "#8DB3CE")
+    static let primary = Color(hex: "#4B708C")
+    static let surfaceLight = Color(hex: "#E6E8E9")
+    static let darkBackground = Color(hex: "#050A12")
+}
+
+private extension View {
+    func liquidCard(cornerRadius: CGFloat) -> some View {
+        self
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .stroke(
+                        LinearGradient(
+                            colors: [Palette.primary.opacity(0.3), .clear],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 0.5
+                    )
+            )
+            .shadow(color: .black.opacity(0.08), radius: 15, x: 0, y: 10)
+    }
+}
+
+private extension Color {
+    init(hex: String) {
+        let hex = hex.replacingOccurrences(of: "#", with: "")
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let r, g, b: UInt64
+        switch hex.count {
+        case 6:
+            (r, g, b) = ((int >> 16) & 0xFF, (int >> 8) & 0xFF, int & 0xFF)
+        default:
+            (r, g, b) = (0, 0, 0)
+        }
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue: Double(b) / 255,
+            opacity: 1
+        )
     }
 }
 
