@@ -1,8 +1,10 @@
+import AppKit
 import SwiftUI
 import UniformTypeIdentifiers
 
 struct ContentView: View {
     @ObservedObject var viewModel: ConversionViewModel
+    @Environment(\.colorScheme) private var colorScheme
     @AppStorage(AppLanguage.storageKey) private var selectedLanguage = AppLanguage.fallback.rawValue
     @AppStorage("appTheme") private var appTheme: Int = 0
 
@@ -16,52 +18,29 @@ struct ContentView: View {
     @State private var isSuffixHelpPresented = false
     @State private var isResizeHelpPresented = false
 
-    private let columnWidths: [CGFloat] = [280, 100, 100, 90, 220, 60]
-
     private var currentLanguage: AppLanguage {
         AppLanguage(rawValue: selectedLanguage) ?? .fallback
     }
 
-    private var themeLabel: String {
-        currentLanguage == .fr ? "Thème" : "Theme"
-    }
-
-    private var themeSystemLabel: String {
-        currentLanguage == .fr ? "Système" : "System"
-    }
-
-    private var themeLightLabel: String {
-        currentLanguage == .fr ? "Clair" : "Light"
-    }
-
-    private var themeDarkLabel: String {
-        currentLanguage == .fr ? "Sombre" : "Dark"
-    }
-
     var body: some View {
-        VStack(spacing: 16) {
-            header
-            settingsPanel
-            listPanel
-            footer
+        HStack(spacing: 20) {
+            sidebar
+                .frame(width: 280)
+
+            mainPanel
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .padding(20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(windowBackground)
         .onAppear {
             syncInputsFromSettings()
             ensureLanguageFallback()
         }
-        .onChange(of: viewModel.settings.resizeSettings.percentage) { _ in
-            syncInputsFromSettings()
-        }
-        .onChange(of: viewModel.settings.resizeSettings.width) { _ in
-            syncInputsFromSettings()
-        }
-        .onChange(of: viewModel.settings.resizeSettings.height) { _ in
-            syncInputsFromSettings()
-        }
-        .onChange(of: viewModel.settings.resizeSettings.mode) { _ in
-            syncInputsFromSettings()
-        }
+        .onChange(of: viewModel.settings.resizeSettings.percentage) { _ in syncInputsFromSettings() }
+        .onChange(of: viewModel.settings.resizeSettings.width) { _ in syncInputsFromSettings() }
+        .onChange(of: viewModel.settings.resizeSettings.height) { _ in syncInputsFromSettings() }
+        .onChange(of: viewModel.settings.resizeSettings.mode) { _ in syncInputsFromSettings() }
         .onDrop(of: [UTType.fileURL.identifier], isTargeted: nil) { providers in
             viewModel.handleDrop(providers: providers)
             return true
@@ -70,16 +49,10 @@ struct ContentView: View {
             L10n.text("alert.preset.delete.title", language: currentLanguage),
             isPresented: Binding(
                 get: { presetPendingDeletion != nil },
-                set: { isPresented in
-                    if !isPresented {
-                        presetPendingDeletion = nil
-                    }
-                }
+                set: { isPresented in if !isPresented { presetPendingDeletion = nil } }
             ),
             actions: {
-                Button(L10n.text("alert.cancel", language: currentLanguage), role: .cancel) {
-                    presetPendingDeletion = nil
-                }
+                Button(L10n.text("alert.cancel", language: currentLanguage), role: .cancel) { presetPendingDeletion = nil }
                 Button(L10n.text("alert.delete", language: currentLanguage), role: .destructive) {
                     guard let presetPendingDeletion else { return }
                     viewModel.deletePreset(id: presetPendingDeletion.id)
@@ -99,149 +72,156 @@ struct ContentView: View {
         }
     }
 
-    private var header: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(L10n.text("app.header.title", language: currentLanguage))
-                    .font(.title.bold())
-                Text(LocalizedStringKey(L10n.text("app.header.tagline", language: currentLanguage)))
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+    private var windowBackground: some View {
+        Group {
+            if colorScheme == .dark {
+                Palette.darkBackground
+            } else {
+                LinearGradient(colors: [Palette.surfaceLight.opacity(0.7), .white], startPoint: .topLeading, endPoint: .bottomTrailing)
             }
+        }
+        .ignoresSafeArea()
+    }
+
+    private var sidebar: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(L10n.text("app.header.title", language: currentLanguage))
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(Palette.primary)
+                    Text(LocalizedStringKey(L10n.text("app.header.tagline", language: currentLanguage)))
+                        .font(.footnote)
+                        .foregroundStyle(Palette.primary.opacity(0.75))
+                }
+                Spacer()
+                settingsMenu
+            }
+
+            controlCard
 
             Spacer()
 
-            settingsMenu
-
-            Button(L10n.text("button.add_files", language: currentLanguage)) {
-                viewModel.addFilesFromPanel()
+            Button {
+                viewModel.selectOutputFolder()
+            } label: {
+                Label("Dossier de sortie", systemImage: "folder")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Palette.primary)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(.ultraThinMaterial, in: Capsule())
+                    .overlay(Capsule().stroke(Palette.primary.opacity(0.3), lineWidth: 0.6))
             }
+            .buttonStyle(.plain)
         }
+        .padding(18)
+        .liquidCard(cornerRadius: 18)
     }
 
-    private var settingsMenu: some View {
-        Menu {
-            Section(L10n.text("settings.language.section", language: currentLanguage)) {
-                Picker(L10n.text("settings.language.label", language: currentLanguage), selection: $selectedLanguage) {
-                    Text(L10n.text("settings.language.french", language: currentLanguage)).tag(AppLanguage.fr.rawValue)
-                    Text(L10n.text("settings.language.english", language: currentLanguage)).tag(AppLanguage.en.rawValue)
-                }
-            }
-        } label: {
-            Image(systemName: "gearshape")
-                .font(.title3)
-        }
-        .menuStyle(.borderlessButton)
-        .help(L10n.text("settings.menu", language: currentLanguage))
-    }
+    private var controlCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            qualitySection
+            metadataToggle
+            suffixSection
+            resizeSection
 
-    private var settingsPanel: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .center, spacing: 12) {
-                HStack(spacing: 8) {
-                    Text(themeLabel)
-                    Picker(themeLabel, selection: $appTheme) {
-                        Text(themeSystemLabel).tag(0)
-                        Text(themeLightLabel).tag(1)
-                        Text(themeDarkLabel).tag(2)
-                    }
-                    .pickerStyle(.segmented)
-                    .frame(width: 260)
-                }
-
-                Picker(L10n.text("settings.preset.label", language: currentLanguage), selection: Binding<UUID?>(
+            HStack {
+                Text("Préréglage")
+                    .foregroundStyle(Palette.primary)
+                Spacer()
+                Picker("Préréglage", selection: Binding<UUID?>(
                     get: { viewModel.selectedPresetID },
                     set: { viewModel.applyPreset(id: $0) }
                 )) {
-                    Text(L10n.text("settings.preset.current", language: currentLanguage)).tag(UUID?.none)
+                    Text("Actuel").tag(UUID?.none)
                     ForEach(viewModel.presets) { preset in
                         Text(viewModel.displayName(for: preset)).tag(Optional(preset.id))
                     }
                 }
-                .frame(maxWidth: 280)
+                .frame(width: 140)
+            }
 
-                if let selectedPreset = viewModel.selectedPreset, viewModel.canDeleteSelectedPreset {
-                    Button(role: .destructive) {
-                        presetPendingDeletion = selectedPreset
-                    } label: {
-                        Image(systemName: "trash")
-                    }
-                    .help(L10n.text("settings.preset.delete_help", language: currentLanguage))
-                }
-
-                TextField(L10n.text("settings.preset.new_name.placeholder", language: currentLanguage), text: $presetNameInput)
-
-                Button(L10n.text("button.save", language: currentLanguage)) {
+            HStack(spacing: 8) {
+                TextField("Nom du préréglage", text: $presetNameInput)
+                Button("Save") {
                     commitAllResizeInputs()
                     viewModel.saveCurrentPreset(named: presetNameInput)
-                    if viewModel.globalError == nil {
-                        presetNameInput = ""
-                    }
+                    if viewModel.globalError == nil { presetNameInput = "" }
                 }
                 .disabled(presetNameInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-            }
-
-            HStack {
-                labelWithInfo(
-                    L10n.text("settings.quality.label", language: currentLanguage),
-                    help: L10n.text("settings.quality.help", language: currentLanguage),
-                    isPresented: $isQualityHelpPresented
-                )
-
-                Slider(
-                    value: Binding(
-                        get: { viewModel.settings.quality },
-                        set: { viewModel.updateQuality($0) }
-                    ),
-                    in: 0.1...1.0,
-                    step: 0.05
-                )
-
-                Text("\(Int(viewModel.settings.quality * 100))%")
-                    .font(.system(.body, design: .monospaced))
-                    .frame(width: 50)
-            }
-
-            Toggle(
-                isOn: Binding(
-                    get: { viewModel.settings.removeMetadata },
-                    set: { viewModel.updateRemoveMetadata($0) }
-                )
-            ) {
-                labelWithInfo(
-                    L10n.text("settings.metadata.label", language: currentLanguage),
-                    help: L10n.text("settings.metadata.help", language: currentLanguage),
-                    isPresented: $isMetadataHelpPresented
-                )
-            }
-            .toggleStyle(.checkbox)
-
-            HStack {
-                labelWithInfo(
-                    L10n.text("settings.suffix.label", language: currentLanguage),
-                    help: L10n.text("settings.suffix.help", language: currentLanguage),
-                    isPresented: $isSuffixHelpPresented
-                )
-
-                Picker(L10n.text("settings.suffix.label", language: currentLanguage), selection: Binding(
-                    get: { viewModel.settings.suffixMode },
-                    set: { viewModel.updateSuffixMode($0) }
-                )) {
-                    ForEach(SuffixMode.allCases) { mode in
-                        Text(mode.localizedTitle).tag(mode)
+                if let selectedPreset = viewModel.selectedPreset, viewModel.canDeleteSelectedPreset {
+                    Button(role: .destructive) { presetPendingDeletion = selectedPreset } label: {
+                        Image(systemName: "trash")
                     }
                 }
-                .frame(maxWidth: 220)
             }
+        }
+    }
 
+    private var qualitySection: some View {
+        VStack(alignment: .leading, spacing: 8) {
             HStack {
-                labelWithInfo(
-                    L10n.text("settings.resize.label", language: currentLanguage),
-                    help: L10n.text("settings.resize.help", language: currentLanguage),
-                    isPresented: $isResizeHelpPresented
-                )
+                Text("Qualité webp")
+                    .foregroundStyle(Palette.primary)
+                infoButton(help: L10n.text("settings.quality.help", language: currentLanguage), isPresented: $isQualityHelpPresented)
+                Spacer()
+                Text("\(Int(viewModel.settings.quality * 100))%")
+                    .font(.system(.caption, design: .monospaced).weight(.semibold))
+                    .foregroundStyle(Palette.primary)
+            }
+            Slider(
+                value: Binding(
+                    get: { viewModel.settings.quality * 100 },
+                    set: { viewModel.updateQuality($0 / 100) }
+                ),
+                in: 0...100,
+                step: 1
+            )
+            .tint(Palette.accent)
+        }
+    }
 
-                Picker(L10n.text("settings.resize.label", language: currentLanguage), selection: Binding(
+    private var metadataToggle: some View {
+        Toggle(isOn: Binding(
+            get: { viewModel.settings.removeMetadata },
+            set: { viewModel.updateRemoveMetadata($0) }
+        )) {
+            HStack(spacing: 6) {
+                Text(L10n.text("settings.metadata.label", language: currentLanguage))
+                    .foregroundStyle(Palette.primary)
+                infoButton(help: L10n.text("settings.metadata.help", language: currentLanguage), isPresented: $isMetadataHelpPresented)
+            }
+        }
+        .toggleStyle(.switch)
+    }
+
+    private var suffixSection: some View {
+        HStack {
+            Text(L10n.text("settings.suffix.label", language: currentLanguage))
+                .foregroundStyle(Palette.primary)
+            infoButton(help: L10n.text("settings.suffix.help", language: currentLanguage), isPresented: $isSuffixHelpPresented)
+            Spacer()
+            Picker("Suffix", selection: Binding(
+                get: { viewModel.settings.suffixMode },
+                set: { viewModel.updateSuffixMode($0) }
+            )) {
+                ForEach(SuffixMode.allCases) { mode in
+                    Text(mode.localizedTitle).tag(mode)
+                }
+            }
+            .frame(width: 130)
+        }
+    }
+
+    private var resizeSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(L10n.text("settings.resize.label", language: currentLanguage))
+                    .foregroundStyle(Palette.primary)
+                infoButton(help: L10n.text("settings.resize.help", language: currentLanguage), isPresented: $isResizeHelpPresented)
+                Spacer()
+                Picker("Resize", selection: Binding(
                     get: { viewModel.settings.resizeSettings.mode },
                     set: { viewModel.updateResizeMode($0) }
                 )) {
@@ -249,234 +229,165 @@ struct ContentView: View {
                         Text(mode.localizedTitle).tag(mode)
                     }
                 }
-                .frame(maxWidth: 260)
+                .frame(width: 130)
+            }
 
+            HStack(spacing: 8) {
                 switch viewModel.settings.resizeSettings.mode {
                 case .percentage:
-                    HStack {
-                        Text("%")
-                        AppKitCommitTextField(
-                            placeholder: "100",
-                            text: $percentageInput,
-                            onCommit: commitPercentageInput
-                        )
-                        .frame(width: 80, height: 24)
-                    }
-
+                    AppKitCommitTextField(placeholder: "100", text: $percentageInput, onCommit: commitPercentageInput)
+                        .frame(width: 60, height: 24)
+                    Text("%")
                 case .width:
-                    HStack {
-                        Text("px")
-                        AppKitCommitTextField(
-                            placeholder: "1920",
-                            text: $widthInput,
-                            onCommit: commitWidthInput
-                        )
-                        .frame(width: 100, height: 24)
-                    }
-
+                    AppKitCommitTextField(placeholder: "1920", text: $widthInput, onCommit: commitWidthInput)
+                        .frame(width: 80, height: 24)
+                    Text("px")
                 case .height:
-                    HStack {
-                        Text("px")
-                        AppKitCommitTextField(
-                            placeholder: "1080",
-                            text: $heightInput,
-                            onCommit: commitHeightInput
-                        )
-                        .frame(width: 100, height: 24)
-                    }
-
+                    AppKitCommitTextField(placeholder: "1080", text: $heightInput, onCommit: commitHeightInput)
+                        .frame(width: 80, height: 24)
+                    Text("px")
                 case .original:
-                    EmptyView()
+                    Text("Original")
+                        .foregroundStyle(Palette.primary.opacity(0.7))
                 }
-
-                if viewModel.settings.resizeSettings.mode == .width ||
-                    viewModel.settings.resizeSettings.mode == .height {
-                    Toggle(L10n.text("settings.keep_aspect_ratio", language: currentLanguage), isOn: Binding(
-                        get: { viewModel.settings.resizeSettings.keepAspectRatio },
-                        set: { viewModel.updateKeepAspectRatio($0) }
-                    ))
-                }
-            }
-
-            HStack {
-                Text(L10n.text("settings.output.label", language: currentLanguage))
-
-                Text(viewModel.settings.outputFolder?.path ?? L10n.text("settings.output.none", language: currentLanguage))
-                    .lineLimit(1)
-                    .truncationMode(.middle)
-                    .foregroundStyle(.secondary)
-
                 Spacer()
-
-                Button(L10n.text("button.choose", language: currentLanguage)) {
-                    viewModel.selectOutputFolder()
-                }
             }
         }
-        .padding(12)
-        .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 12))
     }
 
-    private var listPanel: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text(L10n.text("files.section.title", language: currentLanguage))
-                    .font(.headline)
+    private var mainPanel: some View {
+        VStack(spacing: 14) {
+            queuePanel
+                .frame(maxHeight: .infinity)
 
-                Spacer()
+            comparisonPanel
+                .frame(height: 240)
 
-                Button(L10n.text("button.clear", language: currentLanguage)) {
-                    viewModel.clearAll()
+            actionBar
+        }
+    }
+
+    private var queuePanel: some View {
+        VStack(spacing: 0) {
+            queueHeader
+            ScrollView {
+                LazyVStack(spacing: 6) {
+                    ForEach(viewModel.sortedItems) { item in
+                        QueueRowView(
+                            item: item,
+                            language: currentLanguage,
+                            onDelete: { viewModel.removeItem(item) },
+                            onTap: { viewModel.updateSelectedItem(id: item.id) },
+                            statusText: statusText(for: item.status),
+                            beforeText: viewModel.formattedSize(item.inputSize),
+                            afterText: afterSizeText(for: item),
+                            gainText: viewModel.formattedGain(for: item),
+                            thumbnail: viewModel.selectedItemID == item.id ? viewModel.originalPreview?.image : nil,
+                            canDelete: !viewModel.isConverting
+                        )
+                    }
                 }
-                .disabled(viewModel.items.isEmpty || viewModel.isConverting)
+                .padding(10)
             }
-
-            tableHeader
-
-            List(selection: Binding(
-                get: { viewModel.selectedItemID.map { Set([$0]) } ?? [] },
-                set: { newValue in
-                    viewModel.updateSelectedItem(id: newValue.first)
-                }
-            )) {
-                ForEach(viewModel.sortedItems) { item in
-                    fileRow(item)
-                        .tag(item.id)
-                }
-            }
-            .frame(maxHeight: .infinity)
-
-            previewPanel
         }
+        .liquidCard(cornerRadius: 18)
     }
 
-    private var tableHeader: some View {
-        HStack(spacing: 12) {
-            sortHeader(L10n.text("table.name", language: currentLanguage), column: .name, width: columnWidths[0], alignment: .leading)
-            sortHeader(L10n.text("table.before", language: currentLanguage), column: .beforeSize, width: columnWidths[1], alignment: .trailing)
-            sortHeader(L10n.text("table.after", language: currentLanguage), column: .afterSize, width: columnWidths[2], alignment: .trailing)
-            sortHeader(L10n.text("table.gain", language: currentLanguage), column: .gain, width: columnWidths[3], alignment: .trailing)
-            sortHeader(L10n.text("table.status", language: currentLanguage), column: .status, width: columnWidths[4], alignment: .leading)
-            Text(L10n.text("table.action", language: currentLanguage))
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary.opacity(0.85))
-                .frame(width: columnWidths[5], alignment: .center)
+    private var queueHeader: some View {
+        HStack(spacing: 10) {
+            headerCell("Thumbnail", width: 76)
+            headerCell("Filename", width: 220)
+            headerCell("Type", width: 56)
+            headerCell("Original Size", width: 90)
+            headerCell("Est. After", width: 90)
+            headerCell("Gain", width: 70)
+            headerCell("Status", width: 160)
+            headerCell("Action", width: 70)
+            Spacer(minLength: 0)
         }
-        .padding(.horizontal, 8)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(.regularMaterial)
     }
 
-    private func sortHeader(_ title: String, column: ConversionViewModel.SortColumn, width: CGFloat, alignment: Alignment) -> some View {
-        Button {
-            viewModel.cycleSort(for: column)
-        } label: {
-            HStack(spacing: 4) {
-                Text(title)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary.opacity(0.85))
-                Spacer(minLength: 0)
-                if let symbol = viewModel.sortIndicator(for: column) {
-                    Image(systemName: symbol)
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .frame(width: width, alignment: alignment)
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func fileRow(_ item: FileConversionItem) -> some View {
-        HStack(spacing: 12) {
-            Text(item.filename)
-                .lineLimit(1)
-                .frame(width: columnWidths[0], alignment: .leading)
-
-            Text(viewModel.formattedSize(item.inputSize))
-                .font(.system(.body, design: .monospaced))
-                .frame(width: columnWidths[1], alignment: .trailing)
-
-            Text(afterSizeText(for: item))
-                .font(.system(.body, design: .monospaced))
-                .frame(width: columnWidths[2], alignment: .trailing)
-
-            Text(viewModel.formattedGain(for: item))
-                .foregroundStyle(.secondary)
-                .frame(width: columnWidths[3], alignment: .trailing)
-
-            statusView(for: item.status)
-                .frame(width: columnWidths[4], alignment: .leading)
-
-            Button(role: .destructive) {
-                viewModel.removeItem(item)
-            } label: {
-                Image(systemName: "trash")
-            }
-            .buttonStyle(.borderless)
-            .disabled(viewModel.isConverting)
-            .frame(width: columnWidths[5], alignment: .center)
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            viewModel.updateSelectedItem(id: item.id)
-        }
-    }
-
-    private var previewPanel: some View {
-        HStack(spacing: 12) {
-            previewCard(title: L10n.text("preview.original", language: currentLanguage), info: viewModel.originalPreview, gainText: nil)
-            previewCard(
-                title: L10n.text("preview.converted", language: currentLanguage),
-                info: viewModel.convertedPreview,
-                gainText: viewModel.selectedItem.map { viewModel.formattedGain(for: $0) }
-            )
-        }
-        .frame(height: 250)
-    }
-
-    private func previewCard(title: String, info: ConversionViewModel.PreviewInfo?, gainText: String?) -> some View {
+    private var comparisonPanel: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(title)
+            Text("Comparaison")
                 .font(.headline)
+                .foregroundStyle(Palette.primary)
+                .padding(.horizontal, 12)
+                .padding(.top, 10)
 
             Group {
-                if let image = info?.image {
-                    Image(nsImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(maxWidth: .infinity, maxHeight: 150)
+                if let original = viewModel.originalPreview?.image,
+                   let converted = viewModel.convertedPreview?.image {
+                    ComparisonSliderView(original: original, converted: converted)
+                        .padding(.horizontal, 12)
+                        .padding(.bottom, 12)
                 } else {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(.quaternary.opacity(0.4))
-                        .overlay(
-                            Text(viewModel.previewMessage)
-                                .foregroundStyle(.secondary)
-                                .font(.caption)
-                                .multilineTextAlignment(.center)
-                                .padding(8)
-                        )
-                        .frame(maxWidth: .infinity, maxHeight: 150)
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Palette.surfaceLight.opacity(0.35))
+                        .overlay(Text(viewModel.previewMessage).foregroundStyle(Palette.primary.opacity(0.7)))
+                        .padding(.horizontal, 12)
+                        .padding(.bottom, 12)
                 }
+            }
+        }
+        .liquidCard(cornerRadius: 18)
+    }
+
+    private var actionBar: some View {
+        VStack(spacing: 8) {
+            if let error = viewModel.globalError {
+                Text(error)
+                    .font(.footnote)
+                    .foregroundStyle(.red)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            VStack(alignment: .leading, spacing: 2) {
-                if let info {
-                    Text(L10n.format("preview.size", language: currentLanguage, viewModel.formattedSize(info.fileSize)))
-                        .foregroundStyle(.secondary)
-                    if let dimensions = info.dimensions {
-                        Text(L10n.format("preview.dimensions", language: currentLanguage, Int(dimensions.width), Int(dimensions.height)))
-                            .foregroundStyle(.secondary)
+            HStack(spacing: 12) {
+                ProgressView(value: viewModel.progress)
+                    .tint(Palette.accent)
+                    .frame(maxWidth: .infinity)
+
+                Text("\(Int(viewModel.progress * 100))%")
+                    .font(.system(.subheadline, design: .monospaced).weight(.semibold))
+                    .foregroundStyle(Palette.primary)
+
+                Button("Annuler") { viewModel.stopConversion() }
+                    .disabled(!viewModel.isConverting)
+
+                Button {
+                    commitAllResizeInputs()
+                    if viewModel.isConverting {
+                        viewModel.stopConversion()
+                    } else {
+                        viewModel.convertAll()
                     }
-                    if let gainText, gainText != "-" {
-                        Text(L10n.format("preview.gain", language: currentLanguage, gainText))
-                            .foregroundStyle(.secondary)
-                    }
+                } label: {
+                    Text("Optimiser et convertir tout")
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 9)
+                        .background(
+                            LinearGradient(colors: [Palette.accent, Palette.primary], startPoint: .leading, endPoint: .trailing),
+                            in: Capsule()
+                        )
                 }
+                .disabled(viewModel.items.isEmpty)
+                .buttonStyle(.plain)
             }
-            .font(.caption)
         }
-        .padding(10)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(.quaternary.opacity(0.3), in: RoundedRectangle(cornerRadius: 10))
+        .padding(14)
+        .liquidCard(cornerRadius: 18)
+    }
+
+    private func headerCell(_ text: String, width: CGFloat) -> some View {
+        Text(text)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(Palette.primary)
+            .frame(width: width, alignment: .leading)
     }
 
     private func afterSizeText(for item: FileConversionItem) -> String {
@@ -488,56 +399,54 @@ struct ContentView: View {
         }
     }
 
-    @ViewBuilder
-    private func statusView(for status: FileConversionStatus) -> some View {
+    private func statusText(for status: FileConversionStatus) -> String {
         switch status {
-        case .pending:
-            Text(L10n.text("status.pending", language: currentLanguage)).foregroundStyle(.secondary)
-        case .processing:
-            Text(L10n.text("status.processing", language: currentLanguage)).foregroundStyle(.orange)
-        case .success:
-            Text(L10n.text("status.success", language: currentLanguage)).foregroundStyle(.green)
-        case .failure(let message):
-            Text(message).foregroundStyle(.red).lineLimit(2)
+        case .pending: return L10n.text("status.pending", language: currentLanguage)
+        case .processing: return L10n.text("status.processing", language: currentLanguage)
+        case .success: return L10n.text("status.success", language: currentLanguage)
+        case .failure(let message): return message
         }
     }
 
-    private var footer: some View {
-        VStack(spacing: 8) {
-            if let error = viewModel.globalError {
-                Text(error)
-                    .foregroundStyle(.red)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-
-            HStack {
-                if viewModel.isConverting {
-                    ProgressView(value: viewModel.progress)
-                        .frame(maxWidth: 240)
-                    Text(progressLabel)
-                        .foregroundStyle(.secondary)
-                    Button(L10n.text("button.stop", language: currentLanguage)) {
-                        viewModel.stopConversion()
-                    }
-                    .buttonStyle(.bordered)
-                } else {
-                    Text(progressLabel)
-                        .foregroundStyle(.secondary)
+    private var settingsMenu: some View {
+        Menu {
+            Section(L10n.text("settings.language.section", language: currentLanguage)) {
+                Picker(L10n.text("settings.language.label", language: currentLanguage), selection: $selectedLanguage) {
+                    Text(L10n.text("settings.language.french", language: currentLanguage)).tag(AppLanguage.fr.rawValue)
+                    Text(L10n.text("settings.language.english", language: currentLanguage)).tag(AppLanguage.en.rawValue)
                 }
-
-                Spacer()
-
-                Button(L10n.text("button.convert", language: currentLanguage)) {
-                    commitAllResizeInputs()
-                    viewModel.convertAll()
-                }
-                .disabled(viewModel.items.isEmpty || viewModel.isConverting)
             }
+            Section("Theme") {
+                Picker("Theme", selection: $appTheme) {
+                    Text("System").tag(0)
+                    Text("Light").tag(1)
+                    Text("Dark").tag(2)
+                }
+            }
+        } label: {
+            Image(systemName: "gearshape")
+                .foregroundStyle(Palette.primary)
+                .font(.title3)
+                .padding(8)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
         }
+        .menuStyle(.borderlessButton)
     }
 
-    private var progressLabel: String {
-        L10n.format("progress.label", language: currentLanguage, Int(viewModel.progress * 100))
+    private func infoButton(help: String, isPresented: Binding<Bool>) -> some View {
+        Button {
+            isPresented.wrappedValue.toggle()
+        } label: {
+            Image(systemName: "info.circle")
+                .foregroundStyle(Palette.primary)
+        }
+        .buttonStyle(.plain)
+        .popover(isPresented: isPresented, arrowEdge: .bottom) {
+            Text(help)
+                .font(.callout)
+                .padding(12)
+                .frame(width: 260, alignment: .leading)
+        }
     }
 
     private func ensureLanguageFallback() {
@@ -546,9 +455,7 @@ struct ContentView: View {
         }
     }
 
-    private func digitsOnly(_ text: String) -> String {
-        text.filter { $0.isNumber }
-    }
+    private func digitsOnly(_ text: String) -> String { text.filter { $0.isNumber } }
 
     private func commitAllResizeInputs() {
         commitPercentageInput()
@@ -585,25 +492,158 @@ struct ContentView: View {
         widthInput = String(Int(viewModel.settings.resizeSettings.width.rounded()))
         heightInput = String(Int(viewModel.settings.resizeSettings.height.rounded()))
     }
+}
 
-    private func labelWithInfo(_ title: String, help: String, isPresented: Binding<Bool>) -> some View {
-        HStack(spacing: 4) {
-            Text(title)
-            Button {
-                isPresented.wrappedValue.toggle()
-            } label: {
-                Image(systemName: "info.circle")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+private struct QueueRowView: View {
+    let item: FileConversionItem
+    let language: AppLanguage
+    let onDelete: () -> Void
+    let onTap: () -> Void
+    let statusText: String
+    let beforeText: String
+    let afterText: String
+    let gainText: String
+    let thumbnail: NSImage?
+    let canDelete: Bool
+
+    @State private var isHovering = false
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Group {
+                if let thumbnail {
+                    Image(nsImage: thumbnail)
+                        .resizable()
+                        .scaledToFill()
+                } else {
+                    Image(systemName: "photo")
+                        .resizable()
+                        .scaledToFit()
+                        .padding(8)
+                        .foregroundStyle(Palette.primary.opacity(0.6))
+                }
             }
-            .buttonStyle(.plain)
-            .popover(isPresented: isPresented, arrowEdge: .bottom) {
-                Text(help)
-                    .font(.callout)
-                    .foregroundStyle(.primary)
-                    .padding(12)
-                    .frame(maxWidth: 280, alignment: .leading)
+            .frame(width: 52, height: 36)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            Text(item.filename).lineLimit(1).frame(width: 220, alignment: .leading)
+            Text(item.inputURL.pathExtension.uppercased()).frame(width: 56, alignment: .leading)
+            Text(beforeText).font(.system(.caption, design: .monospaced)).frame(width: 90, alignment: .leading)
+            Text(afterText).font(.system(.caption, design: .monospaced)).frame(width: 90, alignment: .leading)
+            Text(gainText).bold().frame(width: 70, alignment: .leading)
+            Text(statusText).lineLimit(1).frame(width: 160, alignment: .leading)
+
+            Button(role: .destructive, action: onDelete) {
+                Image(systemName: "trash")
             }
+            .disabled(!canDelete)
+            .buttonStyle(.borderless)
+            .frame(width: 70, alignment: .leading)
+
+            Spacer(minLength: 0)
         }
+        .font(.caption)
+        .foregroundStyle(Palette.primary)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(Palette.primary.opacity(isHovering ? 0.05 : 0), in: RoundedRectangle(cornerRadius: 12))
+        .onHover { isHovering = $0 }
+        .onTapGesture(perform: onTap)
+    }
+}
+
+struct ComparisonSliderView: View {
+    let original: NSImage
+    let converted: NSImage
+    @State private var sliderOffset: CGFloat = 0.5
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                Image(nsImage: original)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                Image(nsImage: converted)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .mask(alignment: .leading) {
+                        Rectangle()
+                            .frame(width: geometry.size.width * sliderOffset)
+                    }
+
+                let x = geometry.size.width * sliderOffset
+                Capsule()
+                    .fill(Palette.accent)
+                    .frame(width: 3)
+                    .frame(maxHeight: .infinity)
+                    .overlay(alignment: .center) {
+                        Circle()
+                            .fill(Palette.accent)
+                            .frame(width: 18, height: 18)
+                            .overlay(Circle().stroke(.white.opacity(0.8), lineWidth: 2))
+                    }
+                    .position(x: x, y: geometry.size.height / 2)
+            }
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        sliderOffset = min(max(value.location.x / max(geometry.size.width, 1), 0), 1)
+                    }
+            )
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .liquidCard(cornerRadius: 12)
+    }
+}
+
+private enum Palette {
+    static let accent = Color(hex: "#8DB3CE")
+    static let primary = Color(hex: "#4B708C")
+    static let surfaceLight = Color(hex: "#E6E8E9")
+    static let darkBackground = Color(hex: "#050A12")
+}
+
+private extension View {
+    func liquidCard(cornerRadius: CGFloat) -> some View {
+        self
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .stroke(
+                        LinearGradient(
+                            colors: [Palette.primary.opacity(0.3), .clear],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 0.5
+                    )
+            )
+            .shadow(color: .black.opacity(0.08), radius: 15, x: 0, y: 10)
+    }
+}
+
+private extension Color {
+    init(hex: String) {
+        let hex = hex.replacingOccurrences(of: "#", with: "")
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let r, g, b: UInt64
+        switch hex.count {
+        case 6:
+            (r, g, b) = ((int >> 16) & 0xFF, (int >> 8) & 0xFF, int & 0xFF)
+        default:
+            (r, g, b) = (0, 0, 0)
+        }
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue: Double(b) / 255,
+            opacity: 1
+        )
     }
 }
