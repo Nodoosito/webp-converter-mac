@@ -2,6 +2,7 @@ import AppKit
 import SwiftUI
 import UniformTypeIdentifiers
 
+@MainActor
 struct ContentView: View {
     @StateObject private var viewModel = ConversionViewModel()
     @Environment(\.colorScheme) private var colorScheme
@@ -171,6 +172,7 @@ struct ContentView: View {
     }
 }
 
+@MainActor
 private struct HeaderView<SettingsMenu: View>: View {
     @ObservedObject var viewModel: ConversionViewModel
     let settingsMenu: SettingsMenu
@@ -195,6 +197,7 @@ private struct HeaderView<SettingsMenu: View>: View {
     }
 }
 
+@MainActor
 private struct SidebarView: View {
     @ObservedObject var viewModel: ConversionViewModel
     let currentLanguage: AppLanguage
@@ -444,6 +447,7 @@ private struct SidebarView: View {
     }
 }
 
+@MainActor
 private struct MainAreaView: View {
     @ObservedObject var viewModel: ConversionViewModel
     let uiStatusText: (FileConversionStatus) -> String
@@ -503,13 +507,12 @@ private struct MainAreaView: View {
             .width(min: 56, ideal: 60, max: 64)
 
             TableColumn("Filename") { item in
-                Text(item.filename)
-                    .lineLimit(1)
+                QueueRowView(text: item.filename)
             }
             .width(min: 240, ideal: 280)
 
             TableColumn("Type") { item in
-                Text(item.inputURL.pathExtension.uppercased())
+                QueueRowView(text: item.inputURL.pathExtension.uppercased())
             }
             .width(min: 64, ideal: 72, max: 80)
 
@@ -532,8 +535,7 @@ private struct MainAreaView: View {
             .width(min: 82, ideal: 96, max: 108)
 
             TableColumn("Status") { item in
-                Text(uiStatusText(item.status))
-                    .lineLimit(1)
+                QueueRowView(text: uiStatusText(item.status))
             }
             .width(min: 180, ideal: 220)
 
@@ -626,6 +628,16 @@ private struct MainAreaView: View {
         }
         .padding(14)
         .liquidCard(cornerRadius: 18)
+    }
+}
+
+@MainActor
+private struct QueueRowView: View {
+    let text: String
+
+    var body: some View {
+        Text(text)
+            .lineLimit(1)
     }
 }
 
