@@ -4,8 +4,7 @@ import SwiftUI
 @main
 struct WebPConverterMacApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-    @StateObject private var viewModel = ConversionViewModel()
-    @AppStorage(AppLanguage.storageKey) private var selectedLanguage = ""
+        @AppStorage(AppLanguage.storageKey) private var selectedLanguage = ""
     @AppStorage("appTheme") private var appTheme: Int = 0
 
     private var effectiveLanguage: AppLanguage {
@@ -30,7 +29,7 @@ struct WebPConverterMacApp: App {
                     LanguageSelectionView(selectedLanguage: $selectedLanguage)
                         .environment(\.locale, .init(identifier: effectiveLanguage.rawValue))
                 } else {
-                    ContentView(viewModel: viewModel)
+                    ContentView()
                         .environment(\.locale, .init(identifier: effectiveLanguage.rawValue))
                 }
             }
