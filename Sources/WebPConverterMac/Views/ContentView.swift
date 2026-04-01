@@ -385,9 +385,7 @@ private struct SidebarView: View {
                     get: { viewModel.settings.resizeSettings.mode },
                     set: { viewModel.updateResizeMode($0) }
                 )) {
-                    ForEach(ResizeMode.allCases) { mode in
-                        Text(mode.localizedTitle).tag(mode)
-                    }
+                    ForEach(ResizeMode.allCases) { mode in Text(mode.localizedTitle).tag(mode) }
                 }
                 .labelsHidden()
                 .frame(width: 120)
@@ -567,6 +565,7 @@ private struct MainAreaView: View {
         }
         .liquidCard(cornerRadius: 18)
     }
+}
 
     private var comparisonPanel: some View {
         VStack(alignment: .leading, spacing: 8) {
