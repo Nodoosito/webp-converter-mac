@@ -83,6 +83,7 @@ struct ContentView: View {
 
                 VStack(spacing: 16) {
                     listPanel
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                     previewPanel
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -231,17 +232,9 @@ struct ContentView: View {
 
             tableHeader
 
-            ScrollView(.horizontal) {
-                List(selection: Binding(
-                    get: { viewModel.selectedItemID.map { Set([$0]) } ?? [] },
-                    set: { newValue in
-                        viewModel.updateSelectedItem(id: newValue.first)
-                    }
-                )) {
-                    ForEach(viewModel.sortedItems) { item in
-                        fileRow(item)
-                            .tag(item.id)
-                    }
+            List {
+                ForEach(viewModel.sortedItems) { item in
+                    fileRow(item)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .clipped()
@@ -250,6 +243,7 @@ struct ContentView: View {
             .clipped()
 
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .clipped()
     }
 
@@ -298,9 +292,23 @@ struct ContentView: View {
             let widths = (0..<6).map { columnWidth(geo.size.width, index: $0) }
 
             HStack(spacing: 12) {
-                Text(item.filename)
-                    .lineLimit(1)
-                    .frame(width: widths[0], alignment: .leading)
+                HStack(spacing: 8) {
+                    if let image = NSImage(contentsOf: item.inputURL) {
+                        Image(nsImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 32, height: 32)
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                    } else {
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(Color.secondary.opacity(0.2))
+                            .frame(width: 32, height: 32)
+                    }
+
+                    Text(item.filename)
+                        .lineLimit(1)
+                }
+                .frame(width: widths[0], alignment: .leading)
 
                 Text(viewModel.formattedSize(item.inputSize))
                     .font(.system(.body, design: .monospaced))
@@ -331,7 +339,7 @@ struct ContentView: View {
                 viewModel.updateSelectedItem(id: item.id)
             }
         }
-        .frame(height: 24)
+        .frame(height: 40)
     }
 
     private var previewPanel: some View {
