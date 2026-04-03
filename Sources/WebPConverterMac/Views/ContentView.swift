@@ -75,25 +75,26 @@ struct ContentView: View {
                     commitWidthInput: commitWidthInput,
                     commitHeightInput: commitHeightInput
                 )
-                .frame(minWidth: 260, idealWidth: 300, maxWidth: 340)
-                .layoutPriority(1)
+                .frame(minWidth: 220, idealWidth: 280, maxWidth: 320)
+                .layoutPriority(0)
                 .frame(maxHeight: .infinity)
 
                 VStack(spacing: 16) {
                     listPanel
                         .frame(minHeight: 220)
+                        .frame(minWidth: 500)
                         .frame(maxWidth: .infinity)
-                        .layoutPriority(0)
 
                     previewPanel
                         .frame(minHeight: 200)
+                        .frame(minWidth: 500)
                         .frame(maxWidth: .infinity)
 
                     footer
-                        .frame(minHeight: 60)
+                        .frame(minWidth: 500)
                 }
                 .frame(maxWidth: .infinity)
-                .layoutPriority(0)
+                .layoutPriority(1)
                 .onAppear {
                     syncInputsFromSettings()
                     ensureLanguageFallback()
