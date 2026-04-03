@@ -16,7 +16,10 @@ struct ContentView: View {
     @State private var isSuffixHelpPresented = false
     @State private var isResizeHelpPresented = false
 
-    private let columnWidths: [CGFloat] = [280, 100, 100, 90, 220, 60]
+    private func columnWidth(_ total: CGFloat, index: Int) -> CGFloat {
+        let ratios: [CGFloat] = [0.30, 0.12, 0.12, 0.10, 0.26, 0.10]
+        return total * ratios[index]
+    }
 
     private var currentLanguage: AppLanguage {
         AppLanguage(rawValue: selectedLanguage) ?? .fallback
@@ -49,98 +52,98 @@ struct ContentView: View {
                 }
             )
 
-            GeometryReader { geometry in
-                let sidebarWidth = max(260, min(360, geometry.size.width * 0.30))
-                HStack(spacing: 16) {
-                    SidebarSettings(
-                        viewModel: viewModel,
-                        currentLanguage: currentLanguage,
-                        themeLabel: themeLabel,
-                        themeSystemLabel: themeSystemLabel,
-                        themeLightLabel: themeLightLabel,
-                        themeDarkLabel: themeDarkLabel,
-                        appTheme: $appTheme,
-                        presetPendingDeletion: $presetPendingDeletion,
-                        presetNameInput: $presetNameInput,
-                        percentageInput: $percentageInput,
-                        widthInput: $widthInput,
-                        heightInput: $heightInput,
-                        isQualityHelpPresented: $isQualityHelpPresented,
-                        isMetadataHelpPresented: $isMetadataHelpPresented,
-                        isSuffixHelpPresented: $isSuffixHelpPresented,
-                        isResizeHelpPresented: $isResizeHelpPresented,
-                        commitAllResizeInputs: commitAllResizeInputs,
-                        commitPercentageInput: commitPercentageInput,
-                        commitWidthInput: commitWidthInput,
-                        commitHeightInput: commitHeightInput
-                    )
-                    .frame(width: sidebarWidth)
-                    .frame(maxHeight: .infinity)
+            HStack(spacing: 16) {
+                SidebarSettings(
+                    viewModel: viewModel,
+                    currentLanguage: currentLanguage,
+                    themeLabel: themeLabel,
+                    themeSystemLabel: themeSystemLabel,
+                    themeLightLabel: themeLightLabel,
+                    themeDarkLabel: themeDarkLabel,
+                    appTheme: $appTheme,
+                    presetPendingDeletion: $presetPendingDeletion,
+                    presetNameInput: $presetNameInput,
+                    percentageInput: $percentageInput,
+                    widthInput: $widthInput,
+                    heightInput: $heightInput,
+                    isQualityHelpPresented: $isQualityHelpPresented,
+                    isMetadataHelpPresented: $isMetadataHelpPresented,
+                    isSuffixHelpPresented: $isSuffixHelpPresented,
+                    isResizeHelpPresented: $isResizeHelpPresented,
+                    commitAllResizeInputs: commitAllResizeInputs,
+                    commitPercentageInput: commitPercentageInput,
+                    commitWidthInput: commitWidthInput,
+                    commitHeightInput: commitHeightInput
+                )
+                .frame(minWidth: 260, idealWidth: 300, maxWidth: 340)
+                .layoutPriority(1)
+                .frame(maxHeight: .infinity)
 
-                    VStack(spacing: 16) {
-                        listPanel
-                            .frame(minHeight: 220)
-                            .frame(maxWidth: .infinity)
+                VStack(spacing: 16) {
+                    listPanel
+                        .frame(minHeight: 220)
+                        .frame(maxWidth: .infinity)
+                        .layoutPriority(0)
 
-                        previewPanel
-                            .frame(minHeight: 200)
-                            .frame(maxWidth: .infinity)
+                    previewPanel
+                        .frame(minHeight: 200)
+                        .frame(maxWidth: .infinity)
 
-                        footer
-                            .frame(minHeight: 60)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .onAppear {
-                        syncInputsFromSettings()
-                        ensureLanguageFallback()
-                    }
-                    .onChange(of: viewModel.settings.resizeSettings.percentage) { _ in
-                        syncInputsFromSettings()
-                    }
-                    .onChange(of: viewModel.settings.resizeSettings.width) { _ in
-                        syncInputsFromSettings()
-                    }
-                    .onChange(of: viewModel.settings.resizeSettings.height) { _ in
-                        syncInputsFromSettings()
-                    }
-                    .onChange(of: viewModel.settings.resizeSettings.mode) { _ in
-                        syncInputsFromSettings()
-                    }
-                    .onDrop(of: [UTType.fileURL.identifier], isTargeted: nil) { providers in
-                        viewModel.handleDrop(providers: providers)
-                        return true
-                    }
-                    .alert(
-                        L10n.text("alert.preset.delete.title", language: currentLanguage),
-                        isPresented: Binding(
-                            get: { presetPendingDeletion != nil },
-                            set: { isPresented in
-                                if !isPresented {
-                                    presetPendingDeletion = nil
-                                }
-                            }
-                        ),
-                        actions: {
-                            Button(L10n.text("alert.cancel", language: currentLanguage), role: .cancel) {
+                    footer
+                        .frame(minHeight: 60)
+                }
+                .frame(maxWidth: .infinity)
+                .layoutPriority(0)
+                .onAppear {
+                    syncInputsFromSettings()
+                    ensureLanguageFallback()
+                }
+                .onChange(of: viewModel.settings.resizeSettings.percentage) { _ in
+                    syncInputsFromSettings()
+                }
+                .onChange(of: viewModel.settings.resizeSettings.width) { _ in
+                    syncInputsFromSettings()
+                }
+                .onChange(of: viewModel.settings.resizeSettings.height) { _ in
+                    syncInputsFromSettings()
+                }
+                .onChange(of: viewModel.settings.resizeSettings.mode) { _ in
+                    syncInputsFromSettings()
+                }
+                .onDrop(of: [UTType.fileURL.identifier], isTargeted: nil) { providers in
+                    viewModel.handleDrop(providers: providers)
+                    return true
+                }
+                .alert(
+                    L10n.text("alert.preset.delete.title", language: currentLanguage),
+                    isPresented: Binding(
+                        get: { presetPendingDeletion != nil },
+                        set: { isPresented in
+                            if !isPresented {
                                 presetPendingDeletion = nil
                             }
-                            Button(L10n.text("alert.delete", language: currentLanguage), role: .destructive) {
-                                guard let presetPendingDeletion else { return }
-                                viewModel.deletePreset(id: presetPendingDeletion.id)
-                                self.presetPendingDeletion = nil
-                            }
-                        },
-                        message: {
-                            if let presetPendingDeletion {
-                                Text(L10n.format("alert.preset.delete.message", language: currentLanguage, presetPendingDeletion.localizedDisplayName))
-                            }
                         }
-                    )
-                    .alert(L10n.text("alert.conversion.complete.title", language: currentLanguage), isPresented: $viewModel.showCompletionAlert) {
-                        Button(L10n.text("alert.ok", language: currentLanguage), role: .cancel) {}
-                    } message: {
-                        Text(L10n.format("alert.conversion.complete.message", language: currentLanguage, viewModel.formattedTotalGain))
+                    ),
+                    actions: {
+                        Button(L10n.text("alert.cancel", language: currentLanguage), role: .cancel) {
+                            presetPendingDeletion = nil
+                        }
+                        Button(L10n.text("alert.delete", language: currentLanguage), role: .destructive) {
+                            guard let presetPendingDeletion else { return }
+                            viewModel.deletePreset(id: presetPendingDeletion.id)
+                            self.presetPendingDeletion = nil
+                        }
+                    },
+                    message: {
+                        if let presetPendingDeletion {
+                            Text(L10n.format("alert.preset.delete.message", language: currentLanguage, presetPendingDeletion.localizedDisplayName))
+                        }
                     }
+                )
+                .alert(L10n.text("alert.conversion.complete.title", language: currentLanguage), isPresented: $viewModel.showCompletionAlert) {
+                    Button(L10n.text("alert.ok", language: currentLanguage), role: .cancel) {}
+                } message: {
+                    Text(L10n.format("alert.conversion.complete.message", language: currentLanguage, viewModel.formattedTotalGain))
                 }
             }
         }
@@ -211,24 +214,31 @@ struct ContentView: View {
                         .tag(item.id)
                 }
             }
+            .frame(maxWidth: .infinity)
             .frame(maxHeight: .infinity)
+            .clipped()
 
         }
     }
 
     private var tableHeader: some View {
-        HStack(spacing: 12) {
-            sortHeader(L10n.text("table.name", language: currentLanguage), column: .name, width: columnWidths[0], alignment: .leading)
-            sortHeader(L10n.text("table.before", language: currentLanguage), column: .beforeSize, width: columnWidths[1], alignment: .trailing)
-            sortHeader(L10n.text("table.after", language: currentLanguage), column: .afterSize, width: columnWidths[2], alignment: .trailing)
-            sortHeader(L10n.text("table.gain", language: currentLanguage), column: .gain, width: columnWidths[3], alignment: .trailing)
-            sortHeader(L10n.text("table.status", language: currentLanguage), column: .status, width: columnWidths[4], alignment: .leading)
-            Text(L10n.text("table.action", language: currentLanguage))
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary.opacity(0.85))
-                .frame(width: columnWidths[5], alignment: .center)
+        GeometryReader { geo in
+            let widths = (0..<6).map { columnWidth(geo.size.width, index: $0) }
+
+            HStack(spacing: 12) {
+                sortHeader(L10n.text("table.name", language: currentLanguage), column: .name, width: widths[0], alignment: .leading)
+                sortHeader(L10n.text("table.before", language: currentLanguage), column: .beforeSize, width: widths[1], alignment: .trailing)
+                sortHeader(L10n.text("table.after", language: currentLanguage), column: .afterSize, width: widths[2], alignment: .trailing)
+                sortHeader(L10n.text("table.gain", language: currentLanguage), column: .gain, width: widths[3], alignment: .trailing)
+                sortHeader(L10n.text("table.status", language: currentLanguage), column: .status, width: widths[4], alignment: .leading)
+                Text(L10n.text("table.action", language: currentLanguage))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary.opacity(0.85))
+                    .frame(width: widths[5], alignment: .center)
+            }
+            .padding(.horizontal, 8)
         }
-        .padding(.horizontal, 8)
+        .frame(height: 24)
     }
 
     private func sortHeader(_ title: String, column: ConversionViewModel.SortColumn, width: CGFloat, alignment: Alignment) -> some View {
@@ -252,39 +262,44 @@ struct ContentView: View {
     }
 
     private func fileRow(_ item: FileConversionItem) -> some View {
-        HStack(spacing: 12) {
-            Text(item.filename)
-                .lineLimit(1)
-                .frame(width: columnWidths[0], alignment: .leading)
+        GeometryReader { geo in
+            let widths = (0..<6).map { columnWidth(geo.size.width, index: $0) }
 
-            Text(viewModel.formattedSize(item.inputSize))
-                .font(.system(.body, design: .monospaced))
-                .frame(width: columnWidths[1], alignment: .trailing)
+            HStack(spacing: 12) {
+                Text(item.filename)
+                    .lineLimit(1)
+                    .frame(width: widths[0], alignment: .leading)
 
-            Text(afterSizeText(for: item))
-                .font(.system(.body, design: .monospaced))
-                .frame(width: columnWidths[2], alignment: .trailing)
+                Text(viewModel.formattedSize(item.inputSize))
+                    .font(.system(.body, design: .monospaced))
+                    .frame(width: widths[1], alignment: .trailing)
 
-            Text(viewModel.formattedGain(for: item))
-                .foregroundStyle(.secondary)
-                .frame(width: columnWidths[3], alignment: .trailing)
+                Text(afterSizeText(for: item))
+                    .font(.system(.body, design: .monospaced))
+                    .frame(width: widths[2], alignment: .trailing)
 
-            statusView(for: item.status)
-                .frame(width: columnWidths[4], alignment: .leading)
+                Text(viewModel.formattedGain(for: item))
+                    .foregroundStyle(.secondary)
+                    .frame(width: widths[3], alignment: .trailing)
 
-            Button(role: .destructive) {
-                viewModel.removeItem(item)
-            } label: {
-                Image(systemName: "trash")
+                statusView(for: item.status)
+                    .frame(width: widths[4], alignment: .leading)
+
+                Button(role: .destructive) {
+                    viewModel.removeItem(item)
+                } label: {
+                    Image(systemName: "trash")
+                }
+                .buttonStyle(.borderless)
+                .disabled(viewModel.isConverting)
+                .frame(width: widths[5], alignment: .center)
             }
-            .buttonStyle(.borderless)
-            .disabled(viewModel.isConverting)
-            .frame(width: columnWidths[5], alignment: .center)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                viewModel.updateSelectedItem(id: item.id)
+            }
         }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            viewModel.updateSelectedItem(id: item.id)
-        }
+        .frame(height: 24)
     }
 
     private var previewPanel: some View {
