@@ -33,9 +33,10 @@ struct SidebarSettings: View {
                         .font(.headline)
 
                     VStack(alignment: .leading, spacing: 12) {
-                        HStack(alignment: .center, spacing: 12) {
-                            HStack(spacing: 8) {
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack(alignment: .center, spacing: 12) {
                                 Text(themeLabel)
+
                                 Picker(themeLabel, selection: $appTheme) {
                                     Text(themeSystemLabel).tag(0)
                                     Text(themeLightLabel).tag(1)
@@ -43,39 +44,44 @@ struct SidebarSettings: View {
                                 }
                                 .pickerStyle(.segmented)
                             }
+                            .frame(maxWidth: .infinity, alignment: .leading)
 
-                            Picker(L10n.text("settings.preset.label", language: currentLanguage), selection: Binding<UUID?>(
-                                get: { viewModel.selectedPresetID },
-                                set: { viewModel.applyPreset(id: $0) }
-                            )) {
-                                Text(L10n.text("settings.preset.current", language: currentLanguage)).tag(UUID?.none)
-                                ForEach(viewModel.presets) { preset in
-                                    Text(viewModel.displayName(for: preset)).tag(Optional(preset.id))
+                            HStack(alignment: .center, spacing: 12) {
+                                Picker(L10n.text("settings.preset.label", language: currentLanguage), selection: Binding<UUID?>(
+                                    get: { viewModel.selectedPresetID },
+                                    set: { viewModel.applyPreset(id: $0) }
+                                )) {
+                                    Text(L10n.text("settings.preset.current", language: currentLanguage)).tag(UUID?.none)
+                                    ForEach(viewModel.presets) { preset in
+                                        Text(viewModel.displayName(for: preset)).tag(Optional(preset.id))
+                                    }
+                                }
+
+                                if let selectedPreset = viewModel.selectedPreset, viewModel.canDeleteSelectedPreset {
+                                    Button(role: .destructive) {
+                                        presetPendingDeletion = selectedPreset
+                                    } label: {
+                                        Image(systemName: "trash")
+                                    }
+                                    .help(L10n.text("settings.preset.delete_help", language: currentLanguage))
                                 }
                             }
+                            .frame(maxWidth: .infinity, alignment: .leading)
 
-                            if let selectedPreset = viewModel.selectedPreset, viewModel.canDeleteSelectedPreset {
-                                Button(role: .destructive) {
-                                    presetPendingDeletion = selectedPreset
-                                } label: {
-                                    Image(systemName: "trash")
+                            HStack(alignment: .center, spacing: 12) {
+                                TextField(L10n.text("settings.preset.new_name.placeholder", language: currentLanguage), text: $presetNameInput)
+
+                                Button(L10n.text("button.save", language: currentLanguage)) {
+                                    commitAllResizeInputs()
+                                    viewModel.saveCurrentPreset(named: presetNameInput)
+                                    if viewModel.globalError == nil {
+                                        presetNameInput = ""
+                                    }
                                 }
-                                .help(L10n.text("settings.preset.delete_help", language: currentLanguage))
+                                .disabled(presetNameInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                             }
-
-                            TextField(L10n.text("settings.preset.new_name.placeholder", language: currentLanguage), text: $presetNameInput)
-
-                            Button(L10n.text("button.save", language: currentLanguage)) {
-                                commitAllResizeInputs()
-                                viewModel.saveCurrentPreset(named: presetNameInput)
-                                if viewModel.globalError == nil {
-                                    presetNameInput = ""
-                                }
-                            }
-                            .disabled(presetNameInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .layoutPriority(0)
 
                         HStack {
                             labelWithInfo(
