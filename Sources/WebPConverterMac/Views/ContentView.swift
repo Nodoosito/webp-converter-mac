@@ -175,6 +175,8 @@ struct ContentView: View {
             .padding(20)
             .frame(minWidth: 320)
         }
+        .padding(20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var header: some View {
@@ -229,16 +231,20 @@ struct ContentView: View {
 
             tableHeader
 
-            List(selection: Binding(
-                get: { viewModel.selectedItemID.map { Set([$0]) } ?? [] },
-                set: { newValue in
-                    viewModel.updateSelectedItem(id: newValue.first)
+            ScrollView(.horizontal) {
+                List(selection: Binding(
+                    get: { viewModel.selectedItemID.map { Set([$0]) } ?? [] },
+                    set: { newValue in
+                        viewModel.updateSelectedItem(id: newValue.first)
+                    }
+                )) {
+                    ForEach(viewModel.sortedItems) { item in
+                        fileRow(item)
+                            .tag(item.id)
+                    }
                 }
-            )) {
-                ForEach(viewModel.sortedItems) { item in
-                    fileRow(item)
-                        .tag(item.id)
-                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipped()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .clipped()
