@@ -42,48 +42,53 @@ struct ContentView: View {
     }
 
     var body: some View {
-        VStack(spacing: 16) {
-            HeaderView(
-                onAddFiles: {
-                    viewModel.addFilesFromPanel()
-                },
-                onSettings: {
-                    // open settings menu (no-op for now)
-                }
+    VStack(spacing: 16) {
+        HeaderView(
+            onAddFiles: {
+                viewModel.addFilesFromPanel()
+            },
+            onSettings: {}
+        )
+
+        HStack(alignment: .top, spacing: 16) {
+
+            SidebarSettings(
+                viewModel: viewModel,
+                currentLanguage: currentLanguage,
+                themeLabel: themeLabel,
+                themeSystemLabel: themeSystemLabel,
+                themeLightLabel: themeLightLabel,
+                themeDarkLabel: themeDarkLabel,
+                appTheme: $appTheme,
+                presetPendingDeletion: $presetPendingDeletion,
+                presetNameInput: $presetNameInput,
+                percentageInput: $percentageInput,
+                widthInput: $widthInput,
+                heightInput: $heightInput,
+                isQualityHelpPresented: $isQualityHelpPresented,
+                isMetadataHelpPresented: $isMetadataHelpPresented,
+                isSuffixHelpPresented: $isSuffixHelpPresented,
+                isResizeHelpPresented: $isResizeHelpPresented,
+                commitAllResizeInputs: commitAllResizeInputs,
+                commitPercentageInput: commitPercentageInput,
+                commitWidthInput: commitWidthInput,
+                commitHeightInput: commitHeightInput
             )
+            .frame(width: 280)
+            .frame(maxHeight: .infinity, alignment: .top)
 
-            HStack(alignment: .top, spacing: 16) {
-                SidebarSettings(
-                    viewModel: viewModel,
-                    currentLanguage: currentLanguage,
-                    themeLabel: themeLabel,
-                    themeSystemLabel: themeSystemLabel,
-                    themeLightLabel: themeLightLabel,
-                    themeDarkLabel: themeDarkLabel,
-                    appTheme: $appTheme,
-                    presetPendingDeletion: $presetPendingDeletion,
-                    presetNameInput: $presetNameInput,
-                    percentageInput: $percentageInput,
-                    widthInput: $widthInput,
-                    heightInput: $heightInput,
-                    isQualityHelpPresented: $isQualityHelpPresented,
-                    isMetadataHelpPresented: $isMetadataHelpPresented,
-                    isSuffixHelpPresented: $isSuffixHelpPresented,
-                    isResizeHelpPresented: $isResizeHelpPresented,
-                    commitAllResizeInputs: commitAllResizeInputs,
-                    commitPercentageInput: commitPercentageInput,
-                    commitWidthInput: commitWidthInput,
-                    commitHeightInput: commitHeightInput
-                )
-                .frame(width: 280)
-.frame(maxHeight: .infinity, alignment: .top)
-
-VStack(spacing: 16) {
-    listPanel
-    previewPanel
-    footer
+            VStack(spacing: 16) {
+                listPanel
+                previewPanel
+                footer
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    .padding(20)
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
 }
-.frame(maxWidth: .infinity, maxHeight: .infinity)
                 
                 .onAppear {
                     syncInputsFromSettings()
