@@ -171,6 +171,8 @@ struct ContentView: View {
             .padding(20)
             .frame(minWidth: 320)
         }
+        .padding(20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var header: some View {
@@ -229,6 +231,8 @@ struct ContentView: View {
                 ForEach(viewModel.sortedItems) { item in
                     fileRow(item)
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipped()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .clipped()
@@ -261,7 +265,7 @@ struct ContentView: View {
                 .foregroundStyle(.secondary.opacity(0.85))
                 .frame(width: 60, alignment: .center)
         }
-        .padding(.horizontal, 8)
+        .frame(height: 24)
     }
 
     private func sortHeader(_ title: String, column: ConversionViewModel.SortColumn, width: CGFloat?, alignment: Alignment) -> some View {
@@ -325,10 +329,18 @@ struct ContentView: View {
             statusView(for: item.status)
                 .frame(width: 130, alignment: .leading)
 
-            Button(role: .destructive) {
-                viewModel.removeItem(item)
-            } label: {
-                Image(systemName: "trash")
+                Button(role: .destructive) {
+                    viewModel.removeItem(item)
+                } label: {
+                    Image(systemName: "trash")
+                }
+                .buttonStyle(.borderless)
+                .disabled(viewModel.isConverting)
+                .frame(width: widths[5], alignment: .center)
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                viewModel.updateSelectedItem(id: item.id)
             }
             .buttonStyle(.borderless)
             .disabled(viewModel.isConverting)
