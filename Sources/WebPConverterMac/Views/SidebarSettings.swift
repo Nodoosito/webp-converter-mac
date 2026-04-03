@@ -208,7 +208,11 @@ struct SidebarSettings: View {
             }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .frame(maxWidth: .infinity)
+            .clipped()
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .clipped()
     }
 
     private func labelWithInfo(_ title: String, help: String, isPresented: Binding<Bool>) -> some View {
