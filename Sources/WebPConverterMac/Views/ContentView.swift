@@ -87,6 +87,7 @@ struct ContentView: View {
 
             footer
                 .frame(maxWidth: .infinity)
+                .padding(.top, 8)
         }
         .padding(20)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -171,8 +172,6 @@ struct ContentView: View {
             .padding(20)
             .frame(minWidth: 320)
         }
-        .padding(20)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var header: some View {
@@ -244,45 +243,95 @@ struct ContentView: View {
 
     private var tableHeader: some View {
         HStack(spacing: 12) {
-            sortHeader(
-                L10n.text("table.name", language: currentLanguage),
-                column: .name,
-                width: nil,
-                alignment: .leading
-            )
-            .frame(minWidth: 180, maxWidth: .infinity, alignment: .leading)
+            Button {
+                viewModel.cycleSort(for: .name)
+            } label: {
+                HStack(spacing: 4) {
+                    Text(L10n.text("table.name", language: currentLanguage))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary.opacity(0.85))
+                    Spacer(minLength: 0)
+                    if let symbol = viewModel.sortIndicator(for: .name) {
+                        Image(systemName: symbol)
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .frame(minWidth: 180, maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(.plain)
 
-            sortHeader(
-                L10n.text("table.before", language: currentLanguage),
-                column: .beforeSize,
-                width: 90,
-                alignment: .trailing
-            )
-            .frame(width: 90, alignment: .trailing)
+            Button {
+                viewModel.cycleSort(for: .beforeSize)
+            } label: {
+                HStack(spacing: 4) {
+                    Text(L10n.text("table.before", language: currentLanguage))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary.opacity(0.85))
+                    Spacer(minLength: 0)
+                    if let symbol = viewModel.sortIndicator(for: .beforeSize) {
+                        Image(systemName: symbol)
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .frame(width: 90, alignment: .trailing)
+            }
+            .buttonStyle(.plain)
 
-            sortHeader(
-                L10n.text("table.after", language: currentLanguage),
-                column: .afterSize,
-                width: 90,
-                alignment: .trailing
-            )
-            .frame(width: 90, alignment: .trailing)
+            Button {
+                viewModel.cycleSort(for: .afterSize)
+            } label: {
+                HStack(spacing: 4) {
+                    Text(L10n.text("table.after", language: currentLanguage))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary.opacity(0.85))
+                    Spacer(minLength: 0)
+                    if let symbol = viewModel.sortIndicator(for: .afterSize) {
+                        Image(systemName: symbol)
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .frame(width: 90, alignment: .trailing)
+            }
+            .buttonStyle(.plain)
 
-            sortHeader(
-                L10n.text("table.gain", language: currentLanguage),
-                column: .gain,
-                width: 70,
-                alignment: .trailing
-            )
-            .frame(width: 70, alignment: .trailing)
+            Button {
+                viewModel.cycleSort(for: .gain)
+            } label: {
+                HStack(spacing: 4) {
+                    Text(L10n.text("table.gain", language: currentLanguage))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary.opacity(0.85))
+                    Spacer(minLength: 0)
+                    if let symbol = viewModel.sortIndicator(for: .gain) {
+                        Image(systemName: symbol)
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .frame(width: 70, alignment: .trailing)
+            }
+            .buttonStyle(.plain)
 
-            sortHeader(
-                L10n.text("table.status", language: currentLanguage),
-                column: .status,
-                width: 130,
-                alignment: .leading
-            )
-            .frame(width: 130, alignment: .leading)
+            Button {
+                viewModel.cycleSort(for: .status)
+            } label: {
+                HStack(spacing: 4) {
+                    Text(L10n.text("table.status", language: currentLanguage))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary.opacity(0.85))
+                    Spacer(minLength: 0)
+                    if let symbol = viewModel.sortIndicator(for: .status) {
+                        Image(systemName: symbol)
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .frame(width: 130, alignment: .leading)
+            }
+            .buttonStyle(.plain)
 
             Text(L10n.text("table.action", language: currentLanguage))
                 .font(.caption.weight(.semibold))
@@ -353,18 +402,10 @@ struct ContentView: View {
             statusView(for: item.status)
                 .frame(width: 130, alignment: .leading)
 
-                Button(role: .destructive) {
-                    viewModel.removeItem(item)
-                } label: {
-                    Image(systemName: "trash")
-                }
-                .buttonStyle(.borderless)
-                .disabled(viewModel.isConverting)
-                .frame(width: widths[5], alignment: .center)
-            }
-            .contentShape(Rectangle())
-            .onTapGesture {
-                viewModel.updateSelectedItem(id: item.id)
+            Button(role: .destructive) {
+                viewModel.removeItem(item)
+            } label: {
+                Image(systemName: "trash")
             }
             .buttonStyle(.borderless)
             .disabled(viewModel.isConverting)
