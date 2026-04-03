@@ -34,10 +34,11 @@ struct WebPConverterMacApp: App {
                         .environment(\.locale, .init(identifier: effectiveLanguage.rawValue))
                 }
             }
-            .frame(minWidth: 980, minHeight: 680)
+            .frame(minWidth: 1000, minHeight: 720)
             .background(MainWindowConfigurator())
             .preferredColorScheme(preferredColorScheme)
         }
+        .defaultSize(width: 1200, height: 800)
         .windowResizability(.contentSize)
     }
 }
