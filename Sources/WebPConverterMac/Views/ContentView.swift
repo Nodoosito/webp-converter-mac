@@ -252,14 +252,38 @@ struct ContentView: View {
             )
             .frame(minWidth: 180, maxWidth: .infinity, alignment: .leading)
 
-            sortHeader(L10n.text("table.before", language: currentLanguage), column: .beforeSize, width: 90, alignment: .trailing)
-                .frame(width: 90, alignment: .trailing)
-            sortHeader(L10n.text("table.after", language: currentLanguage), column: .afterSize, width: 90, alignment: .trailing)
-                .frame(width: 90, alignment: .trailing)
-            sortHeader(L10n.text("table.gain", language: currentLanguage), column: .gain, width: 70, alignment: .trailing)
-                .frame(width: 70, alignment: .trailing)
-            sortHeader(L10n.text("table.status", language: currentLanguage), column: .status, width: 130, alignment: .leading)
-                .frame(width: 130, alignment: .leading)
+            sortHeader(
+                L10n.text("table.before", language: currentLanguage),
+                column: .beforeSize,
+                width: 90,
+                alignment: .trailing
+            )
+            .frame(width: 90, alignment: .trailing)
+
+            sortHeader(
+                L10n.text("table.after", language: currentLanguage),
+                column: .afterSize,
+                width: 90,
+                alignment: .trailing
+            )
+            .frame(width: 90, alignment: .trailing)
+
+            sortHeader(
+                L10n.text("table.gain", language: currentLanguage),
+                column: .gain,
+                width: 70,
+                alignment: .trailing
+            )
+            .frame(width: 70, alignment: .trailing)
+
+            sortHeader(
+                L10n.text("table.status", language: currentLanguage),
+                column: .status,
+                width: 130,
+                alignment: .leading
+            )
+            .frame(width: 130, alignment: .leading)
+
             Text(L10n.text("table.action", language: currentLanguage))
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary.opacity(0.85))
