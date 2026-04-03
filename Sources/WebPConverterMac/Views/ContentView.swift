@@ -68,7 +68,9 @@ struct ContentView: View {
 
                 VStack(spacing: 16) {
                     header
-                    listPanel
+                    LiquidGlassCard {
+                        listPanel
+                    }
                     footer
                 }
                 .padding(20)
