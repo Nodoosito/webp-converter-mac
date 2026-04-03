@@ -176,6 +176,8 @@ struct ContentView: View {
             .padding(20)
             .frame(minWidth: 320)
         }
+        .padding(20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var header: some View {
@@ -234,6 +236,8 @@ struct ContentView: View {
                 ForEach(viewModel.sortedItems) { item in
                     fileRow(item)
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipped()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .clipped()
