@@ -254,14 +254,7 @@ struct ContentView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .clipped()
-        .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color(hex: "#8DB3CE").opacity(0.18))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.white.opacity(0.25), lineWidth: 1)
-        )
+        .background(.quaternary.opacity(0.3))
     }
 
     private var tableHeader: some View {
