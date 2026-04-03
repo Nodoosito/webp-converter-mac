@@ -95,7 +95,8 @@ struct ContentView: View {
                     footer
                         .frame(minWidth: 500)
                 }
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipped()
                 .layoutPriority(1)
                 .onAppear {
                     syncInputsFromSettings()
@@ -218,13 +219,13 @@ struct ContentView: View {
                             .tag(item.id)
                     }
                 }
-                .frame(maxWidth: .infinity)
-                .frame(maxHeight: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .clipped()
             }
             .scrollIndicators(.visible)
 
         }
+        .clipped()
     }
 
     private var tableHeader: some View {
