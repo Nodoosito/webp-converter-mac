@@ -87,6 +87,7 @@ struct ContentView: View {
 
             footer
                 .frame(maxWidth: .infinity)
+                .padding(.top, 8)
         }
         .padding(20)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -171,8 +172,6 @@ struct ContentView: View {
             .padding(20)
             .frame(minWidth: 320)
         }
-        .padding(20)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var header: some View {
