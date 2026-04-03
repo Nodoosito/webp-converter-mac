@@ -75,6 +75,9 @@ struct ContentView: View {
                 )
                 .frame(width: 280)
                 .frame(maxHeight: .infinity, alignment: .top)
+                .background(
+                    Color(hex: "#8DB3CE").opacity(0.12)
+                )
 
                 VStack(spacing: 16) {
                     listPanel
