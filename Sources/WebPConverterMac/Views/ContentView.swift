@@ -69,6 +69,7 @@ struct ContentView: View {
 
                 VStack(spacing: 16) {
                     listPanel
+                    previewPanel
                     footer
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
