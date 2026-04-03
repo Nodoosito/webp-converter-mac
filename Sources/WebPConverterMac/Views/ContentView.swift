@@ -194,7 +194,9 @@ struct ContentView: View {
             }
             .frame(maxHeight: .infinity)
 
-            previewPanel
+            LiquidGlassCard {
+                previewPanel
+            }
         }
     }
 
