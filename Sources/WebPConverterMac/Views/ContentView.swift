@@ -65,6 +65,8 @@ struct ContentView: View {
                     commitWidthInput: commitWidthInput,
                     commitHeightInput: commitHeightInput
                 )
+                .frame(width: 260)
+                .fixedSize(horizontal: true, vertical: false)
 
                 VStack(spacing: 16) {
                     header
@@ -73,6 +75,7 @@ struct ContentView: View {
                     }
                     footer
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding(20)
                 .onAppear {
                     syncInputsFromSettings()
@@ -127,6 +130,7 @@ struct ContentView: View {
                 }
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var header: some View {
