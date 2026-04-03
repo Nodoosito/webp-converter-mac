@@ -49,87 +49,97 @@ struct ContentView: View {
                 }
             )
 
-            HStack(alignment: .top, spacing: 16) {
-                SidebarSettings(
-                    viewModel: viewModel,
-                    currentLanguage: currentLanguage,
-                    themeLabel: themeLabel,
-                    themeSystemLabel: themeSystemLabel,
-                    themeLightLabel: themeLightLabel,
-                    themeDarkLabel: themeDarkLabel,
-                    appTheme: $appTheme,
-                    presetPendingDeletion: $presetPendingDeletion,
-                    presetNameInput: $presetNameInput,
-                    percentageInput: $percentageInput,
-                    widthInput: $widthInput,
-                    heightInput: $heightInput,
-                    isQualityHelpPresented: $isQualityHelpPresented,
-                    isMetadataHelpPresented: $isMetadataHelpPresented,
-                    isSuffixHelpPresented: $isSuffixHelpPresented,
-                    isResizeHelpPresented: $isResizeHelpPresented,
-                    commitAllResizeInputs: commitAllResizeInputs,
-                    commitPercentageInput: commitPercentageInput,
-                    commitWidthInput: commitWidthInput,
-                    commitHeightInput: commitHeightInput
-                )
-                .frame(width: 280)
+            GeometryReader { geometry in
+                let sidebarWidth = geometry.size.width * 0.30
+                HStack(spacing: 16) {
+                    SidebarSettings(
+                        viewModel: viewModel,
+                        currentLanguage: currentLanguage,
+                        themeLabel: themeLabel,
+                        themeSystemLabel: themeSystemLabel,
+                        themeLightLabel: themeLightLabel,
+                        themeDarkLabel: themeDarkLabel,
+                        appTheme: $appTheme,
+                        presetPendingDeletion: $presetPendingDeletion,
+                        presetNameInput: $presetNameInput,
+                        percentageInput: $percentageInput,
+                        widthInput: $widthInput,
+                        heightInput: $heightInput,
+                        isQualityHelpPresented: $isQualityHelpPresented,
+                        isMetadataHelpPresented: $isMetadataHelpPresented,
+                        isSuffixHelpPresented: $isSuffixHelpPresented,
+                        isResizeHelpPresented: $isResizeHelpPresented,
+                        commitAllResizeInputs: commitAllResizeInputs,
+                        commitPercentageInput: commitPercentageInput,
+                        commitWidthInput: commitWidthInput,
+                        commitHeightInput: commitHeightInput
+                    )
+                    .frame(width: sidebarWidth)
+                    .frame(maxHeight: .infinity)
 
-                VStack(spacing: 16) {
-                    listPanel
-                    previewPanel
-                    footer
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .onAppear {
-                    syncInputsFromSettings()
-                    ensureLanguageFallback()
-                }
-                .onChange(of: viewModel.settings.resizeSettings.percentage) { _ in
-                    syncInputsFromSettings()
-                }
-                .onChange(of: viewModel.settings.resizeSettings.width) { _ in
-                    syncInputsFromSettings()
-                }
-                .onChange(of: viewModel.settings.resizeSettings.height) { _ in
-                    syncInputsFromSettings()
-                }
-                .onChange(of: viewModel.settings.resizeSettings.mode) { _ in
-                    syncInputsFromSettings()
-                }
-                .onDrop(of: [UTType.fileURL.identifier], isTargeted: nil) { providers in
-                    viewModel.handleDrop(providers: providers)
-                    return true
-                }
-                .alert(
-                    L10n.text("alert.preset.delete.title", language: currentLanguage),
-                    isPresented: Binding(
-                        get: { presetPendingDeletion != nil },
-                        set: { isPresented in
-                            if !isPresented {
+                    VStack(spacing: 16) {
+                        listPanel
+                            .frame(height: 240)
+                            .frame(maxWidth: .infinity)
+
+                        previewPanel
+                            .frame(height: 220)
+                            .frame(maxWidth: .infinity)
+
+                        footer
+                    }
+                    .frame(maxWidth: .infinity)
+                    .onAppear {
+                        syncInputsFromSettings()
+                        ensureLanguageFallback()
+                    }
+                    .onChange(of: viewModel.settings.resizeSettings.percentage) { _ in
+                        syncInputsFromSettings()
+                    }
+                    .onChange(of: viewModel.settings.resizeSettings.width) { _ in
+                        syncInputsFromSettings()
+                    }
+                    .onChange(of: viewModel.settings.resizeSettings.height) { _ in
+                        syncInputsFromSettings()
+                    }
+                    .onChange(of: viewModel.settings.resizeSettings.mode) { _ in
+                        syncInputsFromSettings()
+                    }
+                    .onDrop(of: [UTType.fileURL.identifier], isTargeted: nil) { providers in
+                        viewModel.handleDrop(providers: providers)
+                        return true
+                    }
+                    .alert(
+                        L10n.text("alert.preset.delete.title", language: currentLanguage),
+                        isPresented: Binding(
+                            get: { presetPendingDeletion != nil },
+                            set: { isPresented in
+                                if !isPresented {
+                                    presetPendingDeletion = nil
+                                }
+                            }
+                        ),
+                        actions: {
+                            Button(L10n.text("alert.cancel", language: currentLanguage), role: .cancel) {
                                 presetPendingDeletion = nil
                             }
+                            Button(L10n.text("alert.delete", language: currentLanguage), role: .destructive) {
+                                guard let presetPendingDeletion else { return }
+                                viewModel.deletePreset(id: presetPendingDeletion.id)
+                                self.presetPendingDeletion = nil
+                            }
+                        },
+                        message: {
+                            if let presetPendingDeletion {
+                                Text(L10n.format("alert.preset.delete.message", language: currentLanguage, presetPendingDeletion.localizedDisplayName))
+                            }
                         }
-                    ),
-                    actions: {
-                        Button(L10n.text("alert.cancel", language: currentLanguage), role: .cancel) {
-                            presetPendingDeletion = nil
-                        }
-                        Button(L10n.text("alert.delete", language: currentLanguage), role: .destructive) {
-                            guard let presetPendingDeletion else { return }
-                            viewModel.deletePreset(id: presetPendingDeletion.id)
-                            self.presetPendingDeletion = nil
-                        }
-                    },
-                    message: {
-                        if let presetPendingDeletion {
-                            Text(L10n.format("alert.preset.delete.message", language: currentLanguage, presetPendingDeletion.localizedDisplayName))
-                        }
+                    )
+                    .alert(L10n.text("alert.conversion.complete.title", language: currentLanguage), isPresented: $viewModel.showCompletionAlert) {
+                        Button(L10n.text("alert.ok", language: currentLanguage), role: .cancel) {}
+                    } message: {
+                        Text(L10n.format("alert.conversion.complete.message", language: currentLanguage, viewModel.formattedTotalGain))
                     }
-                )
-                .alert(L10n.text("alert.conversion.complete.title", language: currentLanguage), isPresented: $viewModel.showCompletionAlert) {
-                    Button(L10n.text("alert.ok", language: currentLanguage), role: .cancel) {}
-                } message: {
-                    Text(L10n.format("alert.conversion.complete.message", language: currentLanguage, viewModel.formattedTotalGain))
                 }
             }
         }
