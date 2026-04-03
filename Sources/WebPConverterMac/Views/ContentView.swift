@@ -19,7 +19,9 @@ struct ContentView: View {
 
     private func columnWidth(_ total: CGFloat, index: Int) -> CGFloat {
         let ratios: [CGFloat] = [0.30, 0.12, 0.12, 0.10, 0.26, 0.10]
-        return total * ratios[index]
+        let minimums: [CGFloat] = [220, 80, 80, 70, 120, 80]
+        let ratioWidth = total * ratios[index]
+        return max(ratioWidth, minimums[index])
     }
 
     private var currentLanguage: AppLanguage {
