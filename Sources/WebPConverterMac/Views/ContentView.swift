@@ -17,13 +17,6 @@ struct ContentView: View {
     @State private var isResizeHelpPresented = false
     @State private var showSettings = false
 
-    private func columnWidth(_ total: CGFloat, index: Int) -> CGFloat {
-        let ratios: [CGFloat] = [0.30, 0.12, 0.12, 0.10, 0.26, 0.10]
-        let minimums: [CGFloat] = [220, 80, 80, 70, 120, 80]
-        let ratioWidth = total * ratios[index]
-        return max(ratioWidth, minimums[index])
-    }
-
     private var currentLanguage: AppLanguage {
         AppLanguage(rawValue: selectedLanguage) ?? .fallback
     }
@@ -250,30 +243,36 @@ struct ContentView: View {
     }
 
     private var tableHeader: some View {
-        GeometryReader { geo in
-            let widths = (0..<6).map { columnWidth(geo.size.width, index: $0) }
+        HStack(spacing: 12) {
+            sortHeader(
+                L10n.text("table.name", language: currentLanguage),
+                column: .name,
+                width: nil,
+                alignment: .leading
+            )
+            .frame(minWidth: 180, maxWidth: .infinity, alignment: .leading)
 
-            HStack(spacing: 12) {
-                sortHeader(L10n.text("table.name", language: currentLanguage), column: .name, width: widths[0], alignment: .leading)
-                sortHeader(L10n.text("table.before", language: currentLanguage), column: .beforeSize, width: widths[1], alignment: .trailing)
-                sortHeader(L10n.text("table.after", language: currentLanguage), column: .afterSize, width: widths[2], alignment: .trailing)
-                sortHeader(L10n.text("table.gain", language: currentLanguage), column: .gain, width: widths[3], alignment: .trailing)
-                sortHeader(L10n.text("table.status", language: currentLanguage), column: .status, width: widths[4], alignment: .leading)
-                Text(L10n.text("table.action", language: currentLanguage))
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary.opacity(0.85))
-                    .frame(width: widths[5], alignment: .center)
-            }
-            .padding(.horizontal, 8)
+            sortHeader(L10n.text("table.before", language: currentLanguage), column: .beforeSize, width: 90, alignment: .trailing)
+                .frame(width: 90, alignment: .trailing)
+            sortHeader(L10n.text("table.after", language: currentLanguage), column: .afterSize, width: 90, alignment: .trailing)
+                .frame(width: 90, alignment: .trailing)
+            sortHeader(L10n.text("table.gain", language: currentLanguage), column: .gain, width: 70, alignment: .trailing)
+                .frame(width: 70, alignment: .trailing)
+            sortHeader(L10n.text("table.status", language: currentLanguage), column: .status, width: 130, alignment: .leading)
+                .frame(width: 130, alignment: .leading)
+            Text(L10n.text("table.action", language: currentLanguage))
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary.opacity(0.85))
+                .frame(width: 60, alignment: .center)
         }
         .frame(height: 24)
     }
 
-    private func sortHeader(_ title: String, column: ConversionViewModel.SortColumn, width: CGFloat, alignment: Alignment) -> some View {
+    private func sortHeader(_ title: String, column: ConversionViewModel.SortColumn, width: CGFloat?, alignment: Alignment) -> some View {
         Button {
             viewModel.cycleSort(for: column)
         } label: {
-            HStack(spacing: 4) {
+            let content = HStack(spacing: 4) {
                 Text(title)
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary.opacity(0.85))
@@ -284,48 +283,51 @@ struct ContentView: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            .frame(width: width, alignment: alignment)
+
+            if let width {
+                content
+                    .frame(width: width, alignment: alignment)
+            } else {
+                content
+            }
         }
         .buttonStyle(.plain)
     }
 
     private func fileRow(_ item: FileConversionItem) -> some View {
-        GeometryReader { geo in
-            let widths = (0..<6).map { columnWidth(geo.size.width, index: $0) }
-
-            HStack(spacing: 12) {
-                HStack(spacing: 8) {
-                    if let image = NSImage(contentsOf: item.inputURL) {
-                        Image(nsImage: image)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 32, height: 32)
-                            .clipShape(RoundedRectangle(cornerRadius: 6))
-                    } else {
-                        RoundedRectangle(cornerRadius: 6)
-                            .fill(Color.secondary.opacity(0.2))
-                            .frame(width: 32, height: 32)
-                    }
-
-                    Text(item.filename)
-                        .lineLimit(1)
+        HStack(spacing: 12) {
+            HStack(spacing: 8) {
+                if let image = NSImage(contentsOf: item.inputURL) {
+                    Image(nsImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 32, height: 32)
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                } else {
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(Color.secondary.opacity(0.2))
+                        .frame(width: 32, height: 32)
                 }
-                .frame(width: widths[0], alignment: .leading)
 
-                Text(viewModel.formattedSize(item.inputSize))
-                    .font(.system(.body, design: .monospaced))
-                    .frame(width: widths[1], alignment: .trailing)
+                Text(item.filename)
+                    .lineLimit(1)
+            }
+            .frame(minWidth: 180, maxWidth: .infinity, alignment: .leading)
 
-                Text(afterSizeText(for: item))
-                    .font(.system(.body, design: .monospaced))
-                    .frame(width: widths[2], alignment: .trailing)
+            Text(viewModel.formattedSize(item.inputSize))
+                .font(.system(.body, design: .monospaced))
+                .frame(width: 90, alignment: .trailing)
 
-                Text(viewModel.formattedGain(for: item))
-                    .foregroundStyle(.secondary)
-                    .frame(width: widths[3], alignment: .trailing)
+            Text(afterSizeText(for: item))
+                .font(.system(.body, design: .monospaced))
+                .frame(width: 90, alignment: .trailing)
 
-                statusView(for: item.status)
-                    .frame(width: widths[4], alignment: .leading)
+            Text(viewModel.formattedGain(for: item))
+                .foregroundStyle(.secondary)
+                .frame(width: 70, alignment: .trailing)
+
+            statusView(for: item.status)
+                .frame(width: 130, alignment: .leading)
 
                 Button(role: .destructive) {
                     viewModel.removeItem(item)
@@ -340,6 +342,13 @@ struct ContentView: View {
             .onTapGesture {
                 viewModel.updateSelectedItem(id: item.id)
             }
+            .buttonStyle(.borderless)
+            .disabled(viewModel.isConverting)
+            .frame(width: 60, alignment: .center)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            viewModel.updateSelectedItem(id: item.id)
         }
         .frame(height: 40)
     }
