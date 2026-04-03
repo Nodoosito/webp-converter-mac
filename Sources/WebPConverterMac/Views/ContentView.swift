@@ -88,9 +88,16 @@ struct ContentView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            LiquidGlassCard {
-                footer
-            }
+            footer
+                .padding(20)
+                .background(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(Color(hex: "#8DB3CE").opacity(0.28))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .stroke(Color.white.opacity(0.25), lineWidth: 1)
+                )
                 .frame(maxWidth: .infinity)
                 .padding(.top, 8)
         }
