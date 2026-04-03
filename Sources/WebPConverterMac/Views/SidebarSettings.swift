@@ -43,6 +43,10 @@ struct SidebarSettings: View {
                                     Text(themeDarkLabel).tag(2)
                                 }
                                 .pickerStyle(.segmented)
+                                .background(
+                                    Color(hex: "#C8D6E0"),
+                                    in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                )
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
 
