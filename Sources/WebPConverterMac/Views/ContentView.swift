@@ -52,7 +52,7 @@ struct ContentView: View {
                 }
             )
 
-            HStack(spacing: 16) {
+            HStack(alignment: .top, spacing: 16) {
                 SidebarSettings(
                     viewModel: viewModel,
                     currentLanguage: currentLanguage,
