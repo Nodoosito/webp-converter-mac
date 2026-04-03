@@ -42,7 +42,7 @@ struct ContentView: View {
         VStack(spacing: 16) {
             HeaderView()
 
-            HStack(spacing: 16) {
+            HStack(alignment: .top, spacing: 16) {
                 SidebarSettings(
                     viewModel: viewModel,
                     currentLanguage: currentLanguage,
@@ -68,10 +68,7 @@ struct ContentView: View {
                 .frame(width: 280)
 
                 VStack(spacing: 16) {
-                    header
-                    LiquidGlassCard {
-                        listPanel
-                    }
+                    listPanel
                     footer
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -197,9 +194,6 @@ struct ContentView: View {
             }
             .frame(maxHeight: .infinity)
 
-            LiquidGlassCard {
-                previewPanel
-            }
         }
     }
 
