@@ -51,7 +51,7 @@ struct ContentView: View {
 
             HStack(alignment: .top, spacing: 16) {
 
-                SidebarSettings(
+            SidebarSettings(
                     viewModel: viewModel,
                     currentLanguage: currentLanguage,
                     themeLabel: themeLabel,
@@ -75,6 +75,9 @@ struct ContentView: View {
                 )
                 .frame(width: 280)
                 .frame(maxHeight: .infinity, alignment: .top)
+                .background(
+                    Color(hex: "#8DB3CE").opacity(0.12)
+                )
 
                 VStack(spacing: 16) {
                     listPanel
@@ -85,12 +88,24 @@ struct ContentView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            footer
+            LiquidGlassCard {
+                footer
+            }
                 .frame(maxWidth: .infinity)
                 .padding(.top, 8)
         }
         .padding(20)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(
+            LinearGradient(
+                colors: [
+                    Color(hex: "#8DB3CE").opacity(0.35),
+                    Color(hex: "#4B708C").opacity(0.15)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
 
         .onAppear {
             syncInputsFromSettings()
@@ -239,6 +254,14 @@ struct ContentView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .clipped()
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color(hex: "#8DB3CE").opacity(0.18))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.white.opacity(0.25), lineWidth: 1)
+        )
     }
 
     private var tableHeader: some View {
@@ -473,7 +496,14 @@ struct ContentView: View {
         }
         .padding(10)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(.quaternary.opacity(0.3), in: RoundedRectangle(cornerRadius: 10))
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(Color(hex: "#8DB3CE").opacity(0.18))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .stroke(Color.white.opacity(0.25), lineWidth: 1)
+        )
     }
 
     private func afterSizeText(for item: FileConversionItem) -> String {
@@ -511,6 +541,10 @@ struct ContentView: View {
                 if viewModel.isConverting {
                     ProgressView(value: viewModel.progress)
                         .frame(maxWidth: 240)
+                        .tint(Color(hex: "#4B708C"))
+                        .background(
+                            Color(hex: "#8DB3CE").opacity(0.25)
+                        )
                     Text(progressLabel)
                         .foregroundStyle(.secondary)
                     Button(L10n.text("button.stop", language: currentLanguage)) {
