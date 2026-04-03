@@ -15,6 +15,7 @@ struct ContentView: View {
     @State private var isMetadataHelpPresented = false
     @State private var isSuffixHelpPresented = false
     @State private var isResizeHelpPresented = false
+    @State private var showSettings = false
 
     private func columnWidth(_ total: CGFloat, index: Int) -> CGFloat {
         let ratios: [CGFloat] = [0.30, 0.12, 0.12, 0.10, 0.26, 0.10]
@@ -48,7 +49,9 @@ struct ContentView: View {
                 onAddFiles: {
                     viewModel.addFilesFromPanel()
                 },
-                onSettings: {}
+                onSettings: {
+                    showSettings = true
+                }
             )
 
             HStack(alignment: .top, spacing: 16) {
@@ -79,14 +82,15 @@ struct ContentView: View {
                 .frame(maxHeight: .infinity, alignment: .top)
 
                 VStack(spacing: 16) {
-                    listPanel
-                    previewPanel
-                    Spacer()
+                    VStack(spacing: 16) {
+                        listPanel
+                        previewPanel
+                    }
+                    .frame(maxHeight: .infinity)
+
                     footer
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, 8)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -152,6 +156,10 @@ struct ContentView: View {
                     viewModel.formattedTotalGain
                 )
             )
+        }
+        .sheet(isPresented: $showSettings) {
+            Text("Settings")
+                .padding(20)
         }
         .padding(20)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -224,7 +232,8 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .clipped()
             }
-            .scrollIndicators(.visible)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .clipped()
 
         }
         .clipped()
