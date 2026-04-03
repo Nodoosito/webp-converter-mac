@@ -40,7 +40,14 @@ struct ContentView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            HeaderView()
+            HeaderView(
+                onAddFiles: {
+                    viewModel.addFilesFromPanel()
+                },
+                onSettings: {
+                    // open settings menu (no-op for now)
+                }
+            )
 
             HStack(alignment: .top, spacing: 16) {
                 SidebarSettings(
