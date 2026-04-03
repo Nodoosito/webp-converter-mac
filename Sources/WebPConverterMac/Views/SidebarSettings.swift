@@ -41,7 +41,6 @@ struct SidebarSettings: View {
                                 Text(themeDarkLabel).tag(2)
                             }
                             .pickerStyle(.segmented)
-                            .frame(width: 260)
                         }
 
                         Picker(L10n.text("settings.preset.label", language: currentLanguage), selection: Binding<UUID?>(
@@ -53,7 +52,6 @@ struct SidebarSettings: View {
                                 Text(viewModel.displayName(for: preset)).tag(Optional(preset.id))
                             }
                         }
-                        .frame(maxWidth: 280)
 
                         if let selectedPreset = viewModel.selectedPreset, viewModel.canDeleteSelectedPreset {
                             Button(role: .destructive) {
@@ -94,7 +92,6 @@ struct SidebarSettings: View {
 
                         Text("\(Int(viewModel.settings.quality * 100))%")
                             .font(.system(.body, design: .monospaced))
-                            .frame(width: 50)
                     }
 
                     Toggle(
@@ -126,7 +123,6 @@ struct SidebarSettings: View {
                                 Text(mode.localizedTitle).tag(mode)
                             }
                         }
-                        .frame(maxWidth: 220)
                     }
 
                     HStack {
@@ -144,7 +140,6 @@ struct SidebarSettings: View {
                                 Text(mode.localizedTitle).tag(mode)
                             }
                         }
-                        .frame(maxWidth: 260)
 
                         switch viewModel.settings.resizeSettings.mode {
                         case .percentage:
@@ -155,7 +150,6 @@ struct SidebarSettings: View {
                                     text: $percentageInput,
                                     onCommit: commitPercentageInput
                                 )
-                                .frame(width: 80, height: 24)
                             }
 
                         case .width:
@@ -166,7 +160,6 @@ struct SidebarSettings: View {
                                     text: $widthInput,
                                     onCommit: commitWidthInput
                                 )
-                                .frame(width: 100, height: 24)
                             }
 
                         case .height:
@@ -177,7 +170,6 @@ struct SidebarSettings: View {
                                     text: $heightInput,
                                     onCommit: commitHeightInput
                                 )
-                                .frame(width: 100, height: 24)
                             }
 
                         case .original:
@@ -213,8 +205,8 @@ struct SidebarSettings: View {
 
                 Spacer()
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(width: 260)
     }
 
     private func labelWithInfo(_ title: String, help: String, isPresented: Binding<Bool>) -> some View {
