@@ -75,11 +75,8 @@ struct ContentView: View {
                     commitWidthInput: commitWidthInput,
                     commitHeightInput: commitHeightInput
                 )
-                .frame(minWidth: 220, idealWidth: 280, maxWidth: 320)
-                .fixedSize(horizontal: false, vertical: true)
-                .clipped()
-                .layoutPriority(0)
-                .frame(maxHeight: .infinity)
+                .frame(width: 280)
+.frame(maxHeight: .infinity, alignment: .top)
 
 VStack(spacing: 16) {
     listPanel
