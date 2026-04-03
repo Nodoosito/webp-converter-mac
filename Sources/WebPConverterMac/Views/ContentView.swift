@@ -42,7 +42,7 @@ struct ContentView: View {
         VStack(spacing: 16) {
             HeaderView()
 
-            HStack(alignment: .top, spacing: 16) {
+            HStack(spacing: 16) {
                 SidebarSettings(
                     viewModel: viewModel,
                     currentLanguage: currentLanguage,
@@ -65,8 +65,7 @@ struct ContentView: View {
                     commitWidthInput: commitWidthInput,
                     commitHeightInput: commitHeightInput
                 )
-                .frame(width: 260)
-                .fixedSize(horizontal: true, vertical: false)
+                .frame(width: 280)
 
                 VStack(spacing: 16) {
                     header
@@ -76,7 +75,6 @@ struct ContentView: View {
                     footer
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding(20)
                 .onAppear {
                     syncInputsFromSettings()
                     ensureLanguageFallback()
@@ -130,6 +128,7 @@ struct ContentView: View {
                 }
             }
         }
+        .padding(20)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
