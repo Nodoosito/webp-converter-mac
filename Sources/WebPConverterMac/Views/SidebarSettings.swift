@@ -27,9 +27,10 @@ struct SidebarSettings: View {
 
     var body: some View {
         LiquidGlassCard {
-            VStack(alignment: .leading, spacing: 16) {
-                Text("Réglages")
-                    .font(.headline)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Réglages")
+                        .font(.headline)
 
                 VStack(alignment: .leading, spacing: 12) {
                     HStack(alignment: .center, spacing: 12) {
@@ -205,7 +206,8 @@ struct SidebarSettings: View {
 
                 Spacer()
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
     }
 

@@ -34,7 +34,7 @@ struct WebPConverterMacApp: App {
                         .environment(\.locale, .init(identifier: effectiveLanguage.rawValue))
                 }
             }
-            .frame(minWidth: 1000, minHeight: 720)
+            .frame(minWidth: 1100, minHeight: 720)
             .background(MainWindowConfigurator())
             .preferredColorScheme(preferredColorScheme)
         }
