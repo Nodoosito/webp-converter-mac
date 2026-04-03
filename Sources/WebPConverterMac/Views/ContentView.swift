@@ -82,17 +82,15 @@ struct ContentView: View {
                 .frame(maxHeight: .infinity, alignment: .top)
 
                 VStack(spacing: 16) {
-                    VStack(spacing: 16) {
-                        listPanel
-                        previewPanel
-                    }
-                    .frame(maxHeight: .infinity)
-
-                    footer
+                    listPanel
+                    previewPanel
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            footer
+                .frame(maxWidth: .infinity)
         }
         .padding(20)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -158,8 +156,24 @@ struct ContentView: View {
             )
         }
         .sheet(isPresented: $showSettings) {
-            Text("Settings")
-                .padding(20)
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Settings")
+                    .font(.headline)
+
+                Picker("Language", selection: $selectedLanguage) {
+                    Text(L10n.text("settings.language.french", language: currentLanguage)).tag(AppLanguage.fr.rawValue)
+                    Text(L10n.text("settings.language.english", language: currentLanguage)).tag(AppLanguage.en.rawValue)
+                }
+
+                HStack {
+                    Spacer()
+                    Button("Close") {
+                        showSettings = false
+                    }
+                }
+            }
+            .padding(20)
+            .frame(minWidth: 320)
         }
         .padding(20)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
