@@ -50,7 +50,7 @@ struct ContentView: View {
             )
 
             GeometryReader { geometry in
-                let sidebarWidth = geometry.size.width * 0.30
+                let sidebarWidth = max(260, min(360, geometry.size.width * 0.30))
                 HStack(spacing: 16) {
                     SidebarSettings(
                         viewModel: viewModel,
@@ -79,14 +79,15 @@ struct ContentView: View {
 
                     VStack(spacing: 16) {
                         listPanel
-                            .frame(height: 240)
+                            .frame(minHeight: 220)
                             .frame(maxWidth: .infinity)
 
                         previewPanel
-                            .frame(height: 220)
+                            .frame(minHeight: 200)
                             .frame(maxWidth: .infinity)
 
                         footer
+                            .frame(minHeight: 60)
                     }
                     .frame(maxWidth: .infinity)
                     .onAppear {
