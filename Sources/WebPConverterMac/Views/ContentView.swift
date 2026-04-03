@@ -153,6 +153,8 @@ struct ContentView: View {
                 )
             )
         }
+        .padding(20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var header: some View {
