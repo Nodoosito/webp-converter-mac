@@ -76,6 +76,8 @@ struct ContentView: View {
                     commitHeightInput: commitHeightInput
                 )
                 .frame(minWidth: 220, idealWidth: 280, maxWidth: 320)
+                .fixedSize(horizontal: false, vertical: true)
+                .clipped()
                 .layoutPriority(0)
                 .frame(maxHeight: .infinity)
 
