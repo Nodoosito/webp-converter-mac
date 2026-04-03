@@ -81,23 +81,13 @@ struct ContentView: View {
                 .layoutPriority(0)
                 .frame(maxHeight: .infinity)
 
-                VStack(spacing: 16) {
-                    listPanel
-                        .frame(minHeight: 220)
-                        .frame(minWidth: 500)
-                        .frame(maxWidth: .infinity)
-
-                    previewPanel
-                        .frame(minHeight: 200)
-                        .frame(minWidth: 500)
-                        .frame(maxWidth: .infinity)
-
-                    footer
-                        .frame(minWidth: 500)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .clipped()
-                .layoutPriority(1)
+VStack(spacing: 16) {
+    listPanel
+    previewPanel
+    footer
+}
+.frame(maxWidth: .infinity, maxHeight: .infinity)
+                
                 .onAppear {
                     syncInputsFromSettings()
                     ensureLanguageFallback()
