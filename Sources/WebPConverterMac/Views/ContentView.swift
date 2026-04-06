@@ -80,8 +80,10 @@ struct ContentView: View {
                 )
 
                 VStack(spacing: 16) {
-                    listPanel
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    LiquidGlassCard {
+                        listPanel
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     previewPanel
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -89,15 +91,6 @@ struct ContentView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             footer
-                .padding(20)
-                .background(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color(hex: "#8DB3CE").opacity(0.28))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .stroke(Color.white.opacity(0.25), lineWidth: 1)
-                )
                 .frame(maxWidth: .infinity)
                 .padding(.top, 8)
         }
@@ -261,7 +254,10 @@ struct ContentView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .clipped()
-        .background(.quaternary.opacity(0.3))
+        .padding(12)
+        .background(
+            Color.white.opacity(0.65)
+        )
     }
 
     private var tableHeader: some View {
@@ -280,7 +276,7 @@ struct ContentView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                .frame(minWidth: 180, maxWidth: .infinity, alignment: .leading)
+                .frame(minWidth: 220, maxWidth: .infinity, alignment: .leading)
             }
             .buttonStyle(.plain)
 
@@ -334,7 +330,7 @@ struct ContentView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                .frame(width: 70, alignment: .trailing)
+                .frame(width: 90, alignment: .trailing)
             }
             .buttonStyle(.plain)
 
@@ -352,7 +348,7 @@ struct ContentView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                .frame(width: 130, alignment: .leading)
+                .frame(width: 140, alignment: .leading)
             }
             .buttonStyle(.plain)
 
@@ -362,6 +358,8 @@ struct ContentView: View {
                 .frame(width: 60, alignment: .center)
         }
         .frame(height: 24)
+        .frame(maxWidth: .infinity)
+        .layoutPriority(1)
     }
 
     private func sortHeader(_ title: String, column: ConversionViewModel.SortColumn, width: CGFloat?, alignment: Alignment) -> some View {
@@ -408,7 +406,7 @@ struct ContentView: View {
                 Text(item.filename)
                     .lineLimit(1)
             }
-            .frame(minWidth: 180, maxWidth: .infinity, alignment: .leading)
+            .frame(minWidth: 220, maxWidth: .infinity, alignment: .leading)
 
             Text(viewModel.formattedSize(item.inputSize))
                 .font(.system(.body, design: .monospaced))
@@ -420,10 +418,10 @@ struct ContentView: View {
 
             Text(viewModel.formattedGain(for: item))
                 .foregroundStyle(.secondary)
-                .frame(width: 70, alignment: .trailing)
+                .frame(width: 90, alignment: .trailing)
 
             statusView(for: item.status)
-                .frame(width: 130, alignment: .leading)
+                .frame(width: 140, alignment: .leading)
 
             Button(role: .destructive) {
                 viewModel.removeItem(item)
@@ -530,41 +528,51 @@ struct ContentView: View {
     }
 
     private var footer: some View {
-        VStack(spacing: 8) {
-            if let error = viewModel.globalError {
-                Text(error)
-                    .foregroundStyle(.red)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
+        LiquidGlassCard {
+            VStack(spacing: 8) {
+                if let error = viewModel.globalError {
+                    Text(error)
+                        .foregroundStyle(.red)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
 
-            HStack {
-                if viewModel.isConverting {
+                HStack {
                     ProgressView(value: viewModel.progress)
+                        .opacity(1)
                         .frame(maxWidth: 240)
                         .tint(Color(hex: "#4B708C"))
-                        .background(
-                            Color(hex: "#8DB3CE").opacity(0.25)
-                        )
-                    Text(progressLabel)
-                        .foregroundStyle(.secondary)
-                    Button(L10n.text("button.stop", language: currentLanguage)) {
-                        viewModel.stopConversion()
+
+                    if viewModel.isConverting {
+                        Text(progressLabel)
+                            .foregroundStyle(.secondary)
+                        Button(L10n.text("button.stop", language: currentLanguage)) {
+                            viewModel.stopConversion()
+                        }
+                        .buttonStyle(.bordered)
+                    } else {
+                        Text(progressLabel)
+                            .foregroundStyle(.secondary)
                     }
-                    .buttonStyle(.bordered)
-                } else {
-                    Text(progressLabel)
-                        .foregroundStyle(.secondary)
-                }
 
-                Spacer()
+                    Spacer()
 
-                Button(L10n.text("button.convert", language: currentLanguage)) {
-                    commitAllResizeInputs()
-                    viewModel.convertAll()
+                    Button(L10n.text("button.convert", language: currentLanguage)) {
+                        commitAllResizeInputs()
+                        viewModel.convertAll()
+                    }
+                    .disabled(viewModel.items.isEmpty || viewModel.isConverting)
                 }
-                .disabled(viewModel.items.isEmpty || viewModel.isConverting)
             }
         }
+        .frame(height: 44)
+        .padding(.horizontal, 4)
+        .background(
+            Color(hex: "#4B708C").opacity(0.25)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.white.opacity(0.35), lineWidth: 1)
+        )
     }
 
     private var progressLabel: String {
