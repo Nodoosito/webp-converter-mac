@@ -535,6 +535,15 @@ struct ContentView: View {
             }
             .frame(maxWidth: .infinity)
         }
+        .frame(height: 44)
+        .padding(.horizontal, 4)
+        .background(
+            Color(hex: "#4B708C").opacity(0.25)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.white.opacity(0.35), lineWidth: 1)
+        )
     }
 
     private func ensureLanguageFallback() {
