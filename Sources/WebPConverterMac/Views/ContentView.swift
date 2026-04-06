@@ -483,7 +483,6 @@ struct ContentView: View {
                     }
                 }.font(.caption)
             }
-            .padding(12)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
