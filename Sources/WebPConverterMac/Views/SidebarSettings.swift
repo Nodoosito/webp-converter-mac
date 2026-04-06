@@ -228,6 +228,7 @@ struct SidebarSettings: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
+                .padding(16)
             }
         }
     }
@@ -252,4 +253,3 @@ struct SidebarSettings: View {
             }
         }
     }
-}
