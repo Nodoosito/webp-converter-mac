@@ -89,7 +89,7 @@ struct ContentView: View {
             footer
                 .frame(maxWidth: .infinity)
         }
-        .padding(20)
+        .padding(16)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             LinearGradient(
