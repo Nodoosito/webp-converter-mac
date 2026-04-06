@@ -173,11 +173,11 @@ struct ContentView: View {
                 }
 
                 HStack {
-                    Spacer()
                     Button("Close") {
                         showSettings = false
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .padding(20)
             .frame(minWidth: 320)
@@ -193,8 +193,6 @@ struct ContentView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
-
-            Spacer()
 
             settingsMenu
 
@@ -222,13 +220,13 @@ struct ContentView: View {
 
     private var listPanel: some View {
         LiquidGlassCard {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: sectionSpacing) {
                 HStack {
                     Text(L10n.text("files.section.title", language: currentLanguage))
                         .font(.headline)
-
-                    Spacer()
-
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .overlay(alignment: .trailing) {
                     Button(L10n.text("button.clear", language: currentLanguage)) {
                         viewModel.clearAll()
                     }
@@ -515,13 +513,13 @@ struct ContentView: View {
 
     private var footer: some View {
         LiquidGlassCard {
-            HStack(spacing: 12) {
+            HStack(spacing: sectionSpacing) {
                 ProgressView(value: viewModel.progress)
                     .tint(Color(hex: "#4B708C"))
                     .scaleEffect(y: 1.2)
                     .frame(maxWidth: .infinity)
 
-                HStack(spacing: 8) {
+                HStack(spacing: sectionSpacing) {
                     Text(L10n.format("progress.label", language: currentLanguage, Int(viewModel.progress * 100)))
                         .foregroundStyle(.secondary)
 
@@ -535,15 +533,6 @@ struct ContentView: View {
             }
             .frame(maxWidth: .infinity)
         }
-        .frame(height: 44)
-        .padding(.horizontal, 4)
-        .background(
-            Color(hex: "#4B708C").opacity(0.25)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.white.opacity(0.35), lineWidth: 1)
-        )
     }
 
     private func ensureLanguageFallback() {
