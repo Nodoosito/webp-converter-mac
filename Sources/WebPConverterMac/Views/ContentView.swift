@@ -16,6 +16,7 @@ struct ContentView: View {
     @State private var isSuffixHelpPresented = false
     @State private var isResizeHelpPresented = false
     @State private var showSettings = false
+    private let sectionSpacing: CGFloat = 16
 
     private var currentLanguage: AppLanguage {
         AppLanguage(rawValue: selectedLanguage) ?? .fallback
@@ -38,7 +39,7 @@ struct ContentView: View {
     }
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: sectionSpacing) {
 
             HeaderView(
                 onAddFiles: {
@@ -49,7 +50,7 @@ struct ContentView: View {
                 }
             )
 
-            HStack(alignment: .top, spacing: 16) {
+            HStack(alignment: .top, spacing: sectionSpacing) {
 
             SidebarSettings(
                     viewModel: viewModel,
@@ -75,13 +76,10 @@ struct ContentView: View {
                 )
                 .frame(width: 280)
                 .frame(maxHeight: .infinity, alignment: .top)
-                .background(
-                    Color(hex: "#8DB3CE").opacity(0.12)
-                )
 
-                VStack(spacing: 16) {
+                VStack(spacing: sectionSpacing) {
                     listPanel
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     previewPanel
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -89,17 +87,7 @@ struct ContentView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             footer
-                .padding(20)
-                .background(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color(hex: "#8DB3CE").opacity(0.28))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .stroke(Color.white.opacity(0.25), lineWidth: 1)
-                )
                 .frame(maxWidth: .infinity)
-                .padding(.top, 8)
         }
         .padding(20)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -185,11 +173,11 @@ struct ContentView: View {
                 }
 
                 HStack {
-                    Spacer()
                     Button("Close") {
                         showSettings = false
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .padding(20)
             .frame(minWidth: 320)
@@ -205,8 +193,6 @@ struct ContentView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
-
-            Spacer()
 
             settingsMenu
 
@@ -233,35 +219,37 @@ struct ContentView: View {
     }
 
     private var listPanel: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text(L10n.text("files.section.title", language: currentLanguage))
-                    .font(.headline)
-
-                Spacer()
-
-                Button(L10n.text("button.clear", language: currentLanguage)) {
-                    viewModel.clearAll()
+        LiquidGlassCard {
+            VStack(alignment: .leading, spacing: sectionSpacing) {
+                HStack {
+                    Text(L10n.text("files.section.title", language: currentLanguage))
+                        .font(.headline)
                 }
-                .disabled(viewModel.items.isEmpty || viewModel.isConverting)
-            }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .overlay(alignment: .trailing) {
+                    Button(L10n.text("button.clear", language: currentLanguage)) {
+                        viewModel.clearAll()
+                    }
+                    .disabled(viewModel.items.isEmpty || viewModel.isConverting)
+                }
 
-            tableHeader
+                tableHeader
 
-            List {
-                ForEach(viewModel.sortedItems) { item in
-                    fileRow(item)
+                List {
+                    ForEach(viewModel.sortedItems) { item in
+                        fileRow(item)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .clipped()
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .scrollContentBackground(.hidden)
+                .background(Color.clear)
                 .clipped()
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .clipped()
-
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .clipped()
-        .background(.quaternary.opacity(0.3))
     }
 
     private var tableHeader: some View {
@@ -280,7 +268,7 @@ struct ContentView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                .frame(minWidth: 180, maxWidth: .infinity, alignment: .leading)
+                .frame(minWidth: 220, maxWidth: .infinity, alignment: .leading)
             }
             .buttonStyle(.plain)
 
@@ -334,7 +322,7 @@ struct ContentView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                .frame(width: 70, alignment: .trailing)
+                .frame(width: 90, alignment: .trailing)
             }
             .buttonStyle(.plain)
 
@@ -352,7 +340,7 @@ struct ContentView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                .frame(width: 130, alignment: .leading)
+                .frame(width: 140, alignment: .leading)
             }
             .buttonStyle(.plain)
 
@@ -362,6 +350,8 @@ struct ContentView: View {
                 .frame(width: 60, alignment: .center)
         }
         .frame(height: 24)
+        .frame(maxWidth: .infinity)
+        .layoutPriority(1)
     }
 
     private func sortHeader(_ title: String, column: ConversionViewModel.SortColumn, width: CGFloat?, alignment: Alignment) -> some View {
@@ -408,7 +398,7 @@ struct ContentView: View {
                 Text(item.filename)
                     .lineLimit(1)
             }
-            .frame(minWidth: 180, maxWidth: .infinity, alignment: .leading)
+            .frame(minWidth: 220, maxWidth: .infinity, alignment: .leading)
 
             Text(viewModel.formattedSize(item.inputSize))
                 .font(.system(.body, design: .monospaced))
@@ -420,10 +410,10 @@ struct ContentView: View {
 
             Text(viewModel.formattedGain(for: item))
                 .foregroundStyle(.secondary)
-                .frame(width: 70, alignment: .trailing)
+                .frame(width: 90, alignment: .trailing)
 
             statusView(for: item.status)
-                .frame(width: 130, alignment: .leading)
+                .frame(width: 140, alignment: .leading)
 
             Button(role: .destructive) {
                 viewModel.removeItem(item)
@@ -442,7 +432,7 @@ struct ContentView: View {
     }
 
     private var previewPanel: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: sectionSpacing) {
             previewCard(title: L10n.text("preview.original", language: currentLanguage), info: viewModel.originalPreview, gainText: nil)
             previewCard(
                 title: L10n.text("preview.converted", language: currentLanguage),
@@ -454,56 +444,47 @@ struct ContentView: View {
     }
 
     private func previewCard(title: String, info: ConversionViewModel.PreviewInfo?, gainText: String?) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.headline)
+        LiquidGlassCard {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(title)
+                    .font(.headline)
 
-            Group {
-                if let image = info?.image {
-                    Image(nsImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(maxWidth: .infinity, maxHeight: 150)
-                } else {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(.quaternary.opacity(0.4))
-                        .overlay(
-                            Text(viewModel.previewMessage)
+                Group {
+                    if let image = info?.image {
+                        Image(nsImage: image)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxWidth: .infinity, maxHeight: 150)
+                    } else {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(.quaternary.opacity(0.4))
+                            .overlay(
+                                Text(viewModel.previewMessage)
+                                    .foregroundStyle(.secondary)
+                                    .font(.caption)
+                                    .multilineTextAlignment(.center)
+                            )
+                            .frame(maxWidth: .infinity, maxHeight: 150)
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 2) {
+                    if let info {
+                        Text(L10n.format("preview.size", language: currentLanguage, viewModel.formattedSize(info.fileSize)))
+                            .foregroundStyle(.secondary)
+                        if let dimensions = info.dimensions {
+                            Text(L10n.format("preview.dimensions", language: currentLanguage, Int(dimensions.width), Int(dimensions.height)))
                                 .foregroundStyle(.secondary)
-                                .font(.caption)
-                                .multilineTextAlignment(.center)
-                                .padding(8)
-                        )
-                        .frame(maxWidth: .infinity, maxHeight: 150)
-                }
-            }
-
-            VStack(alignment: .leading, spacing: 2) {
-                if let info {
-                    Text(L10n.format("preview.size", language: currentLanguage, viewModel.formattedSize(info.fileSize)))
-                        .foregroundStyle(.secondary)
-                    if let dimensions = info.dimensions {
-                        Text(L10n.format("preview.dimensions", language: currentLanguage, Int(dimensions.width), Int(dimensions.height)))
-                            .foregroundStyle(.secondary)
+                        }
+                        if let gainText, gainText != "-" {
+                            Text(L10n.format("preview.gain", language: currentLanguage, gainText))
+                                .foregroundStyle(.secondary)
+                        }
                     }
-                    if let gainText, gainText != "-" {
-                        Text(L10n.format("preview.gain", language: currentLanguage, gainText))
-                            .foregroundStyle(.secondary)
-                    }
-                }
+                }.font(.caption)
             }
-            .font(.caption)
         }
-        .padding(10)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(Color(hex: "#8DB3CE").opacity(0.18))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(Color.white.opacity(0.25), lineWidth: 1)
-        )
     }
 
     private func afterSizeText(for item: FileConversionItem) -> String {
@@ -530,45 +511,27 @@ struct ContentView: View {
     }
 
     private var footer: some View {
-        VStack(spacing: 8) {
-            if let error = viewModel.globalError {
-                Text(error)
-                    .foregroundStyle(.red)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
+        LiquidGlassCard {
+            HStack(spacing: sectionSpacing) {
+                ProgressView(value: viewModel.progress)
+                    .tint(Color(hex: "#4B708C"))
+                    .scaleEffect(y: 0.8)
+                    .frame(maxWidth: .infinity)
 
-            HStack {
-                if viewModel.isConverting {
-                    ProgressView(value: viewModel.progress)
-                        .frame(maxWidth: 240)
-                        .tint(Color(hex: "#4B708C"))
-                        .background(
-                            Color(hex: "#8DB3CE").opacity(0.25)
-                        )
-                    Text(progressLabel)
+                HStack(spacing: sectionSpacing) {
+                    Text(L10n.format("progress.label", language: currentLanguage, Int(viewModel.progress * 100)))
                         .foregroundStyle(.secondary)
-                    Button(L10n.text("button.stop", language: currentLanguage)) {
-                        viewModel.stopConversion()
+
+                    Button(L10n.text("button.convert", language: currentLanguage)) {
+                        commitAllResizeInputs()
+                        viewModel.convertAll()
                     }
-                    .buttonStyle(.bordered)
-                } else {
-                    Text(progressLabel)
-                        .foregroundStyle(.secondary)
+                    .disabled(viewModel.items.isEmpty || viewModel.isConverting)
                 }
-
-                Spacer()
-
-                Button(L10n.text("button.convert", language: currentLanguage)) {
-                    commitAllResizeInputs()
-                    viewModel.convertAll()
-                }
-                .disabled(viewModel.items.isEmpty || viewModel.isConverting)
+                .frame(width: 180, alignment: .trailing)
             }
+            .frame(maxWidth: .infinity)
         }
-    }
-
-    private var progressLabel: String {
-        L10n.format("progress.label", language: currentLanguage, Int(viewModel.progress * 100))
     }
 
     private func ensureLanguageFallback() {
