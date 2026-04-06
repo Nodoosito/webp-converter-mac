@@ -463,7 +463,6 @@ struct ContentView: View {
                                     .foregroundStyle(.secondary)
                                     .font(.caption)
                                     .multilineTextAlignment(.center)
-                                    .padding(8)
                             )
                             .frame(maxWidth: .infinity, maxHeight: 150)
                     }
@@ -484,6 +483,7 @@ struct ContentView: View {
                     }
                 }.font(.caption)
             }
+            .padding(12)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
@@ -516,7 +516,7 @@ struct ContentView: View {
             HStack(spacing: sectionSpacing) {
                 ProgressView(value: viewModel.progress)
                     .tint(Color(hex: "#4B708C"))
-                    .scaleEffect(y: 1.2)
+                    .scaleEffect(y: 0.8)
                     .frame(maxWidth: .infinity)
 
                 HStack(spacing: sectionSpacing) {
