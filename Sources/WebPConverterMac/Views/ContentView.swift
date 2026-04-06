@@ -515,40 +515,25 @@ struct ContentView: View {
 
     private var footer: some View {
         LiquidGlassCard {
-            VStack(spacing: 8) {
-                if let error = viewModel.globalError {
-                    Text(error)
-                        .foregroundStyle(.red)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
+            HStack(spacing: 12) {
+                ProgressView(value: viewModel.progress)
+                    .tint(Color(hex: "#4B708C"))
+                    .scaleEffect(y: 1.2)
+                    .frame(maxWidth: .infinity)
 
-                HStack {
-                    ProgressView(value: viewModel.progress)
-                        .tint(Color(hex: "#4B708C"))
-                        .frame(maxWidth: .infinity)
-                        .scaleEffect(y: 1.2)
-                }
-                .frame(maxWidth: .infinity)
+                HStack(spacing: 8) {
+                    Text(L10n.format("progress.label", language: currentLanguage, Int(viewModel.progress * 100)))
+                        .foregroundStyle(.secondary)
 
-                HStack {
-                    if viewModel.isConverting {
-                        Text(progressLabel)
-                            .foregroundStyle(.secondary)
-                        Button(L10n.text("button.stop", language: currentLanguage)) {
-                            viewModel.stopConversion()
-                        }
-                        .buttonStyle(.bordered)
-                    } else {
-                        Text(progressLabel)
-                            .foregroundStyle(.secondary)
-                    }
                     Button(L10n.text("button.convert", language: currentLanguage)) {
                         commitAllResizeInputs()
                         viewModel.convertAll()
                     }
                     .disabled(viewModel.items.isEmpty || viewModel.isConverting)
                 }
+                .frame(width: 180, alignment: .trailing)
             }
+            .frame(maxWidth: .infinity)
         }
         .frame(height: 44)
         .padding(.horizontal, 4)
@@ -559,10 +544,6 @@ struct ContentView: View {
             RoundedRectangle(cornerRadius: 16)
                 .stroke(Color.white.opacity(0.35), lineWidth: 1)
         )
-    }
-
-    private var progressLabel: String {
-        L10n.format("progress.label", language: currentLanguage, Int(viewModel.progress * 100))
     }
 
     private func ensureLanguageFallback() {
