@@ -28,7 +28,7 @@ struct SidebarSettings: View {
     var body: some View {
         LiquidGlassCard {
             ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 12) {
                     Text("Réglages")
                         .font(.headline)
 
