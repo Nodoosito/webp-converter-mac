@@ -51,8 +51,7 @@ struct ContentView: View {
             )
 
             HStack(alignment: .top, spacing: sectionSpacing) {
-
-            SidebarSettings(
+                SidebarSettings(
                     viewModel: viewModel,
                     currentLanguage: currentLanguage,
                     themeLabel: themeLabel,
@@ -75,14 +74,15 @@ struct ContentView: View {
                     commitHeightInput: commitHeightInput
                 )
                 .frame(width: 280)
-                .frame(maxHeight: .infinity, alignment: .top)
+                .clipShape(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                )
 
                 VStack(spacing: sectionSpacing) {
                     listPanel
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     previewPanel
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .frame(maxWidth: .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
@@ -220,29 +220,14 @@ struct ContentView: View {
 
     private var listPanel: some View {
         LiquidGlassCard {
-            VStack(alignment: .leading, spacing: sectionSpacing) {
-                HStack {
-                    Text(L10n.text("files.section.title", language: currentLanguage))
-                        .font(.headline)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .overlay(alignment: .trailing) {
-                    Button(L10n.text("button.clear", language: currentLanguage)) {
-                        viewModel.clearAll()
-                    }
-                    .disabled(viewModel.items.isEmpty || viewModel.isConverting)
-                }
-
+            VStack(alignment: .leading, spacing: 8) {
                 tableHeader
 
                 List {
                     ForEach(viewModel.sortedItems) { item in
                         fileRow(item)
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .clipped()
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .scrollContentBackground(.hidden)
                 .background(Color.clear)
                 .clipped()
@@ -350,7 +335,6 @@ struct ContentView: View {
                 .frame(width: 60, alignment: .center)
         }
         .frame(height: 24)
-        .frame(maxWidth: .infinity)
         .layoutPriority(1)
     }
 
@@ -440,6 +424,7 @@ struct ContentView: View {
                 gainText: viewModel.selectedItem.map { viewModel.formattedGain(for: $0) }
             )
         }
+        .frame(maxWidth: .infinity)
         .frame(height: 250)
     }
 
@@ -454,7 +439,7 @@ struct ContentView: View {
                         Image(nsImage: image)
                             .resizable()
                             .scaledToFit()
-                            .frame(maxWidth: .infinity, maxHeight: 150)
+                            .frame(maxHeight: 150)
                     } else {
                         RoundedRectangle(cornerRadius: 8)
                             .fill(.quaternary.opacity(0.4))
@@ -464,7 +449,7 @@ struct ContentView: View {
                                     .font(.caption)
                                     .multilineTextAlignment(.center)
                             )
-                            .frame(maxWidth: .infinity, maxHeight: 150)
+                            .frame(maxHeight: 150)
                     }
                 }
 
@@ -484,7 +469,7 @@ struct ContentView: View {
                 }.font(.caption)
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private func afterSizeText(for item: FileConversionItem) -> String {
