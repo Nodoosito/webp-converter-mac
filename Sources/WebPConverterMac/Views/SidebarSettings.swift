@@ -28,7 +28,7 @@ struct SidebarSettings: View {
     var body: some View {
         LiquidGlassCard {
             ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 12) {
                     Text("Réglages")
                         .font(.headline)
 
@@ -228,6 +228,7 @@ struct SidebarSettings: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
+                .padding(16)
             }
         }
     }
@@ -252,4 +253,3 @@ struct SidebarSettings: View {
             }
         }
     }
-}
