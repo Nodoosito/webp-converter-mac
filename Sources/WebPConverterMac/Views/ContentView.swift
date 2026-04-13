@@ -16,6 +16,7 @@ struct ContentView: View {
     @State private var isSuffixHelpPresented = false
     @State private var isResizeHelpPresented = false
     @State private var showSettings = false
+    @State private var previewSplit: CGFloat = 0.5
     private let sectionSpacing: CGFloat = 16
 
     private var currentLanguage: AppLanguage {
@@ -51,8 +52,7 @@ struct ContentView: View {
             )
 
             HStack(alignment: .top, spacing: sectionSpacing) {
-
-            SidebarSettings(
+                SidebarSettings(
                     viewModel: viewModel,
                     currentLanguage: currentLanguage,
                     themeLabel: themeLabel,
@@ -75,14 +75,15 @@ struct ContentView: View {
                     commitHeightInput: commitHeightInput
                 )
                 .frame(width: 280)
-                .frame(maxHeight: .infinity, alignment: .top)
+                .clipShape(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                )
 
                 VStack(spacing: sectionSpacing) {
                     listPanel
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     previewPanel
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .frame(maxWidth: .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
@@ -220,29 +221,14 @@ struct ContentView: View {
 
     private var listPanel: some View {
         LiquidGlassCard {
-            VStack(alignment: .leading, spacing: sectionSpacing) {
-                HStack {
-                    Text(L10n.text("files.section.title", language: currentLanguage))
-                        .font(.headline)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .overlay(alignment: .trailing) {
-                    Button(L10n.text("button.clear", language: currentLanguage)) {
-                        viewModel.clearAll()
-                    }
-                    .disabled(viewModel.items.isEmpty || viewModel.isConverting)
-                }
-
+            VStack(alignment: .leading, spacing: 8) {
                 tableHeader
 
                 List {
                     ForEach(viewModel.sortedItems) { item in
                         fileRow(item)
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .clipped()
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .scrollContentBackground(.hidden)
                 .background(Color.clear)
                 .clipped()
@@ -350,7 +336,6 @@ struct ContentView: View {
                 .frame(width: 60, alignment: .center)
         }
         .frame(height: 24)
-        .frame(maxWidth: .infinity)
         .layoutPriority(1)
     }
 
@@ -432,59 +417,64 @@ struct ContentView: View {
     }
 
     private var previewPanel: some View {
-        HStack(spacing: sectionSpacing) {
-            previewCard(title: L10n.text("preview.original", language: currentLanguage), info: viewModel.originalPreview, gainText: nil)
-            previewCard(
-                title: L10n.text("preview.converted", language: currentLanguage),
-                info: viewModel.convertedPreview,
-                gainText: viewModel.selectedItem.map { viewModel.formattedGain(for: $0) }
-            )
-        }
-        .frame(height: 250)
-    }
-
-    private func previewCard(title: String, info: ConversionViewModel.PreviewInfo?, gainText: String?) -> some View {
         LiquidGlassCard {
-            VStack(alignment: .leading, spacing: 8) {
-                Text(title)
-                    .font(.headline)
+            if let originalImage = viewModel.originalPreview?.image,
+               let convertedImage = viewModel.convertedPreview?.image {
+                VStack(alignment: .leading, spacing: 10) {
+                    GeometryReader { proxy in
+                        let width = max(proxy.size.width, 1)
+                        let clampedSplit = min(max(previewSplit, 0), 1)
+                        let splitX = width * clampedSplit
 
-                Group {
-                    if let image = info?.image {
-                        Image(nsImage: image)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(maxWidth: .infinity, maxHeight: 150)
-                    } else {
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(.quaternary.opacity(0.4))
-                            .overlay(
-                                Text(viewModel.previewMessage)
-                                    .foregroundStyle(.secondary)
-                                    .font(.caption)
-                                    .multilineTextAlignment(.center)
-                            )
-                            .frame(maxWidth: .infinity, maxHeight: 150)
+                        ZStack(alignment: .leading) {
+                            Image(nsImage: originalImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: proxy.size.width, height: proxy.size.height)
+
+                            Image(nsImage: convertedImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: proxy.size.width, height: proxy.size.height)
+                                .mask(alignment: .trailing) {
+                                    Rectangle()
+                                        .frame(width: width - splitX)
+                                }
+
+                            Rectangle()
+                                .fill(Color.white.opacity(0.85))
+                                .frame(width: 2, height: proxy.size.height)
+                                .offset(x: splitX - 1)
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .contentShape(Rectangle())
+                        .gesture(
+                            DragGesture(minimumDistance: 0)
+                                .onChanged { value in
+                                    previewSplit = min(max(value.location.x / width, 0), 1)
+                                }
+                        )
                     }
+                    .frame(height: 170)
+                    .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+
+                    Slider(value: $previewSplit, in: 0...1)
+                        .tint(Color(hex: "#4B708C"))
                 }
-
-                VStack(alignment: .leading, spacing: 2) {
-                    if let info {
-                        Text(L10n.format("preview.size", language: currentLanguage, viewModel.formattedSize(info.fileSize)))
+            } else {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(.quaternary.opacity(0.4))
+                    .overlay(
+                        Text("Sélectionnez un fichier pour voir l’aperçu")
                             .foregroundStyle(.secondary)
-                        if let dimensions = info.dimensions {
-                            Text(L10n.format("preview.dimensions", language: currentLanguage, Int(dimensions.width), Int(dimensions.height)))
-                                .foregroundStyle(.secondary)
-                        }
-                        if let gainText, gainText != "-" {
-                            Text(L10n.format("preview.gain", language: currentLanguage, gainText))
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                }.font(.caption)
+                            .font(.caption)
+                            .multilineTextAlignment(.center)
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .frame(maxWidth: .infinity)
+        .frame(height: 250)
     }
 
     private func afterSizeText(for item: FileConversionItem) -> String {
