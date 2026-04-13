@@ -28,27 +28,66 @@ struct SidebarSettings: View {
     var body: some View {
         LiquidGlassCard {
             ScrollView {
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: 16) {
                     Text("Réglages")
                         .font(.headline)
 
-                    VStack(alignment: .leading, spacing: 12) {
-                        VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        VStack(alignment: .leading, spacing: 16) {
                             HStack(alignment: .center, spacing: 12) {
                                 Text(themeLabel)
 
-                                Picker(themeLabel, selection: $appTheme) {
-                                    Text(themeSystemLabel).tag(0)
-                                    Text(themeLightLabel).tag(1)
-                                    Text(themeDarkLabel).tag(2)
+                                HStack(spacing: 8) {
+                                    Image(systemName: "gearshape")
+                                        .font(.system(size: 13, weight: .semibold))
+                                        .foregroundStyle(.secondary)
+                                        .frame(width: 24, height: 24)
+
+                                    Button {
+                                        appTheme = appTheme == 1 ? 0 : 1
+                                    } label: {
+                                        Image(systemName: "sun.max.fill")
+                                            .font(.system(size: 14, weight: .semibold))
+                                            .frame(width: 28, height: 28)
+                                            .foregroundStyle(appTheme == 1 ? .white : .primary)
+                                            .background(
+                                                Group {
+                                                    if appTheme == 1 {
+                                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                                            .fill(Color(hex: "#63B53D"))
+                                                    }
+                                                }
+                                            )
+                                    }
+                                    .buttonStyle(.plain)
+                                    .help("\(themeLightLabel) (\(themeSystemLabel) si désactivé)")
+
+                                    Button {
+                                        appTheme = appTheme == 2 ? 0 : 2
+                                    } label: {
+                                        Image(systemName: "moon.fill")
+                                            .font(.system(size: 14, weight: .semibold))
+                                            .frame(width: 28, height: 28)
+                                            .foregroundStyle(appTheme == 2 ? .white : .primary)
+                                            .background(
+                                                Group {
+                                                    if appTheme == 2 {
+                                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                                            .fill(Color(hex: "#63B53D"))
+                                                    }
+                                                }
+                                            )
+                                    }
+                                    .buttonStyle(.plain)
+                                    .help("\(themeDarkLabel) (\(themeSystemLabel) si désactivé)")
                                 }
-                                .pickerStyle(.segmented)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 4)
                                 .background(
                                     Color(hex: "#C8D6E0"),
                                     in: RoundedRectangle(cornerRadius: 8, style: .continuous)
                                 )
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
 
                             HStack(alignment: .center, spacing: 12) {
                                 Picker(L10n.text("settings.preset.label", language: currentLanguage), selection: Binding<UUID?>(
@@ -70,7 +109,6 @@ struct SidebarSettings: View {
                                     .help(L10n.text("settings.preset.delete_help", language: currentLanguage))
                                 }
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
 
                             HStack(alignment: .center, spacing: 12) {
                                 TextField(L10n.text("settings.preset.new_name.placeholder", language: currentLanguage), text: $presetNameInput)
@@ -84,7 +122,6 @@ struct SidebarSettings: View {
                                 }
                                 .disabled(presetNameInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
 
                         HStack {
@@ -106,8 +143,6 @@ struct SidebarSettings: View {
                             Text("\(Int(viewModel.settings.quality * 100))%")
                                 .font(.system(.body, design: .monospaced))
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .layoutPriority(0)
 
                         Toggle(
                             isOn: Binding(
@@ -138,9 +173,8 @@ struct SidebarSettings: View {
                                     Text(mode.localizedTitle).tag(mode)
                                 }
                             }
+                            .labelsHidden()
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .layoutPriority(0)
 
                         HStack {
                             labelWithInfo(
@@ -157,6 +191,7 @@ struct SidebarSettings: View {
                                     Text(mode.localizedTitle).tag(mode)
                                 }
                             }
+                            .labelsHidden()
 
                             switch viewModel.settings.resizeSettings.mode {
                             case .percentage:
@@ -201,8 +236,6 @@ struct SidebarSettings: View {
                                 ))
                             }
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .layoutPriority(0)
 
                         HStack {
                             Text(L10n.text("settings.output.label", language: currentLanguage))
@@ -218,16 +251,11 @@ struct SidebarSettings: View {
                                 viewModel.selectOutputFolder()
                             }
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .layoutPriority(0)
                     }
-                    .padding(12)
+                    .padding(16)
                     .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 12))
 
-                    Spacer()
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .fixedSize(horizontal: false, vertical: true)
                 .padding(16)
             }
         }
@@ -253,3 +281,4 @@ struct SidebarSettings: View {
             }
         }
     }
+}
