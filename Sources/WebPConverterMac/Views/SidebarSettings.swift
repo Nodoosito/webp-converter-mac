@@ -48,7 +48,6 @@ struct SidebarSettings: View {
                                     in: RoundedRectangle(cornerRadius: 8, style: .continuous)
                                 )
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
 
                             HStack(alignment: .center, spacing: 12) {
                                 Picker(L10n.text("settings.preset.label", language: currentLanguage), selection: Binding<UUID?>(
@@ -70,7 +69,6 @@ struct SidebarSettings: View {
                                     .help(L10n.text("settings.preset.delete_help", language: currentLanguage))
                                 }
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
 
                             HStack(alignment: .center, spacing: 12) {
                                 TextField(L10n.text("settings.preset.new_name.placeholder", language: currentLanguage), text: $presetNameInput)
@@ -84,7 +82,6 @@ struct SidebarSettings: View {
                                 }
                                 .disabled(presetNameInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
 
                         HStack {
@@ -106,8 +103,6 @@ struct SidebarSettings: View {
                             Text("\(Int(viewModel.settings.quality * 100))%")
                                 .font(.system(.body, design: .monospaced))
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .layoutPriority(0)
 
                         Toggle(
                             isOn: Binding(
@@ -139,8 +134,6 @@ struct SidebarSettings: View {
                                 }
                             }
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .layoutPriority(0)
 
                         HStack {
                             labelWithInfo(
@@ -201,8 +194,6 @@ struct SidebarSettings: View {
                                 ))
                             }
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .layoutPriority(0)
 
                         HStack {
                             Text(L10n.text("settings.output.label", language: currentLanguage))
@@ -218,16 +209,12 @@ struct SidebarSettings: View {
                                 viewModel.selectOutputFolder()
                             }
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .layoutPriority(0)
                     }
                     .padding(12)
                     .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 12))
 
                     Spacer()
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .fixedSize(horizontal: false, vertical: true)
                 .padding(16)
             }
         }
@@ -253,3 +240,4 @@ struct SidebarSettings: View {
             }
         }
     }
+}
