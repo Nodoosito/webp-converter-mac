@@ -51,8 +51,7 @@ struct ContentView: View {
             )
 
             HStack(alignment: .top, spacing: sectionSpacing) {
-
-            SidebarSettings(
+                SidebarSettings(
                     viewModel: viewModel,
                     currentLanguage: currentLanguage,
                     themeLabel: themeLabel,
@@ -75,14 +74,13 @@ struct ContentView: View {
                     commitHeightInput: commitHeightInput
                 )
                 .frame(width: 280)
-                .frame(maxHeight: .infinity, alignment: .top)
 
                 VStack(spacing: sectionSpacing) {
                     listPanel
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                     previewPanel
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
