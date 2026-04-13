@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LiquidGlassCard<Content: View>: View {
-    private let content: Content
+    let content: Content
 
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
@@ -9,19 +9,18 @@ struct LiquidGlassCard<Content: View>: View {
 
     var body: some View {
         content
-            .padding(20)
+            .padding(16)
             .background(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(
-                        Color(hex: "#8DB3CE").opacity(0.18)
-                    )
+                    .fill(Color(hex: "#8DB3CE").opacity(0.18))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(
-                        Color.white.opacity(0.25),
-                        lineWidth: 1
-                    )
+                    .stroke(Color.white.opacity(0.25), lineWidth: 1)
+            )
+            .compositingGroup()
+            .clipShape(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
             )
     }
 }
