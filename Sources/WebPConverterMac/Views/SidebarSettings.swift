@@ -37,12 +37,47 @@ struct SidebarSettings: View {
                             HStack(alignment: .center, spacing: 12) {
                                 Text(themeLabel)
 
-                                Picker(themeLabel, selection: $appTheme) {
-                                    Text(themeSystemLabel).tag(0)
-                                    Text(themeLightLabel).tag(1)
-                                    Text(themeDarkLabel).tag(2)
+                                HStack(spacing: 8) {
+                                    Button {
+                                        appTheme = appTheme == 1 ? 0 : 1
+                                    } label: {
+                                        Image(systemName: "sun.max.fill")
+                                            .font(.system(size: 14, weight: .semibold))
+                                            .frame(width: 28, height: 28)
+                                            .foregroundStyle(appTheme == 1 ? .white : .primary)
+                                            .background(
+                                                Group {
+                                                    if appTheme == 1 {
+                                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                                            .fill(Color(hex: "#63B53D"))
+                                                    }
+                                                }
+                                            )
+                                    }
+                                    .buttonStyle(.plain)
+                                    .help("\(themeLightLabel) (\(themeSystemLabel) si désactivé)")
+
+                                    Button {
+                                        appTheme = appTheme == 2 ? 0 : 2
+                                    } label: {
+                                        Image(systemName: "moon.fill")
+                                            .font(.system(size: 14, weight: .semibold))
+                                            .frame(width: 28, height: 28)
+                                            .foregroundStyle(appTheme == 2 ? .white : .primary)
+                                            .background(
+                                                Group {
+                                                    if appTheme == 2 {
+                                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                                            .fill(Color(hex: "#63B53D"))
+                                                    }
+                                                }
+                                            )
+                                    }
+                                    .buttonStyle(.plain)
+                                    .help("\(themeDarkLabel) (\(themeSystemLabel) si désactivé)")
                                 }
-                                .pickerStyle(.segmented)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 4)
                                 .background(
                                     Color(hex: "#C8D6E0"),
                                     in: RoundedRectangle(cornerRadius: 8, style: .continuous)
