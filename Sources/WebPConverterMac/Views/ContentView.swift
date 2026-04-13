@@ -74,7 +74,9 @@ struct ContentView: View {
                     commitHeightInput: commitHeightInput
                 )
                 .frame(width: 280)
-                .clipped()
+                .clipShape(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                )
 
                 VStack(spacing: sectionSpacing) {
                     listPanel
