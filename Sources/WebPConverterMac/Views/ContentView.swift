@@ -73,11 +73,10 @@ struct ContentView: View {
                     commitWidthInput: commitWidthInput,
                     commitHeightInput: commitHeightInput
                 )
-                .frame(width: 280)
+                .frame(width: 280, alignment: .topLeading)
 
                 VStack(spacing: sectionSpacing) {
                     listPanel
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                     previewPanel
                 }
                 .frame(maxWidth: .infinity, alignment: .topLeading)
