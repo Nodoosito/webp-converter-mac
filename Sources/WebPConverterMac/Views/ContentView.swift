@@ -74,7 +74,7 @@ struct ContentView: View {
                     commitWidthInput: commitWidthInput,
                     commitHeightInput: commitHeightInput
                 )
-                .frame(width: 280)
+                .frame(width: 380)
                 .clipShape(
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
                 )
@@ -222,6 +222,17 @@ struct ContentView: View {
     private var listPanel: some View {
         LiquidGlassCard {
             VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("Fichiers dans la file d'attente")
+                        .font(.headline)
+                    Spacer()
+                    Button("Effacer la file d'attente") {
+                        viewModel.clearAll()
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(viewModel.items.isEmpty || viewModel.isConverting)
+                }
+
                 tableHeader
 
                 List {
@@ -421,6 +432,10 @@ struct ContentView: View {
             if let originalImage = viewModel.originalPreview?.image,
                let convertedImage = viewModel.convertedPreview?.image {
                 VStack(alignment: .leading, spacing: 10) {
+                    Text("Aperçu de la conversion")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .center)
+
                     GeometryReader { proxy in
                         let width = max(proxy.size.width, 1)
                         let clampedSplit = min(max(previewSplit, 0), 1)
@@ -465,10 +480,14 @@ struct ContentView: View {
                 RoundedRectangle(cornerRadius: 8)
                     .fill(.quaternary.opacity(0.4))
                     .overlay(
-                        Text("Sélectionnez un fichier pour voir l’aperçu")
-                            .foregroundStyle(.secondary)
-                            .font(.caption)
-                            .multilineTextAlignment(.center)
+                        VStack(spacing: 10) {
+                            Text("Aperçu de la conversion")
+                                .font(.headline)
+                            Text("Sélectionnez un fichier pour voir l’aperçu comparatif")
+                                .foregroundStyle(.secondary)
+                                .font(.caption)
+                                .multilineTextAlignment(.center)
+                        }
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
@@ -502,7 +521,7 @@ struct ContentView: View {
 
     private var footer: some View {
         LiquidGlassCard {
-            HStack(spacing: sectionSpacing) {
+            HStack(spacing: 12) {
                 ProgressView(value: viewModel.progress)
                     .tint(Color(hex: "#4B708C"))
                     .scaleEffect(y: 0.8)
@@ -516,6 +535,7 @@ struct ContentView: View {
                         commitAllResizeInputs()
                         viewModel.convertAll()
                     }
+                    .buttonStyle(.borderedProminent)
                     .disabled(viewModel.items.isEmpty || viewModel.isConverting)
                 }
                 .frame(width: 180, alignment: .trailing)
