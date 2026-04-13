@@ -213,7 +213,6 @@ struct SidebarSettings: View {
                     .padding(12)
                     .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 12))
 
-                    Spacer()
                 }
                 .padding(16)
             }
