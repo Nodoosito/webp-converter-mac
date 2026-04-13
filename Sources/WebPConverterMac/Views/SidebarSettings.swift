@@ -4,12 +4,6 @@ struct SidebarSettings: View {
     @ObservedObject var viewModel: ConversionViewModel
     let currentLanguage: AppLanguage
 
-    let themeLabel: String
-    let themeSystemLabel: String
-    let themeLightLabel: String
-    let themeDarkLabel: String
-
-    @Binding var appTheme: Int
     @Binding var presetPendingDeletion: ConversionPreset?
     @Binding var presetNameInput: String
     @Binding var percentageInput: String
@@ -32,63 +26,8 @@ struct SidebarSettings: View {
                     Text("Réglages")
                         .font(.headline)
 
-                    VStack(alignment: .leading, spacing: 16) {
-                        VStack(alignment: .leading, spacing: 16) {
-                            HStack(alignment: .center, spacing: 12) {
-                                Text(themeLabel)
-
-                                HStack(spacing: 8) {
-                                    Image(systemName: "gearshape")
-                                        .font(.system(size: 13, weight: .semibold))
-                                        .foregroundStyle(.secondary)
-                                        .frame(width: 24, height: 24)
-
-                                    Button {
-                                        appTheme = appTheme == 1 ? 0 : 1
-                                    } label: {
-                                        Image(systemName: "sun.max.fill")
-                                            .font(.system(size: 14, weight: .semibold))
-                                            .frame(width: 28, height: 28)
-                                            .foregroundStyle(appTheme == 1 ? .white : .primary)
-                                            .background(
-                                                Group {
-                                                    if appTheme == 1 {
-                                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                                            .fill(Color(hex: "#63B53D"))
-                                                    }
-                                                }
-                                            )
-                                    }
-                                    .buttonStyle(.plain)
-                                    .help("\(themeLightLabel) (\(themeSystemLabel) si désactivé)")
-
-                                    Button {
-                                        appTheme = appTheme == 2 ? 0 : 2
-                                    } label: {
-                                        Image(systemName: "moon.fill")
-                                            .font(.system(size: 14, weight: .semibold))
-                                            .frame(width: 28, height: 28)
-                                            .foregroundStyle(appTheme == 2 ? .white : .primary)
-                                            .background(
-                                                Group {
-                                                    if appTheme == 2 {
-                                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                                            .fill(Color(hex: "#63B53D"))
-                                                    }
-                                                }
-                                            )
-                                    }
-                                    .buttonStyle(.plain)
-                                    .help("\(themeDarkLabel) (\(themeSystemLabel) si désactivé)")
-                                }
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 4)
-                                .background(
-                                    Color(hex: "#C8D6E0"),
-                                    in: RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                )
-                            }
-
+                    VStack(alignment: .leading, spacing: 20) {
+                        VStack(alignment: .leading, spacing: 20) {
                             HStack(alignment: .center, spacing: 12) {
                                 Picker(L10n.text("settings.preset.label", language: currentLanguage), selection: Binding<UUID?>(
                                     get: { viewModel.selectedPresetID },

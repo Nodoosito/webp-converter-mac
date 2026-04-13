@@ -23,22 +23,6 @@ struct ContentView: View {
         AppLanguage(rawValue: selectedLanguage) ?? .fallback
     }
 
-    private var themeLabel: String {
-        currentLanguage == .fr ? "Thème" : "Theme"
-    }
-
-    private var themeSystemLabel: String {
-        currentLanguage == .fr ? "Système" : "System"
-    }
-
-    private var themeLightLabel: String {
-        currentLanguage == .fr ? "Clair" : "Light"
-    }
-
-    private var themeDarkLabel: String {
-        currentLanguage == .fr ? "Sombre" : "Dark"
-    }
-
     var body: some View {
         VStack(spacing: sectionSpacing) {
 
@@ -48,40 +32,41 @@ struct ContentView: View {
                 },
                 onSettings: {
                     showSettings = true
-                }
+                },
+                appTheme: $appTheme
             )
 
-            HStack(alignment: .top, spacing: sectionSpacing) {
-                SidebarSettings(
-                    viewModel: viewModel,
-                    currentLanguage: currentLanguage,
-                    themeLabel: themeLabel,
-                    themeSystemLabel: themeSystemLabel,
-                    themeLightLabel: themeLightLabel,
-                    themeDarkLabel: themeDarkLabel,
-                    appTheme: $appTheme,
-                    presetPendingDeletion: $presetPendingDeletion,
-                    presetNameInput: $presetNameInput,
-                    percentageInput: $percentageInput,
-                    widthInput: $widthInput,
-                    heightInput: $heightInput,
-                    isQualityHelpPresented: $isQualityHelpPresented,
-                    isMetadataHelpPresented: $isMetadataHelpPresented,
-                    isSuffixHelpPresented: $isSuffixHelpPresented,
-                    isResizeHelpPresented: $isResizeHelpPresented,
-                    commitAllResizeInputs: commitAllResizeInputs,
-                    commitPercentageInput: commitPercentageInput,
-                    commitWidthInput: commitWidthInput,
-                    commitHeightInput: commitHeightInput
-                )
-                .frame(width: 380)
-                .clipShape(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                )
+            GeometryReader { proxy in
+                let sidebarWidth = max(300, min(360, proxy.size.width * 0.28))
 
-                VStack(spacing: sectionSpacing) {
-                    listPanel
-                    previewPanel
+                HStack(alignment: .top, spacing: sectionSpacing) {
+                    SidebarSettings(
+                        viewModel: viewModel,
+                        currentLanguage: currentLanguage,
+                        presetPendingDeletion: $presetPendingDeletion,
+                        presetNameInput: $presetNameInput,
+                        percentageInput: $percentageInput,
+                        widthInput: $widthInput,
+                        heightInput: $heightInput,
+                        isQualityHelpPresented: $isQualityHelpPresented,
+                        isMetadataHelpPresented: $isMetadataHelpPresented,
+                        isSuffixHelpPresented: $isSuffixHelpPresented,
+                        isResizeHelpPresented: $isResizeHelpPresented,
+                        commitAllResizeInputs: commitAllResizeInputs,
+                        commitPercentageInput: commitPercentageInput,
+                        commitWidthInput: commitWidthInput,
+                        commitHeightInput: commitHeightInput
+                    )
+                    .frame(width: sidebarWidth)
+                    .clipShape(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    )
+
+                    VStack(spacing: sectionSpacing) {
+                        listPanel
+                        previewPanel
+                    }
+                    .frame(maxWidth: .infinity)
                 }
                 .frame(maxWidth: .infinity)
             }

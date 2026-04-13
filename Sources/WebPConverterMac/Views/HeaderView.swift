@@ -3,6 +3,7 @@ import SwiftUI
 struct HeaderView: View {
     let onAddFiles: () -> Void
     let onSettings: () -> Void
+    @Binding var appTheme: Int
 
     var body: some View {
         HStack {
@@ -29,6 +30,27 @@ struct HeaderView: View {
                     .background(Color(hex: "#8DB3CE").opacity(0.8), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
                 .buttonStyle(.plain)
+
+                HStack(spacing: 6) {
+                    Button {
+                        appTheme = appTheme == 1 ? 0 : 1
+                    } label: {
+                        Image(systemName: "sun.max.fill")
+                            .frame(width: 24, height: 24)
+                    }
+                    .buttonStyle(.plain)
+
+                    Button {
+                        appTheme = appTheme == 2 ? 0 : 2
+                    } label: {
+                        Image(systemName: "moon.fill")
+                            .frame(width: 24, height: 24)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Color(hex: "#C8D6E0"), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
 
                 Button(action: onSettings) {
                     Image(systemName: "gearshape")
