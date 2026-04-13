@@ -28,16 +28,21 @@ struct SidebarSettings: View {
     var body: some View {
         LiquidGlassCard {
             ScrollView {
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: 16) {
                     Text("Réglages")
                         .font(.headline)
 
-                    VStack(alignment: .leading, spacing: 12) {
-                        VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        VStack(alignment: .leading, spacing: 16) {
                             HStack(alignment: .center, spacing: 12) {
                                 Text(themeLabel)
 
                                 HStack(spacing: 8) {
+                                    Image(systemName: "gearshape")
+                                        .font(.system(size: 13, weight: .semibold))
+                                        .foregroundStyle(.secondary)
+                                        .frame(width: 24, height: 24)
+
                                     Button {
                                         appTheme = appTheme == 1 ? 0 : 1
                                     } label: {
@@ -168,6 +173,7 @@ struct SidebarSettings: View {
                                     Text(mode.localizedTitle).tag(mode)
                                 }
                             }
+                            .labelsHidden()
                         }
 
                         HStack {
@@ -185,6 +191,7 @@ struct SidebarSettings: View {
                                     Text(mode.localizedTitle).tag(mode)
                                 }
                             }
+                            .labelsHidden()
 
                             switch viewModel.settings.resizeSettings.mode {
                             case .percentage:
@@ -245,7 +252,7 @@ struct SidebarSettings: View {
                             }
                         }
                     }
-                    .padding(12)
+                    .padding(16)
                     .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 12))
 
                 }
