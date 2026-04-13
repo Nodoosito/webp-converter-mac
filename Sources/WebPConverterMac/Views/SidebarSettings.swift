@@ -4,12 +4,6 @@ struct SidebarSettings: View {
     @ObservedObject var viewModel: ConversionViewModel
     let currentLanguage: AppLanguage
 
-    let themeLabel: String
-    let themeSystemLabel: String
-    let themeLightLabel: String
-    let themeDarkLabel: String
-
-    @Binding var appTheme: Int
     @Binding var presetPendingDeletion: ConversionPreset?
     @Binding var presetNameInput: String
     @Binding var percentageInput: String
@@ -28,28 +22,12 @@ struct SidebarSettings: View {
     var body: some View {
         LiquidGlassCard {
             ScrollView {
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: 16) {
                     Text("Réglages")
                         .font(.headline)
 
-                    VStack(alignment: .leading, spacing: 12) {
-                        VStack(alignment: .leading, spacing: 12) {
-                            HStack(alignment: .center, spacing: 12) {
-                                Text(themeLabel)
-
-                                Picker(themeLabel, selection: $appTheme) {
-                                    Text(themeSystemLabel).tag(0)
-                                    Text(themeLightLabel).tag(1)
-                                    Text(themeDarkLabel).tag(2)
-                                }
-                                .pickerStyle(.segmented)
-                                .background(
-                                    Color(hex: "#C8D6E0"),
-                                    in: RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                )
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-
+                    VStack(alignment: .leading, spacing: 20) {
+                        VStack(alignment: .leading, spacing: 20) {
                             HStack(alignment: .center, spacing: 12) {
                                 Picker(L10n.text("settings.preset.label", language: currentLanguage), selection: Binding<UUID?>(
                                     get: { viewModel.selectedPresetID },
@@ -70,7 +48,6 @@ struct SidebarSettings: View {
                                     .help(L10n.text("settings.preset.delete_help", language: currentLanguage))
                                 }
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
 
                             HStack(alignment: .center, spacing: 12) {
                                 TextField(L10n.text("settings.preset.new_name.placeholder", language: currentLanguage), text: $presetNameInput)
@@ -84,7 +61,6 @@ struct SidebarSettings: View {
                                 }
                                 .disabled(presetNameInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
 
                         HStack {
@@ -106,8 +82,6 @@ struct SidebarSettings: View {
                             Text("\(Int(viewModel.settings.quality * 100))%")
                                 .font(.system(.body, design: .monospaced))
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .layoutPriority(0)
 
                         Toggle(
                             isOn: Binding(
@@ -138,9 +112,8 @@ struct SidebarSettings: View {
                                     Text(mode.localizedTitle).tag(mode)
                                 }
                             }
+                            .labelsHidden()
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .layoutPriority(0)
 
                         HStack {
                             labelWithInfo(
@@ -157,6 +130,7 @@ struct SidebarSettings: View {
                                     Text(mode.localizedTitle).tag(mode)
                                 }
                             }
+                            .labelsHidden()
 
                             switch viewModel.settings.resizeSettings.mode {
                             case .percentage:
@@ -201,8 +175,6 @@ struct SidebarSettings: View {
                                 ))
                             }
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .layoutPriority(0)
 
                         HStack {
                             Text(L10n.text("settings.output.label", language: currentLanguage))
@@ -218,16 +190,11 @@ struct SidebarSettings: View {
                                 viewModel.selectOutputFolder()
                             }
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .layoutPriority(0)
                     }
-                    .padding(12)
+                    .padding(16)
                     .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 12))
 
-                    Spacer()
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .fixedSize(horizontal: false, vertical: true)
                 .padding(16)
             }
         }
@@ -253,3 +220,4 @@ struct SidebarSettings: View {
             }
         }
     }
+}
