@@ -3,7 +3,7 @@ import Foundation
 import ImageIO
 
 @MainActor
-final class ConversionViewModel: ObservableObject {
+public final class ConversionViewModel: ObservableObject {
     enum SortColumn { case name, beforeSize, afterSize, gain, status }
     enum SortDirection { case none, ascending, descending }
 
@@ -125,6 +125,14 @@ final class ConversionViewModel: ObservableObject {
     }
 
     var canDeleteSelectedPreset: Bool { selectedPreset?.isSystemPreset == false }
+
+    public init() {
+        self.presetStore = ConversionPresetStore()
+        self.userDefaults = .standard
+        presets = presetStore.loadPresets()
+        settings.outputFolder = restoredOutputFolder()
+        selectedPresetID = matchingPresetID(for: settings)
+    }
 
     init(
         presetStore: ConversionPresetStore = ConversionPresetStore(),
