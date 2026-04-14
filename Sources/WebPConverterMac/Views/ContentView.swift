@@ -1,7 +1,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct ContentView: View {
+public struct ContentView: View {
     @ObservedObject var viewModel: ConversionViewModel
     @AppStorage(AppLanguage.storageKey) private var selectedLanguage = AppLanguage.fallback.rawValue
     @AppStorage("appTheme") private var appTheme: Int = 0
@@ -23,7 +23,11 @@ struct ContentView: View {
         AppLanguage(rawValue: selectedLanguage) ?? .fallback
     }
 
-    var body: some View {
+    public init(viewModel: ConversionViewModel) {
+        self.viewModel = viewModel
+    }
+
+    public var body: some View {
         VStack(spacing: sectionSpacing) {
 
             HeaderView(

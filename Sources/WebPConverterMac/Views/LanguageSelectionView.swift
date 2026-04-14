@@ -1,9 +1,13 @@
 import SwiftUI
 
-struct LanguageSelectionView: View {
+public struct LanguageSelectionView: View {
     @Binding var selectedLanguage: String
 
-    var body: some View {
+    public init(selectedLanguage: Binding<String>) {
+        _selectedLanguage = selectedLanguage
+    }
+
+    public var body: some View {
         VStack(spacing: 20) {
             VStack(spacing: 8) {
                 Text(L10n.text("app.name"))
