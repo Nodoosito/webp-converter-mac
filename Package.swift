@@ -7,10 +7,10 @@ let package = Package(
         .macOS(.v13)
     ],
     products: [
-        .executable(name: "Orlo", targets: ["WebPConverterMac"])
+        .library(name: "WebPConverterMac", targets: ["WebPConverterMac"]) // ← library
     ],
     targets: [
-        .executableTarget(
+        .target(                          // ← .target au lieu de .executableTarget
             name: "WebPConverterMac",
             path: "Sources/WebPConverterMac",
             resources: [
