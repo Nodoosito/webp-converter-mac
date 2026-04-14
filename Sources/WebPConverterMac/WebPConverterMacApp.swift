@@ -28,7 +28,8 @@ struct WebPConverterMacApp: App {
                 if selectedLanguage.isEmpty {
                     LanguageSelectionView(selectedLanguage: $selectedLanguage)
                         .environment(\.locale, .init(identifier: effectiveLanguage.rawValue))
-                } else {
+                }
+                else {
                     ContentView(viewModel: viewModel)
                         .environment(\.locale, .init(identifier: effectiveLanguage.rawValue))
                 }

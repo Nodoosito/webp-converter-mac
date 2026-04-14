@@ -6,8 +6,54 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		9F3936D52F8E1F7D00F3AA7A /* WebPConverterMac in Frameworks */ = {isa = PBXBuildFile; productRef = 9F3936D42F8E1F7D00F3AA7A /* WebPConverterMac */; };
+		9F6A32262F8E238E00E22BC1 /* Icon Orlo.icon in Resources */ = {isa = PBXBuildFile; fileRef = 9F6A32122F8E238E00E22BC1 /* Icon Orlo.icon */; };
+		9F6A32272F8E238E00E22BC1 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 9F6A32132F8E238E00E22BC1 /* Localizable.xcstrings */; };
+		9F6A32282F8E238E00E22BC1 /* WebPConverterMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A32242F8E238E00E22BC1 /* WebPConverterMacApp.swift */; };
+		9F6A32292F8E238E00E22BC1 /* NSItemProvider+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A32182F8E238E00E22BC1 /* NSItemProvider+Async.swift */; };
+		9F6A322A2F8E238E00E22BC1 /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A32232F8E238E00E22BC1 /* Localization.swift */; };
+		9F6A322B2F8E238E00E22BC1 /* LanguageSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A321F2F8E238E00E22BC1 /* LanguageSelectionView.swift */; };
+		9F6A322C2F8E238E00E22BC1 /* ConversionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A32102F8E238E00E22BC1 /* ConversionModels.swift */; };
+		9F6A322D2F8E238E00E22BC1 /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A321E2F8E238E00E22BC1 /* HeaderView.swift */; };
+		9F6A322E2F8E238E00E22BC1 /* ConversionPresetStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A32152F8E238E00E22BC1 /* ConversionPresetStore.swift */; };
+		9F6A322F2F8E238E00E22BC1 /* AppKitCommitTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A321C2F8E238E00E22BC1 /* AppKitCommitTextField.swift */; };
+		9F6A32302F8E238E00E22BC1 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A320E2F8E238E00E22BC1 /* Color+Hex.swift */; };
+		9F6A32312F8E238E00E22BC1 /* SidebarSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A32212F8E238E00E22BC1 /* SidebarSettings.swift */; };
+		9F6A32322F8E238E00E22BC1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A321D2F8E238E00E22BC1 /* ContentView.swift */; };
+		9F6A32332F8E238E00E22BC1 /* FileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A32162F8E238E00E22BC1 /* FileService.swift */; };
+		9F6A32342F8E238E00E22BC1 /* LiquidGlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A32202F8E238E00E22BC1 /* LiquidGlassCard.swift */; };
+		9F6A32352F8E238E00E22BC1 /* ConversionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A321A2F8E238E00E22BC1 /* ConversionViewModel.swift */; };
+		9F6A32362F8E238E00E22BC1 /* ImageConversionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A32172F8E238E00E22BC1 /* ImageConversionService.swift */; };
+		9F6A323B2F8E23AB00E22BC1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 9F6A323A2F8E23AB00E22BC1 /* README.md */; };
+		9F6A323C2F8E23AB00E22BC1 /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A32372F8E23AB00E22BC1 /* HeaderView.swift */; };
+		9F6A323D2F8E23AB00E22BC1 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A32392F8E23AB00E22BC1 /* Package.swift */; };
+		9F6A323E2F8E23AB00E22BC1 /* OrloDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A32382F8E23AB00E22BC1 /* OrloDesign.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		9F3936C52F8E1DDC00F3AA7A /* Orlo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Orlo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9F6A320E2F8E238E00E22BC1 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
+		9F6A32102F8E238E00E22BC1 /* ConversionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversionModels.swift; sourceTree = "<group>"; };
+		9F6A32122F8E238E00E22BC1 /* Icon Orlo.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "Icon Orlo.icon"; sourceTree = "<group>"; };
+		9F6A32132F8E238E00E22BC1 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		9F6A32152F8E238E00E22BC1 /* ConversionPresetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversionPresetStore.swift; sourceTree = "<group>"; };
+		9F6A32162F8E238E00E22BC1 /* FileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileService.swift; sourceTree = "<group>"; };
+		9F6A32172F8E238E00E22BC1 /* ImageConversionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageConversionService.swift; sourceTree = "<group>"; };
+		9F6A32182F8E238E00E22BC1 /* NSItemProvider+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSItemProvider+Async.swift"; sourceTree = "<group>"; };
+		9F6A321A2F8E238E00E22BC1 /* ConversionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversionViewModel.swift; sourceTree = "<group>"; };
+		9F6A321C2F8E238E00E22BC1 /* AppKitCommitTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppKitCommitTextField.swift; sourceTree = "<group>"; };
+		9F6A321D2F8E238E00E22BC1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		9F6A321E2F8E238E00E22BC1 /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
+		9F6A321F2F8E238E00E22BC1 /* LanguageSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageSelectionView.swift; sourceTree = "<group>"; };
+		9F6A32202F8E238E00E22BC1 /* LiquidGlassCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassCard.swift; sourceTree = "<group>"; };
+		9F6A32212F8E238E00E22BC1 /* SidebarSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarSettings.swift; sourceTree = "<group>"; };
+		9F6A32232F8E238E00E22BC1 /* Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
+		9F6A32242F8E238E00E22BC1 /* WebPConverterMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebPConverterMacApp.swift; sourceTree = "<group>"; };
+		9F6A32372F8E23AB00E22BC1 /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HeaderView.swift; path = "/Users/LucasMinelli/webp-converter-mac/HeaderView.swift"; sourceTree = "<absolute>"; };
+		9F6A32382F8E23AB00E22BC1 /* OrloDesign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OrloDesign.swift; path = "/Users/LucasMinelli/webp-converter-mac/OrloDesign.swift"; sourceTree = "<absolute>"; };
+		9F6A32392F8E23AB00E22BC1 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Package.swift; path = "/Users/LucasMinelli/webp-converter-mac/Package.swift"; sourceTree = "<absolute>"; };
+		9F6A323A2F8E23AB00E22BC1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = "/Users/LucasMinelli/webp-converter-mac/README.md"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -23,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F3936D52F8E1F7D00F3AA7A /* WebPConverterMac in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -32,6 +79,11 @@
 		9F3936BC2F8E1DDC00F3AA7A = {
 			isa = PBXGroup;
 			children = (
+				9F6A32372F8E23AB00E22BC1 /* HeaderView.swift */,
+				9F6A32382F8E23AB00E22BC1 /* OrloDesign.swift */,
+				9F6A32392F8E23AB00E22BC1 /* Package.swift */,
+				9F6A323A2F8E23AB00E22BC1 /* README.md */,
+				9F6A32252F8E238E00E22BC1 /* WebPConverterMac */,
 				9F3936C72F8E1DDC00F3AA7A /* Orlo */,
 				9F3936C62F8E1DDC00F3AA7A /* Products */,
 			);
@@ -44,6 +96,79 @@
 			);
 			name = Products;
 			sourceTree = "<group>";
+		};
+		9F6A320F2F8E238E00E22BC1 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				9F6A320E2F8E238E00E22BC1 /* Color+Hex.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		9F6A32112F8E238E00E22BC1 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				9F6A32102F8E238E00E22BC1 /* ConversionModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		9F6A32142F8E238E00E22BC1 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9F6A32122F8E238E00E22BC1 /* Icon Orlo.icon */,
+				9F6A32132F8E238E00E22BC1 /* Localizable.xcstrings */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		9F6A32192F8E238E00E22BC1 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				9F6A32152F8E238E00E22BC1 /* ConversionPresetStore.swift */,
+				9F6A32162F8E238E00E22BC1 /* FileService.swift */,
+				9F6A32172F8E238E00E22BC1 /* ImageConversionService.swift */,
+				9F6A32182F8E238E00E22BC1 /* NSItemProvider+Async.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		9F6A321B2F8E238E00E22BC1 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				9F6A321A2F8E238E00E22BC1 /* ConversionViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		9F6A32222F8E238E00E22BC1 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9F6A321C2F8E238E00E22BC1 /* AppKitCommitTextField.swift */,
+				9F6A321D2F8E238E00E22BC1 /* ContentView.swift */,
+				9F6A321E2F8E238E00E22BC1 /* HeaderView.swift */,
+				9F6A321F2F8E238E00E22BC1 /* LanguageSelectionView.swift */,
+				9F6A32202F8E238E00E22BC1 /* LiquidGlassCard.swift */,
+				9F6A32212F8E238E00E22BC1 /* SidebarSettings.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		9F6A32252F8E238E00E22BC1 /* WebPConverterMac */ = {
+			isa = PBXGroup;
+			children = (
+				9F6A320F2F8E238E00E22BC1 /* Extensions */,
+				9F6A32112F8E238E00E22BC1 /* Models */,
+				9F6A32142F8E238E00E22BC1 /* Resources */,
+				9F6A32192F8E238E00E22BC1 /* Services */,
+				9F6A321B2F8E238E00E22BC1 /* ViewModels */,
+				9F6A32222F8E238E00E22BC1 /* Views */,
+				9F6A32232F8E238E00E22BC1 /* Localization.swift */,
+				9F6A32242F8E238E00E22BC1 /* WebPConverterMacApp.swift */,
+			);
+			name = WebPConverterMac;
+			path = "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac";
+			sourceTree = "<absolute>";
 		};
 /* End PBXGroup section */
 
@@ -65,6 +190,7 @@
 			);
 			name = Orlo;
 			packageProductDependencies = (
+				9F3936D42F8E1F7D00F3AA7A /* WebPConverterMac */,
 			);
 			productName = Orlo;
 			productReference = 9F3936C52F8E1DDC00F3AA7A /* Orlo.app */;
@@ -94,6 +220,8 @@
 			);
 			mainGroup = 9F3936BC2F8E1DDC00F3AA7A;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9F3936C62F8E1DDC00F3AA7A /* Products */;
 			projectDirPath = "";
@@ -109,6 +237,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F6A32262F8E238E00E22BC1 /* Icon Orlo.icon in Resources */,
+				9F6A32272F8E238E00E22BC1 /* Localizable.xcstrings in Resources */,
+				9F6A323B2F8E23AB00E22BC1 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +250,24 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F6A323C2F8E23AB00E22BC1 /* HeaderView.swift in Sources */,
+				9F6A323D2F8E23AB00E22BC1 /* Package.swift in Sources */,
+				9F6A323E2F8E23AB00E22BC1 /* OrloDesign.swift in Sources */,
+				9F6A32282F8E238E00E22BC1 /* WebPConverterMacApp.swift in Sources */,
+				9F6A32292F8E238E00E22BC1 /* NSItemProvider+Async.swift in Sources */,
+				9F6A322A2F8E238E00E22BC1 /* Localization.swift in Sources */,
+				9F6A322B2F8E238E00E22BC1 /* LanguageSelectionView.swift in Sources */,
+				9F6A322C2F8E238E00E22BC1 /* ConversionModels.swift in Sources */,
+				9F6A322D2F8E238E00E22BC1 /* HeaderView.swift in Sources */,
+				9F6A322E2F8E238E00E22BC1 /* ConversionPresetStore.swift in Sources */,
+				9F6A322F2F8E238E00E22BC1 /* AppKitCommitTextField.swift in Sources */,
+				9F6A32302F8E238E00E22BC1 /* Color+Hex.swift in Sources */,
+				9F6A32312F8E238E00E22BC1 /* SidebarSettings.swift in Sources */,
+				9F6A32322F8E238E00E22BC1 /* ContentView.swift in Sources */,
+				9F6A32332F8E238E00E22BC1 /* FileService.swift in Sources */,
+				9F6A32342F8E238E00E22BC1 /* LiquidGlassCard.swift in Sources */,
+				9F6A32352F8E238E00E22BC1 /* ConversionViewModel.swift in Sources */,
+				9F6A32362F8E238E00E22BC1 /* ImageConversionService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,6 +474,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9F3936D42F8E1F7D00F3AA7A /* WebPConverterMac */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WebPConverterMac;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 9F3936BD2F8E1DDC00F3AA7A /* Project object */;
 }
