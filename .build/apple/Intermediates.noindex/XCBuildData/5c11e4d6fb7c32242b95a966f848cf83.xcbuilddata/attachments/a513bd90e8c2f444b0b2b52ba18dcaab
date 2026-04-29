@@ -1,0 +1,179 @@
+{
+  "" : {
+    "diagnostics" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Orlo-primary.dia",
+    "emit-module-dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Orlo-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Orlo-primary-emit-module.dia",
+    "pch" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Orlo-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Orlo-primary.swiftdeps"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/DerivedSources/GeneratedStringSymbols_Localizable.swift" : {
+    "const-values" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/GeneratedStringSymbols_Localizable.swiftconstvalues",
+    "dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/GeneratedStringSymbols_Localizable.d",
+    "diagnostics" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/GeneratedStringSymbols_Localizable.dia",
+    "index-unit-output-path" : "/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/GeneratedStringSymbols_Localizable.o",
+    "llvm-bc" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/GeneratedStringSymbols_Localizable.bc",
+    "object" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/GeneratedStringSymbols_Localizable.o",
+    "swift-dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/GeneratedStringSymbols_Localizable.swiftdeps",
+    "swiftmodule" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/GeneratedStringSymbols_Localizable~partial.swiftmodule"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/DerivedSources/resource_bundle_accessor.swift" : {
+    "const-values" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/resource_bundle_accessor.swiftconstvalues",
+    "dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/resource_bundle_accessor.d",
+    "diagnostics" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/resource_bundle_accessor.dia",
+    "index-unit-output-path" : "/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/resource_bundle_accessor.o",
+    "llvm-bc" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/resource_bundle_accessor.bc",
+    "object" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/resource_bundle_accessor.o",
+    "swift-dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/resource_bundle_accessor.swiftdeps",
+    "swiftmodule" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/resource_bundle_accessor~partial.swiftmodule"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Extensions/Color+Hex.swift" : {
+    "const-values" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Color+Hex.swiftconstvalues",
+    "dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Color+Hex.d",
+    "diagnostics" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Color+Hex.dia",
+    "index-unit-output-path" : "/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Color+Hex.o",
+    "llvm-bc" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Color+Hex.bc",
+    "object" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Color+Hex.o",
+    "swift-dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Color+Hex.swiftdeps",
+    "swiftmodule" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Color+Hex~partial.swiftmodule"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Localization.swift" : {
+    "const-values" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Localization.swiftconstvalues",
+    "dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Localization.d",
+    "diagnostics" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Localization.dia",
+    "index-unit-output-path" : "/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Localization.o",
+    "llvm-bc" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Localization.bc",
+    "object" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Localization.o",
+    "swift-dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Localization.swiftdeps",
+    "swiftmodule" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/Localization~partial.swiftmodule"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Models/ConversionModels.swift" : {
+    "const-values" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionModels.swiftconstvalues",
+    "dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionModels.d",
+    "diagnostics" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionModels.dia",
+    "index-unit-output-path" : "/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionModels.o",
+    "llvm-bc" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionModels.bc",
+    "object" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionModels.o",
+    "swift-dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionModels.swiftdeps",
+    "swiftmodule" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionModels~partial.swiftmodule"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/ConversionPresetStore.swift" : {
+    "const-values" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionPresetStore.swiftconstvalues",
+    "dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionPresetStore.d",
+    "diagnostics" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionPresetStore.dia",
+    "index-unit-output-path" : "/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionPresetStore.o",
+    "llvm-bc" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionPresetStore.bc",
+    "object" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionPresetStore.o",
+    "swift-dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionPresetStore.swiftdeps",
+    "swiftmodule" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionPresetStore~partial.swiftmodule"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/FileService.swift" : {
+    "const-values" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/FileService.swiftconstvalues",
+    "dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/FileService.d",
+    "diagnostics" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/FileService.dia",
+    "index-unit-output-path" : "/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/FileService.o",
+    "llvm-bc" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/FileService.bc",
+    "object" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/FileService.o",
+    "swift-dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/FileService.swiftdeps",
+    "swiftmodule" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/FileService~partial.swiftmodule"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/ImageConversionService.swift" : {
+    "const-values" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ImageConversionService.swiftconstvalues",
+    "dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ImageConversionService.d",
+    "diagnostics" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ImageConversionService.dia",
+    "index-unit-output-path" : "/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ImageConversionService.o",
+    "llvm-bc" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ImageConversionService.bc",
+    "object" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ImageConversionService.o",
+    "swift-dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ImageConversionService.swiftdeps",
+    "swiftmodule" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ImageConversionService~partial.swiftmodule"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/NSItemProvider+Async.swift" : {
+    "const-values" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/NSItemProvider+Async.swiftconstvalues",
+    "dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/NSItemProvider+Async.d",
+    "diagnostics" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/NSItemProvider+Async.dia",
+    "index-unit-output-path" : "/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/NSItemProvider+Async.o",
+    "llvm-bc" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/NSItemProvider+Async.bc",
+    "object" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/NSItemProvider+Async.o",
+    "swift-dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/NSItemProvider+Async.swiftdeps",
+    "swiftmodule" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/NSItemProvider+Async~partial.swiftmodule"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/ViewModels/ConversionViewModel.swift" : {
+    "const-values" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionViewModel.swiftconstvalues",
+    "dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionViewModel.d",
+    "diagnostics" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionViewModel.dia",
+    "index-unit-output-path" : "/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionViewModel.o",
+    "llvm-bc" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionViewModel.bc",
+    "object" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionViewModel.o",
+    "swift-dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionViewModel.swiftdeps",
+    "swiftmodule" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ConversionViewModel~partial.swiftmodule"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/AppKitCommitTextField.swift" : {
+    "const-values" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/AppKitCommitTextField.swiftconstvalues",
+    "dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/AppKitCommitTextField.d",
+    "diagnostics" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/AppKitCommitTextField.dia",
+    "index-unit-output-path" : "/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/AppKitCommitTextField.o",
+    "llvm-bc" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/AppKitCommitTextField.bc",
+    "object" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/AppKitCommitTextField.o",
+    "swift-dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/AppKitCommitTextField.swiftdeps",
+    "swiftmodule" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/AppKitCommitTextField~partial.swiftmodule"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/ContentView.swift" : {
+    "const-values" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ContentView.d",
+    "diagnostics" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ContentView.dia",
+    "index-unit-output-path" : "/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ContentView.o",
+    "llvm-bc" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ContentView.bc",
+    "object" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ContentView.o",
+    "swift-dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ContentView.swiftdeps",
+    "swiftmodule" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/ContentView~partial.swiftmodule"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/HeaderView.swift" : {
+    "const-values" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/HeaderView.swiftconstvalues",
+    "dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/HeaderView.d",
+    "diagnostics" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/HeaderView.dia",
+    "index-unit-output-path" : "/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/HeaderView.o",
+    "llvm-bc" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/HeaderView.bc",
+    "object" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/HeaderView.o",
+    "swift-dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/HeaderView.swiftdeps",
+    "swiftmodule" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/HeaderView~partial.swiftmodule"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/LanguageSelectionView.swift" : {
+    "const-values" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/LanguageSelectionView.swiftconstvalues",
+    "dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/LanguageSelectionView.d",
+    "diagnostics" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/LanguageSelectionView.dia",
+    "index-unit-output-path" : "/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/LanguageSelectionView.o",
+    "llvm-bc" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/LanguageSelectionView.bc",
+    "object" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/LanguageSelectionView.o",
+    "swift-dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/LanguageSelectionView.swiftdeps",
+    "swiftmodule" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/LanguageSelectionView~partial.swiftmodule"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/LiquidGlassCard.swift" : {
+    "const-values" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/LiquidGlassCard.swiftconstvalues",
+    "dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/LiquidGlassCard.d",
+    "diagnostics" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/LiquidGlassCard.dia",
+    "index-unit-output-path" : "/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/LiquidGlassCard.o",
+    "llvm-bc" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/LiquidGlassCard.bc",
+    "object" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/LiquidGlassCard.o",
+    "swift-dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/LiquidGlassCard.swiftdeps",
+    "swiftmodule" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/LiquidGlassCard~partial.swiftmodule"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/SidebarSettings.swift" : {
+    "const-values" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/SidebarSettings.swiftconstvalues",
+    "dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/SidebarSettings.d",
+    "diagnostics" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/SidebarSettings.dia",
+    "index-unit-output-path" : "/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/SidebarSettings.o",
+    "llvm-bc" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/SidebarSettings.bc",
+    "object" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/SidebarSettings.o",
+    "swift-dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/SidebarSettings.swiftdeps",
+    "swiftmodule" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/SidebarSettings~partial.swiftmodule"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/WebPConverterMacApp.swift" : {
+    "const-values" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/WebPConverterMacApp.swiftconstvalues",
+    "dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/WebPConverterMacApp.d",
+    "diagnostics" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/WebPConverterMacApp.dia",
+    "index-unit-output-path" : "/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/WebPConverterMacApp.o",
+    "llvm-bc" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/WebPConverterMacApp.bc",
+    "object" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/WebPConverterMacApp.o",
+    "swift-dependencies" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/WebPConverterMacApp.swiftdeps",
+    "swiftmodule" : "/Users/LucasMinelli/webp-converter-mac/.build/apple/Intermediates.noindex/WebPConverterMac.build/Debug/Orlo.build/Objects-normal/x86_64/WebPConverterMacApp~partial.swiftmodule"
+  }
+}

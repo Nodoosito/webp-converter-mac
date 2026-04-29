@@ -1,0 +1,48 @@
+{
+  "source": "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/SidebarSettings.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Réglages",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 26
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld%%",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 82
+        }
+      },
+      {
+        "comment": "",
+        "key": "%",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 138
+        }
+      },
+      {
+        "comment": "",
+        "key": "px",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 148
+        }
+      },
+      {
+        "comment": "",
+        "key": "px",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 158
+        }
+      }
+    ]
+  },
+  "version": 1
+}

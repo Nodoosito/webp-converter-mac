@@ -36,13 +36,15 @@ enum L10n {
     }
 
     private static func localizedBundle(for language: AppLanguage) -> Bundle {
-        guard
-            let path = Bundle.module.path(forResource: language.rawValue, ofType: "lproj"),
-            let bundle = Bundle(path: path)
-        else {
-            return .module
+        if let bundle = Bundle.main.path(forResource: language.rawValue, ofType: "lproj") {
+            return Bundle(path: bundle) ?? .main
         }
-
-        return bundle
+        
+        if let resourcesURL = Bundle.main.url(forResource: "Localizable", withExtension: "xcstrings"),
+           let resourceBundle = Bundle(url: resourcesURL) {
+            return resourceBundle
+        }
+        
+        return .main
     }
 }

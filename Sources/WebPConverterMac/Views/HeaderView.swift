@@ -5,15 +5,26 @@ struct HeaderView: View {
     let onSettings: () -> Void
     @Binding var appTheme: Int
 
+    private var appIcon: NSImage? {
+        NSApp.applicationIconImage
+    }
+
     var body: some View {
         HStack {
             HStack(spacing: 12) {
-                Image(systemName: "circle.lefthalf.filled")
-                    .font(.system(size: 28, weight: .light))
-                    .foregroundStyle(Color(hex: "#6F98B9"))
+                if let icon = appIcon {
+                    Image(nsImage: icon)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 32, height: 32)
+                } else {
+                    Image(systemName: "circle.lefthalf.filled")
+                        .font(.system(size: 28, weight: .light))
+                        .foregroundStyle(Color(hex: "#6F98B9"))
+                }
 
-                Text("Batch Image converter")
-                    .font(.system(size: 44 / 2, weight: .medium))
+                Text("Orlo Batch Image converter")
+                    .font(.system(size: 22, weight: .medium))
                     .foregroundStyle(Color(hex: "#476E8D"))
             }
 

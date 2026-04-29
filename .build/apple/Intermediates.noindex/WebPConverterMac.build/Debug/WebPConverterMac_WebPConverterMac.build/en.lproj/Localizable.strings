@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>alert.cancel</key>
+	<string>Cancel</string>
+	<key>alert.conversion.complete.message</key>
+	<string>Processing complete. Total savings: %@</string>
+	<key>alert.conversion.complete.title</key>
+	<string>Processing complete</string>
+	<key>alert.delete</key>
+	<string>Delete</string>
+	<key>alert.ok</key>
+	<string>OK</string>
+	<key>alert.preset.delete.message</key>
+	<string>The preset “%@” will be permanently deleted.</string>
+	<key>alert.preset.delete.title</key>
+	<string>Delete preset?</string>
+	<key>app.header.tagline</key>
+	<string>Organize, reduce, smooth, optimize</string>
+	<key>app.header.title</key>
+	<string>Orlo — Batch Image Converter</string>
+	<key>app.name</key>
+	<string>Orlo</string>
+	<key>app.window.title</key>
+	<string>Orlo</string>
+	<key>button.add_files</key>
+	<string>Add files</string>
+	<key>button.choose</key>
+	<string>Choose</string>
+	<key>button.clear</key>
+	<string>Clear</string>
+	<key>button.convert</key>
+	<string>Convert</string>
+	<key>button.save</key>
+	<string>Save</string>
+	<key>button.stop</key>
+	<string>Stop</string>
+	<key>files.section.title</key>
+	<string>Files</string>
+	<key>language.selection.english</key>
+	<string>English</string>
+	<key>language.selection.french</key>
+	<string>French</string>
+	<key>language.selection.subtitle</key>
+	<string>Select Orlo's interface language. You can change it any time from settings.</string>
+	<key>language.selection.title</key>
+	<string>Choose your language</string>
+	<key>preset.default</key>
+	<string>Default</string>
+	<key>preset.web_banner</key>
+	<string>Web Banner</string>
+	<key>preset.wordpress_thumbnail</key>
+	<string>WordPress Thumbnail</string>
+	<key>preview.converted</key>
+	<string>Converted WebP</string>
+	<key>preview.dimensions</key>
+	<string>Dimensions: %d × %d</string>
+	<key>preview.gain</key>
+	<string>Savings: %@</string>
+	<key>preview.original</key>
+	<string>Original</string>
+	<key>preview.size</key>
+	<string>Size: %@</string>
+	<key>progress.label</key>
+	<string>Progress: %d%%</string>
+	<key>resize.height</key>
+	<string>Height</string>
+	<key>resize.original</key>
+	<string>Original size</string>
+	<key>resize.percentage</key>
+	<string>Percentage</string>
+	<key>resize.width</key>
+	<string>Width</string>
+	<key>settings.keep_aspect_ratio</key>
+	<string>Keep aspect ratio</string>
+	<key>settings.language.english</key>
+	<string>English</string>
+	<key>settings.language.french</key>
+	<string>French</string>
+	<key>settings.language.label</key>
+	<string>Interface language</string>
+	<key>settings.language.section</key>
+	<string>Language</string>
+	<key>settings.menu</key>
+	<string>Settings</string>
+	<key>settings.metadata.help</key>
+	<string>Removes technical data (EXIF, GPS, camera settings) to reduce file size and protect your photo privacy.</string>
+	<key>settings.metadata.label</key>
+	<string>Remove metadata</string>
+	<key>settings.output.label</key>
+	<string>Output:</string>
+	<key>settings.output.none</key>
+	<string>No folder selected</string>
+	<key>settings.preset.current</key>
+	<string>Current configuration</string>
+	<key>settings.preset.delete_help</key>
+	<string>Delete this custom preset</string>
+	<key>settings.preset.label</key>
+	<string>Preset</string>
+	<key>settings.preset.new_name.placeholder</key>
+	<string>New preset name</string>
+	<key>settings.quality.help</key>
+	<string>Adjusts the compression level. A high value preserves more original detail, while a low value maximizes disk-space savings.</string>
+	<key>settings.quality.label</key>
+	<string>WEBP quality</string>
+	<key>settings.resize.help</key>
+	<string>Changes the image dimensions. Resizing is the most direct way to drastically reduce a file's weight.</string>
+	<key>settings.resize.label</key>
+	<string>Resize</string>
+	<key>settings.suffix.help</key>
+	<string>Adds text to the filename so you can quickly identify variants such as dimensions or usage.</string>
+	<key>settings.suffix.label</key>
+	<string>Suffix</string>
+	<key>status.pending</key>
+	<string>Pending</string>
+	<key>status.processing</key>
+	<string>Converting...</string>
+	<key>status.success</key>
+	<string>Done</string>
+	<key>suffix.dimensions</key>
+	<string>Dimensions</string>
+	<key>suffix.none</key>
+	<string>None</string>
+	<key>suffix.preset_name</key>
+	<string>Preset name</string>
+	<key>table.action</key>
+	<string>Action</string>
+	<key>table.after</key>
+	<string>After</string>
+	<key>table.before</key>
+	<string>Before</string>
+	<key>table.gain</key>
+	<string>Savings</string>
+	<key>table.name</key>
+	<string>Name</string>
+	<key>table.status</key>
+	<string>Status</string>
+	<key>vm.error.output_folder.missing</key>
+	<string>No output folder selected.</string>
+	<key>vm.error.preset.empty</key>
+	<string>Preset name cannot be empty.</string>
+	<key>vm.error.preset.protected</key>
+	<string>This name is reserved for a default preset.</string>
+	<key>vm.error.processing_stopped</key>
+	<string>Processing stopped.</string>
+	<key>vm.gain.percent</key>
+	<string>%d%%</string>
+	<key>vm.preview.available_after_conversion</key>
+	<string>Preview available after conversion</string>
+	<key>vm.preview.loading</key>
+	<string>Loading preview...</string>
+	<key>vm.preview.select_file</key>
+	<string>Select a file to view the preview</string>
+	<key>vm.total_gain.megabytes</key>
+	<string>%@ MB</string>
+</dict>
+</plist>

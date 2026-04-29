@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>alert.cancel</key>
+	<string>Annuler</string>
+	<key>alert.conversion.complete.message</key>
+	<string>Traitement terminé. Gain total : %@</string>
+	<key>alert.conversion.complete.title</key>
+	<string>Traitement terminé</string>
+	<key>alert.delete</key>
+	<string>Supprimer</string>
+	<key>alert.ok</key>
+	<string>OK</string>
+	<key>alert.preset.delete.message</key>
+	<string>Le préréglage “%@” sera supprimé définitivement.</string>
+	<key>alert.preset.delete.title</key>
+	<string>Supprimer le préréglage ?</string>
+	<key>app.header.tagline</key>
+	<string>Organiser, réduire, lisser, optimiser</string>
+	<key>app.header.title</key>
+	<string>Orlo — Batch Image Converter</string>
+	<key>app.name</key>
+	<string>Orlo</string>
+	<key>app.window.title</key>
+	<string>Orlo</string>
+	<key>button.add_files</key>
+	<string>Ajouter des fichiers</string>
+	<key>button.choose</key>
+	<string>Choisir</string>
+	<key>button.clear</key>
+	<string>Vider</string>
+	<key>button.convert</key>
+	<string>Convertir</string>
+	<key>button.save</key>
+	<string>Enregistrer</string>
+	<key>button.stop</key>
+	<string>Arrêter</string>
+	<key>files.section.title</key>
+	<string>Fichiers</string>
+	<key>language.selection.english</key>
+	<string>Anglais</string>
+	<key>language.selection.french</key>
+	<string>Français</string>
+	<key>language.selection.subtitle</key>
+	<string>Sélectionnez la langue d'interface d'Orlo. Vous pourrez la modifier à tout moment dans les réglages.</string>
+	<key>language.selection.title</key>
+	<string>Choisissez votre langue</string>
+	<key>preset.default</key>
+	<string>Défaut</string>
+	<key>preset.web_banner</key>
+	<string>Bannière Web</string>
+	<key>preset.wordpress_thumbnail</key>
+	<string>WordPress Thumbnail</string>
+	<key>preview.converted</key>
+	<string>WebP converti</string>
+	<key>preview.dimensions</key>
+	<string>Dimensions : %d × %d</string>
+	<key>preview.gain</key>
+	<string>Gain : %@</string>
+	<key>preview.original</key>
+	<string>Original</string>
+	<key>preview.size</key>
+	<string>Taille : %@</string>
+	<key>progress.label</key>
+	<string>Progression : %d%%</string>
+	<key>resize.height</key>
+	<string>Hauteur</string>
+	<key>resize.original</key>
+	<string>Taille originale</string>
+	<key>resize.percentage</key>
+	<string>Pourcentage</string>
+	<key>resize.width</key>
+	<string>Largeur</string>
+	<key>settings.keep_aspect_ratio</key>
+	<string>Conserver les proportions</string>
+	<key>settings.language.english</key>
+	<string>Anglais</string>
+	<key>settings.language.french</key>
+	<string>Français</string>
+	<key>settings.language.label</key>
+	<string>Langue de l'interface</string>
+	<key>settings.language.section</key>
+	<string>Langue</string>
+	<key>settings.menu</key>
+	<string>Réglages</string>
+	<key>settings.metadata.help</key>
+	<string>Supprime les données techniques (EXIF, GPS, réglages boîtier) pour alléger le fichier et protéger la confidentialité de vos prises de vue.</string>
+	<key>settings.metadata.label</key>
+	<string>Supprimer les métadonnées</string>
+	<key>settings.output.label</key>
+	<string>Sortie :</string>
+	<key>settings.output.none</key>
+	<string>Aucun dossier sélectionné</string>
+	<key>settings.preset.current</key>
+	<string>Configuration actuelle</string>
+	<key>settings.preset.delete_help</key>
+	<string>Supprimer ce préréglage personnalisé</string>
+	<key>settings.preset.label</key>
+	<string>Préréglage</string>
+	<key>settings.preset.new_name.placeholder</key>
+	<string>Nom du nouveau préréglage</string>
+	<key>settings.quality.help</key>
+	<string>Ajuste le niveau de compression. Une valeur élevée préserve les détails originaux, une valeur basse maximise l'espace disque économisé.</string>
+	<key>settings.quality.label</key>
+	<string>Qualité WEBP</string>
+	<key>settings.resize.help</key>
+	<string>Modifie les dimensions physiques de l'image. Redimensionner est la méthode la plus directe pour réduire radicalement le poids d'un fichier.</string>
+	<key>settings.resize.label</key>
+	<string>Redimensionnement</string>
+	<key>settings.suffix.help</key>
+	<string>Ajoute un texte au nom du fichier pour identifier rapidement ses variantes (ex: dimensions ou usage).</string>
+	<key>settings.suffix.label</key>
+	<string>Suffixe</string>
+	<key>status.pending</key>
+	<string>En attente</string>
+	<key>status.processing</key>
+	<string>Conversion...</string>
+	<key>status.success</key>
+	<string>OK</string>
+	<key>suffix.dimensions</key>
+	<string>Dimensions</string>
+	<key>suffix.none</key>
+	<string>Aucun</string>
+	<key>suffix.preset_name</key>
+	<string>Nom du préréglage</string>
+	<key>table.action</key>
+	<string>Action</string>
+	<key>table.after</key>
+	<string>Après</string>
+	<key>table.before</key>
+	<string>Avant</string>
+	<key>table.gain</key>
+	<string>Gain</string>
+	<key>table.name</key>
+	<string>Nom</string>
+	<key>table.status</key>
+	<string>Statut</string>
+	<key>vm.error.output_folder.missing</key>
+	<string>Aucun dossier de sortie sélectionné.</string>
+	<key>vm.error.preset.empty</key>
+	<string>Le nom du préréglage ne peut pas être vide.</string>
+	<key>vm.error.preset.protected</key>
+	<string>Ce nom est réservé à un préréglage par défaut.</string>
+	<key>vm.error.processing_stopped</key>
+	<string>Traitement arrêté.</string>
+	<key>vm.gain.percent</key>
+	<string>%d%%</string>
+	<key>vm.preview.available_after_conversion</key>
+	<string>Aperçu disponible après conversion</string>
+	<key>vm.preview.loading</key>
+	<string>Chargement de l'aperçu...</string>
+	<key>vm.preview.select_file</key>
+	<string>Sélectionnez un fichier pour voir l'aperçu</string>
+	<key>vm.total_gain.megabytes</key>
+	<string>%@ Mo</string>
+</dict>
+</plist>

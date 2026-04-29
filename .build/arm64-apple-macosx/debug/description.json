@@ -1,0 +1,581 @@
+{
+  "builtTestProducts" : [
+
+  ],
+  "copyCommands" : {
+    "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac_WebPConverterMac.bundle/Icone ORLO.svg" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Resources/Icon Orlo.icon/Assets/Icone ORLO.svg"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac_WebPConverterMac.bundle/Icone ORLO.svg"
+        }
+      ]
+    },
+    "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac_WebPConverterMac.bundle/Localizable.xcstrings" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Resources/Localizable.xcstrings"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac_WebPConverterMac.bundle/Localizable.xcstrings"
+        }
+      ]
+    },
+    "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac_WebPConverterMac.bundle/icon.json" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Resources/Icon Orlo.icon/icon.json"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac_WebPConverterMac.bundle/icon.json"
+        }
+      ]
+    }
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.WebPConverterMac-arm64-apple-macosx-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/sources",
+      "importPath" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Extensions/Color+Hex.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Localization.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Models/ConversionModels.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/ConversionPresetStore.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/FileService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/ImageConversionService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/NSItemProvider+Async.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/ViewModels/ConversionViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/AppKitCommitTextField.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/ContentView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/HeaderView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/LanguageSelectionView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/LiquidGlassCard.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/SidebarSettings.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/WebPConverterMacApp.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/DerivedSources/resource_bundle_accessor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "virtual",
+          "name" : "<WebPConverterMac-arm64-apple-macosx-debug.module-resources>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/sources"
+        }
+      ],
+      "isLibrary" : false,
+      "moduleName" : "WebPConverterMac",
+      "moduleOutputPath" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/Modules/WebPConverterMac.swiftmodule",
+      "objects" : [
+        "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/Color+Hex.swift.o",
+        "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/Localization.swift.o",
+        "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionModels.swift.o",
+        "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionPresetStore.swift.o",
+        "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/FileService.swift.o",
+        "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ImageConversionService.swift.o",
+        "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/NSItemProvider+Async.swift.o",
+        "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionViewModel.swift.o",
+        "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/AppKitCommitTextField.swift.o",
+        "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ContentView.swift.o",
+        "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/HeaderView.swift.o",
+        "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/LanguageSelectionView.swift.o",
+        "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/LiquidGlassCard.swift.o",
+        "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/SidebarSettings.swift.o",
+        "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/WebPConverterMacApp.swift.o",
+        "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/resource_bundle_accessor.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx13.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-j11",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_AVAILABLE",
+        "-module-cache-path",
+        "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-Xfrontend",
+        "-entry-point-function-name",
+        "-Xfrontend",
+        "WebPConverterMac_main",
+        "-swift-version",
+        "5",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "webp_converter_mac"
+      ],
+      "outputFileMapPath" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/Color+Hex.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/Localization.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionModels.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionPresetStore.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/FileService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ImageConversionService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/NSItemProvider+Async.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionViewModel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/AppKitCommitTextField.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ContentView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/HeaderView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/LanguageSelectionView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/LiquidGlassCard.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/SidebarSettings.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/WebPConverterMacApp.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/resource_bundle_accessor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/Modules/WebPConverterMac.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Extensions/Color+Hex.swift",
+        "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Localization.swift",
+        "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Models/ConversionModels.swift",
+        "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/ConversionPresetStore.swift",
+        "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/FileService.swift",
+        "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/ImageConversionService.swift",
+        "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/NSItemProvider+Async.swift",
+        "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/ViewModels/ConversionViewModel.swift",
+        "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/AppKitCommitTextField.swift",
+        "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/ContentView.swift",
+        "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/HeaderView.swift",
+        "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/LanguageSelectionView.swift",
+        "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/LiquidGlassCard.swift",
+        "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/SidebarSettings.swift",
+        "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/WebPConverterMacApp.swift",
+        "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/DerivedSources/resource_bundle_accessor.swift"
+      ],
+      "tempsPath" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build",
+      "wholeModuleOptimization" : false
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "WebPConverterMac" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "WebPConverterMac",
+      "-package-name",
+      "webp_converter_mac",
+      "-c",
+      "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Extensions/Color+Hex.swift",
+      "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Localization.swift",
+      "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Models/ConversionModels.swift",
+      "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/ConversionPresetStore.swift",
+      "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/FileService.swift",
+      "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/ImageConversionService.swift",
+      "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/NSItemProvider+Async.swift",
+      "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/ViewModels/ConversionViewModel.swift",
+      "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/AppKitCommitTextField.swift",
+      "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/ContentView.swift",
+      "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/HeaderView.swift",
+      "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/LanguageSelectionView.swift",
+      "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/LiquidGlassCard.swift",
+      "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/SidebarSettings.swift",
+      "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/WebPConverterMacApp.swift",
+      "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/DerivedSources/resource_bundle_accessor.swift",
+      "-I",
+      "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx13.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-j11",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_AVAILABLE",
+      "-module-cache-path",
+      "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-Xfrontend",
+      "-entry-point-function-name",
+      "-Xfrontend",
+      "WebPConverterMac_main",
+      "-swift-version",
+      "5",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "webp_converter_mac",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "WebPConverterMac" : [
+
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+
+  },
+  "traitConfiguration" : {
+    "default" : {
+
+    }
+  },
+  "writeCommands" : {
+    "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/Orlo-entitlement.plist" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<entitlement-plist>"
+        },
+        {
+          "kind" : "virtual",
+          "name" : "<com.apple.security.get-task-allow>"
+        }
+      ],
+      "outputFilePath" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/Orlo-entitlement.plist"
+    },
+    "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/Orlo.product/Objects.LinkFileList" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<link-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/AppKitCommitTextField.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/Color+Hex.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ContentView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionModels.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionPresetStore.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionViewModel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/FileService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/HeaderView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ImageConversionService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/LanguageSelectionView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/LiquidGlassCard.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/Localization.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/NSItemProvider+Async.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/SidebarSettings.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/WebPConverterMacApp.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/resource_bundle_accessor.swift.o"
+        }
+      ],
+      "outputFilePath" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/Orlo.product/Objects.LinkFileList"
+    },
+    "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Extensions/Color+Hex.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Localization.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Models/ConversionModels.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/ConversionPresetStore.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/FileService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/ImageConversionService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/NSItemProvider+Async.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/ViewModels/ConversionViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/AppKitCommitTextField.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/ContentView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/HeaderView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/LanguageSelectionView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/LiquidGlassCard.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/SidebarSettings.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/WebPConverterMacApp.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/DerivedSources/resource_bundle_accessor.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/sources"
+    },
+    "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+    }
+  }
+}

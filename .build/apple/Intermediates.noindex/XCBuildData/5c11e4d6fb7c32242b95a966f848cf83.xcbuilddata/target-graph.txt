@@ -1,0 +1,7 @@
+Target dependency graph (3 targets)
+Target 'AllExcludingTests' in project 'Aggregate'
+➜ Explicit dependency on target 'Orlo_6680E38A0_PackageProduct' in project 'WebPConverterMac'
+➜ Explicit dependency on target 'WebPConverterMac_WebPConverterMac' in project 'WebPConverterMac'
+Target 'Orlo_6680E38A0_PackageProduct' in project 'WebPConverterMac'
+➜ Explicit dependency on target 'WebPConverterMac_WebPConverterMac' in project 'WebPConverterMac'
+Target 'WebPConverterMac_WebPConverterMac' in project 'WebPConverterMac' (no dependencies)

@@ -3,17 +3,30 @@ import SwiftUI
 struct LanguageSelectionView: View {
     @Binding var selectedLanguage: String
 
+    private var appIcon: NSImage? {
+        NSApp.applicationIconImage
+    }
+
     var body: some View {
         VStack(spacing: 20) {
-            VStack(spacing: 8) {
-                Text(L10n.text("app.name"))
-                    .font(.largeTitle.bold())
-                Text(L10n.text("language.selection.title"))
-                    .font(.title3.weight(.semibold))
-                Text(L10n.text("language.selection.subtitle"))
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: 420)
+            HStack(spacing: 16) {
+                if let icon = appIcon {
+                    Image(nsImage: icon)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 64, height: 64)
+                }
+                
+                VStack(spacing: 8) {
+                    Text(L10n.text("app.name"))
+                        .font(.largeTitle.bold())
+                    Text(L10n.text("language.selection.title"))
+                        .font(.title3.weight(.semibold))
+                    Text(L10n.text("language.selection.subtitle"))
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: 420)
+                }
             }
 
             HStack(spacing: 16) {

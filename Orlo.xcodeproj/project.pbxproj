@@ -1,0 +1,420 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0810D93D7E17C518FD1AAC14 /* AppKitCommitTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 798968035E727F21C88B6BAC /* AppKitCommitTextField.swift */; };
+		1625CD321740DE07F33377B8 /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1ED9615B16277838832189F /* HeaderView.swift */; };
+		19F5726583F6D698E5E88198 /* NSItemProvider+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E55A581CA34976C05198E84 /* NSItemProvider+Async.swift */; };
+		1CDD4EA4D8EBAC65FB0D4850 /* ConversionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E96055654E10D0B12CEAB2 /* ConversionViewModel.swift */; };
+		3082BCB59930FE08FB6423EB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D41F708F81BD4C4CAE203603 /* ContentView.swift */; };
+		365EC107684A7C3C5E0E226A /* ConversionPresetStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E616FEA77AABDF5675B1F0E4 /* ConversionPresetStore.swift */; };
+		89E806AD0FAE4BC91C3702BA /* WebPConverterMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F776C81BB0D44EA589EF3F83 /* WebPConverterMacApp.swift */; };
+		A56BD5A55B4280B1D64E590C /* ImageConversionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D33CBA987B3E1E65562D9E /* ImageConversionService.swift */; };
+		B1DFE28FF409857C4EACB2A1 /* LanguageSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C58AA00AE63E83C264E435 /* LanguageSelectionView.swift */; };
+		CF62288F80B07F57E2C95419 /* SidebarSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A8CCD27FC4D4D241A7B61F1 /* SidebarSettings.swift */; };
+		D1C20CEAC3A641D948A2AD1E /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8DB4127D912514C4389EEBD /* Localization.swift */; };
+		D23FFB231534C0A0897E70EE /* FileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93A2BE43BBE5C9DF50D73F1 /* FileService.swift */; };
+		D2CCD5A2F38B108DA4AF7BB1 /* ConversionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D20B16FF679BF715BB8A93 /* ConversionModels.swift */; };
+		D8A1DCD3E42600D0AFF3D12F /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C53F8ED22BDF349205FF1E8 /* Color+Hex.swift */; };
+		EA3BF5C249B0E366109860CC /* Icon Orlo.icon in Resources */ = {isa = PBXBuildFile; fileRef = 69FF1292AC9DB176AB9076D3 /* Icon Orlo.icon */; };
+		ED4B62D0A6A9AEA2111E4916 /* LiquidGlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02B4EF34E99B43274609D839 /* LiquidGlassCard.swift */; };
+		FA1D93279B56C68991163486 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = C9A06C4888245B0442E638AA /* Localizable.xcstrings */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		02B4EF34E99B43274609D839 /* LiquidGlassCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassCard.swift; sourceTree = "<group>"; };
+		0E55A581CA34976C05198E84 /* NSItemProvider+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSItemProvider+Async.swift"; sourceTree = "<group>"; };
+		1393192FF6B8E0362651B552 /* Orlo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Orlo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		45D20B16FF679BF715BB8A93 /* ConversionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversionModels.swift; sourceTree = "<group>"; };
+		69C58AA00AE63E83C264E435 /* LanguageSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageSelectionView.swift; sourceTree = "<group>"; };
+		69FF1292AC9DB176AB9076D3 /* Icon Orlo.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = "Icon Orlo.icon"; sourceTree = "<group>"; };
+		798968035E727F21C88B6BAC /* AppKitCommitTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppKitCommitTextField.swift; sourceTree = "<group>"; };
+		7A8CCD27FC4D4D241A7B61F1 /* SidebarSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarSettings.swift; sourceTree = "<group>"; };
+		9C53F8ED22BDF349205FF1E8 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
+		A8DB4127D912514C4389EEBD /* Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
+		B5D33CBA987B3E1E65562D9E /* ImageConversionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageConversionService.swift; sourceTree = "<group>"; };
+		C93A2BE43BBE5C9DF50D73F1 /* FileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileService.swift; sourceTree = "<group>"; };
+		C9A06C4888245B0442E638AA /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		D1ED9615B16277838832189F /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
+		D41F708F81BD4C4CAE203603 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E616FEA77AABDF5675B1F0E4 /* ConversionPresetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversionPresetStore.swift; sourceTree = "<group>"; };
+		E8E96055654E10D0B12CEAB2 /* ConversionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversionViewModel.swift; sourceTree = "<group>"; };
+		F776C81BB0D44EA589EF3F83 /* WebPConverterMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebPConverterMacApp.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		08CF69DFF1B6B2F95CB07726 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				69FF1292AC9DB176AB9076D3 /* Icon Orlo.icon */,
+				C9A06C4888245B0442E638AA /* Localizable.xcstrings */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		243ACA71CE7F2A1AA74EACDC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1393192FF6B8E0362651B552 /* Orlo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2DD263121C4CB83B8C0F4E17 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				9C53F8ED22BDF349205FF1E8 /* Color+Hex.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		6356BEF4CA9FD57DC0D44C05 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				E8E96055654E10D0B12CEAB2 /* ConversionViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		6D0761A4BAC8FFD1C469ED13 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				79C3CD3A660280559E8B1893 /* WebPConverterMac */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		79C3CD3A660280559E8B1893 /* WebPConverterMac */ = {
+			isa = PBXGroup;
+			children = (
+				A8DB4127D912514C4389EEBD /* Localization.swift */,
+				F776C81BB0D44EA589EF3F83 /* WebPConverterMacApp.swift */,
+				2DD263121C4CB83B8C0F4E17 /* Extensions */,
+				B84AD6E6EC162A6913C457A1 /* Models */,
+				08CF69DFF1B6B2F95CB07726 /* Resources */,
+				FFC91817E5DC8C6A427A1C96 /* Services */,
+				6356BEF4CA9FD57DC0D44C05 /* ViewModels */,
+				B9D83F027457ED47DD92AC41 /* Views */,
+			);
+			path = WebPConverterMac;
+			sourceTree = "<group>";
+		};
+		AAD9550286DC0B2D12D5808D = {
+			isa = PBXGroup;
+			children = (
+				6D0761A4BAC8FFD1C469ED13 /* Sources */,
+				243ACA71CE7F2A1AA74EACDC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B84AD6E6EC162A6913C457A1 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				45D20B16FF679BF715BB8A93 /* ConversionModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		B9D83F027457ED47DD92AC41 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				798968035E727F21C88B6BAC /* AppKitCommitTextField.swift */,
+				D41F708F81BD4C4CAE203603 /* ContentView.swift */,
+				D1ED9615B16277838832189F /* HeaderView.swift */,
+				69C58AA00AE63E83C264E435 /* LanguageSelectionView.swift */,
+				02B4EF34E99B43274609D839 /* LiquidGlassCard.swift */,
+				7A8CCD27FC4D4D241A7B61F1 /* SidebarSettings.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		FFC91817E5DC8C6A427A1C96 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				E616FEA77AABDF5675B1F0E4 /* ConversionPresetStore.swift */,
+				C93A2BE43BBE5C9DF50D73F1 /* FileService.swift */,
+				B5D33CBA987B3E1E65562D9E /* ImageConversionService.swift */,
+				0E55A581CA34976C05198E84 /* NSItemProvider+Async.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3206A71BB5CF0CA077FBF7F2 /* Orlo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C862243E2427EB49929192CF /* Build configuration list for PBXNativeTarget "Orlo" */;
+			buildPhases = (
+				7A8E5056E985B75961D9D5E2 /* Sources */,
+				CC67CFB6B6E38712D6576D84 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Orlo;
+			packageProductDependencies = (
+			);
+			productName = Orlo;
+			productReference = 1393192FF6B8E0362651B552 /* Orlo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		ECD72A20D7FFBE81B38597C8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					3206A71BB5CF0CA077FBF7F2 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = B3E2DA3C9320D396C7858F8C /* Build configuration list for PBXProject "Orlo" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+				fr,
+			);
+			mainGroup = AAD9550286DC0B2D12D5808D;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 243ACA71CE7F2A1AA74EACDC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3206A71BB5CF0CA077FBF7F2 /* Orlo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		CC67CFB6B6E38712D6576D84 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EA3BF5C249B0E366109860CC /* Icon Orlo.icon in Resources */,
+				FA1D93279B56C68991163486 /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7A8E5056E985B75961D9D5E2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0810D93D7E17C518FD1AAC14 /* AppKitCommitTextField.swift in Sources */,
+				D8A1DCD3E42600D0AFF3D12F /* Color+Hex.swift in Sources */,
+				3082BCB59930FE08FB6423EB /* ContentView.swift in Sources */,
+				D2CCD5A2F38B108DA4AF7BB1 /* ConversionModels.swift in Sources */,
+				365EC107684A7C3C5E0E226A /* ConversionPresetStore.swift in Sources */,
+				1CDD4EA4D8EBAC65FB0D4850 /* ConversionViewModel.swift in Sources */,
+				D23FFB231534C0A0897E70EE /* FileService.swift in Sources */,
+				1625CD321740DE07F33377B8 /* HeaderView.swift in Sources */,
+				A56BD5A55B4280B1D64E590C /* ImageConversionService.swift in Sources */,
+				B1DFE28FF409857C4EACB2A1 /* LanguageSelectionView.swift in Sources */,
+				ED4B62D0A6A9AEA2111E4916 /* LiquidGlassCard.swift in Sources */,
+				D1C20CEAC3A641D948A2AD1E /* Localization.swift in Sources */,
+				19F5726583F6D698E5E88198 /* NSItemProvider+Async.swift in Sources */,
+				CF62288F80B07F57E2C95419 /* SidebarSettings.swift in Sources */,
+				89E806AD0FAE4BC91C3702BA /* WebPConverterMacApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		25933B7E34C1C6B420AB5895 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		C015FCF8A8412FBD1C0F8161 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Orlo/Orlo.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = Orlo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.orlo.WebPConverter;
+				PRODUCT_NAME = Orlo;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		D2755E0F858B1C2FA88B1AC0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Orlo/Orlo.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = Orlo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.orlo.WebPConverter;
+				PRODUCT_NAME = Orlo;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		D942E884CAF1ACC6531FD2D5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B3E2DA3C9320D396C7858F8C /* Build configuration list for PBXProject "Orlo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D942E884CAF1ACC6531FD2D5 /* Debug */,
+				25933B7E34C1C6B420AB5895 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		C862243E2427EB49929192CF /* Build configuration list for PBXNativeTarget "Orlo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C015FCF8A8412FBD1C0F8161 /* Debug */,
+				D2755E0F858B1C2FA88B1AC0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = ECD72A20D7FFBE81B38597C8 /* Project object */;
+}

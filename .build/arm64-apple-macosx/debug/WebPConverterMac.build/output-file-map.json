@@ -1,0 +1,117 @@
+{
+  "": {
+    "swift-dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/primary.swiftdeps"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Extensions/Color+Hex.swift": {
+    "dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/Color+Hex.d",
+    "object": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/Color+Hex.swift.o",
+    "swiftmodule": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/Color+Hex~partial.swiftmodule",
+    "swift-dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/Color+Hex.swiftdeps",
+    "diagnostics": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/Color+Hex.dia"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Localization.swift": {
+    "dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/Localization.d",
+    "object": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/Localization.swift.o",
+    "swiftmodule": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/Localization~partial.swiftmodule",
+    "swift-dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/Localization.swiftdeps",
+    "diagnostics": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/Localization.dia"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Models/ConversionModels.swift": {
+    "dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionModels.d",
+    "object": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionModels.swift.o",
+    "swiftmodule": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionModels~partial.swiftmodule",
+    "swift-dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionModels.swiftdeps",
+    "diagnostics": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionModels.dia"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/ConversionPresetStore.swift": {
+    "dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionPresetStore.d",
+    "object": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionPresetStore.swift.o",
+    "swiftmodule": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionPresetStore~partial.swiftmodule",
+    "swift-dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionPresetStore.swiftdeps",
+    "diagnostics": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionPresetStore.dia"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/FileService.swift": {
+    "dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/FileService.d",
+    "object": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/FileService.swift.o",
+    "swiftmodule": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/FileService~partial.swiftmodule",
+    "swift-dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/FileService.swiftdeps",
+    "diagnostics": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/FileService.dia"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/ImageConversionService.swift": {
+    "dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ImageConversionService.d",
+    "object": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ImageConversionService.swift.o",
+    "swiftmodule": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ImageConversionService~partial.swiftmodule",
+    "swift-dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ImageConversionService.swiftdeps",
+    "diagnostics": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ImageConversionService.dia"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Services/NSItemProvider+Async.swift": {
+    "dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/NSItemProvider+Async.d",
+    "object": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/NSItemProvider+Async.swift.o",
+    "swiftmodule": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/NSItemProvider+Async~partial.swiftmodule",
+    "swift-dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/NSItemProvider+Async.swiftdeps",
+    "diagnostics": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/NSItemProvider+Async.dia"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/ViewModels/ConversionViewModel.swift": {
+    "dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionViewModel.d",
+    "object": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionViewModel.swift.o",
+    "swiftmodule": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionViewModel.swiftdeps",
+    "diagnostics": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ConversionViewModel.dia"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/AppKitCommitTextField.swift": {
+    "dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/AppKitCommitTextField.d",
+    "object": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/AppKitCommitTextField.swift.o",
+    "swiftmodule": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/AppKitCommitTextField~partial.swiftmodule",
+    "swift-dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/AppKitCommitTextField.swiftdeps",
+    "diagnostics": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/AppKitCommitTextField.dia"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/ContentView.swift": {
+    "dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ContentView.d",
+    "object": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ContentView.swift.o",
+    "swiftmodule": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ContentView~partial.swiftmodule",
+    "swift-dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ContentView.swiftdeps",
+    "diagnostics": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/ContentView.dia"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/HeaderView.swift": {
+    "dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/HeaderView.d",
+    "object": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/HeaderView.swift.o",
+    "swiftmodule": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/HeaderView~partial.swiftmodule",
+    "swift-dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/HeaderView.swiftdeps",
+    "diagnostics": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/HeaderView.dia"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/LanguageSelectionView.swift": {
+    "dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/LanguageSelectionView.d",
+    "object": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/LanguageSelectionView.swift.o",
+    "swiftmodule": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/LanguageSelectionView~partial.swiftmodule",
+    "swift-dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/LanguageSelectionView.swiftdeps",
+    "diagnostics": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/LanguageSelectionView.dia"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/LiquidGlassCard.swift": {
+    "dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/LiquidGlassCard.d",
+    "object": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/LiquidGlassCard.swift.o",
+    "swiftmodule": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/LiquidGlassCard~partial.swiftmodule",
+    "swift-dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/LiquidGlassCard.swiftdeps",
+    "diagnostics": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/LiquidGlassCard.dia"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/Views/SidebarSettings.swift": {
+    "dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/SidebarSettings.d",
+    "object": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/SidebarSettings.swift.o",
+    "swiftmodule": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/SidebarSettings~partial.swiftmodule",
+    "swift-dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/SidebarSettings.swiftdeps",
+    "diagnostics": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/SidebarSettings.dia"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/Sources/WebPConverterMac/WebPConverterMacApp.swift": {
+    "dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/WebPConverterMacApp.d",
+    "object": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/WebPConverterMacApp.swift.o",
+    "swiftmodule": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/WebPConverterMacApp~partial.swiftmodule",
+    "swift-dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/WebPConverterMacApp.swiftdeps",
+    "diagnostics": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/WebPConverterMacApp.dia"
+  },
+  "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/DerivedSources/resource_bundle_accessor.swift": {
+    "dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/resource_bundle_accessor.d",
+    "object": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/resource_bundle_accessor.swift.o",
+    "swiftmodule": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/resource_bundle_accessor~partial.swiftmodule",
+    "swift-dependencies": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/resource_bundle_accessor.swiftdeps",
+    "diagnostics": "/Users/LucasMinelli/webp-converter-mac/.build/arm64-apple-macosx/debug/WebPConverterMac.build/resource_bundle_accessor.dia"
+  }
+}
