@@ -32,7 +32,7 @@
 		1393192FF6B8E0362651B552 /* Orlo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Orlo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		45D20B16FF679BF715BB8A93 /* ConversionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversionModels.swift; sourceTree = "<group>"; };
 		69C58AA00AE63E83C264E435 /* LanguageSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageSelectionView.swift; sourceTree = "<group>"; };
-		69FF1292AC9DB176AB9076D3 /* Icon Orlo.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = "Icon Orlo.icon"; sourceTree = "<group>"; };
+		69FF1292AC9DB176AB9076D3 /* Icon Orlo.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "Icon Orlo.icon"; sourceTree = "<group>"; };
 		798968035E727F21C88B6BAC /* AppKitCommitTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppKitCommitTextField.swift; sourceTree = "<group>"; };
 		7A8CCD27FC4D4D241A7B61F1 /* SidebarSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarSettings.swift; sourceTree = "<group>"; };
 		9C53F8ED22BDF349205FF1E8 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
@@ -242,6 +242,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -300,12 +301,16 @@
 		C015FCF8A8412FBD1C0F8161 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "Icon Orlo";
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Orlo/Orlo.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = Orlo/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.orlo.WebPConverter;
 				PRODUCT_NAME = Orlo;
 				SDKROOT = macosx;
@@ -315,12 +320,16 @@
 		D2755E0F858B1C2FA88B1AC0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "Icon Orlo";
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Orlo/Orlo.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = Orlo/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.orlo.WebPConverter;
 				PRODUCT_NAME = Orlo;
 				SDKROOT = macosx;
@@ -331,6 +340,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
